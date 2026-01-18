@@ -67,7 +67,7 @@ const Header = {
             <header class="admin-header">
                 <h1 id="page-title">Админ-панель</h1>
                 <div class="admin-header-actions">
-                    <a href="../public/index.html" class="btn btn-primary">Вернуться на сайт</a>
+                    <a href="/" class="btn btn-primary">Вернуться на сайт</a>
                 </div>
             </header>
         `;
@@ -75,7 +75,8 @@ const Header = {
 };
 
 // Компоненты страниц
-const LoginPage = {
+// Делаем доступными глобально для роутера
+window.LoginPage = {
     render: async () => {
         return `
             <div class="login-page">
@@ -116,7 +117,7 @@ const LoginPage = {
     }
 };
 
-const DashboardPage = {
+window.DashboardPage = {
     render: async () => {
         const layout = Layout.render();
         const mainContent = `
@@ -166,6 +167,8 @@ const DashboardPage = {
 
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Инициализация приложения...');
+    
     // Регистрируем маршруты (guards отключены - авторизация не требуется)
     router.route('/', LoginPage.render);
     router.route('/login', LoginPage.render);
@@ -177,31 +180,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Загружаем остальные страницы динамически
     loadPageComponents();
     
-    // Инициализируем роутер
-    router.init();
+    console.log('✅ Зарегистрировано маршрутов:', router.routes.length);
+    console.log('✅ Маршруты:', router.routes.map(r => r.path));
     
-    // Вызываем init для текущей страницы после загрузки
-    setTimeout(async () => {
-        const path = window.location.pathname.replace(/\/admin/, '') || '/login';
-        
-        if (path === '/login' || path === '/') {
-            if (LoginPage.init) LoginPage.init();
-        } else if (path === '/dashboard') {
-            if (DashboardPage.init) await DashboardPage.init();
-        } else if (path === '/videos') {
-            const VideosPage = await import('./pages/videos.js');
-            if (VideosPage.default.init) await VideosPage.default.init();
-        } else if (path === '/students') {
-            const StudentsPage = await import('./pages/students.js');
-            if (StudentsPage.default.init) await StudentsPage.default.init();
-        } else if (path === '/tours') {
-            const ToursPage = await import('./pages/tours.js');
-            if (ToursPage.default.init) await ToursPage.default.init();
-        } else if (path === '/blog') {
-            const BlogPage = await import('./pages/blog.js');
-            if (BlogPage.default.init) await BlogPage.default.init();
-        }
-    }, 300);
+    // Инициализируем роутер (он сам вызовет init для текущей страницы через loadComponent)
+    // Используем небольшую задержку для гарантии что все маршруты зарегистрированы
+    setTimeout(() => {
+        console.log('🚀 Инициализация роутера...');
+        router.init();
+    }, 10);
+    
+    // Дополнительная инициализация для страниц, которые уже загружены (login, dashboard)
+    // Для остальных страниц init вызывается через router.initCurrentPage()
 });
 
 // Загрузка компонентов страниц

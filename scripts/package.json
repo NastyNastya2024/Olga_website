@@ -1,0 +1,15 @@
+{
+  "name": "olga-website-scripts",
+  "version": "1.0.0",
+  "description": "Вспомогательные скрипты для работы с проектом",
+  "scripts": {
+    "upload": "node upload-to-s3.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1500.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "yandex-disk": "^1.1.7"
+  }
+}

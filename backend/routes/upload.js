@@ -12,10 +12,10 @@ const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 500 * 1024 * 1024, // 500MB для видео файлов
   },
   fileFilter: (req, file, cb) => {
-    // Разрешаем только изображения и видео
+    // Разрешаем изображения и видео
     const allowedMimes = [
       'image/jpeg',
       'image/png',
@@ -23,6 +23,9 @@ const upload = multer({
       'image/webp',
       'video/mp4',
       'video/webm',
+      'video/quicktime', // .mov
+      'video/x-msvideo', // .avi
+      'video/x-matroska', // .mkv
     ];
     
     if (allowedMimes.includes(file.mimetype)) {

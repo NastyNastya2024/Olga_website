@@ -112,33 +112,60 @@ class ApiClient {
     }
 
     /**
-     * Загрузка файла
+     * Загрузка файла с отслеживанием прогресса
      */
-    async uploadFile(endpoint, formData) {
+    async uploadFile(endpoint, formData, onProgress) {
         const url = `${this.baseUrl}${endpoint}`;
         const token = this.getToken();
 
-        const config = {
-            method: 'POST',
-            headers: {
-                ...(token && { Authorization: `Bearer ${token}` }),
-            },
-            body: formData,
-        };
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
 
-        try {
-            const response = await fetch(url, config);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Ошибка загрузки файла');
+            // Отслеживание прогресса
+            if (onProgress) {
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        onProgress(percentComplete);
+                    }
+                });
             }
 
-            return data;
-        } catch (error) {
-            console.error('Upload Error:', error);
-            throw error;
-        }
+            xhr.addEventListener('load', () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        resolve(data);
+                    } catch (error) {
+                        reject(new Error('Ошибка парсинга ответа'));
+                    }
+                } else {
+                    try {
+                        const error = JSON.parse(xhr.responseText);
+                        reject(new Error(error.error || 'Ошибка загрузки файла'));
+                    } catch {
+                        reject(new Error('Ошибка загрузки файла'));
+                    }
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                reject(new Error('Ошибка сети при загрузке файла'));
+            });
+
+            xhr.addEventListener('abort', () => {
+                reject(new Error('Загрузка отменена'));
+            });
+
+            xhr.open('POST', url);
+            
+            // Добавляем токен авторизации если есть
+            if (token) {
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
+
+            xhr.send(formData);
+        });
     }
 }
 
