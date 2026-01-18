@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видео - Olga Website</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">Olga Website</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="videos.html" class="active">Видео</a></li>
+                <li><a href="tours.html">Туры</a></li>
+                <li><a href="club.html">Клуб</a></li>
+                <li><a href="blog.html">Блог</a></li>
+            </ul>
+            <a href="../admin/index.html" class="btn-login">Вход</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Видео / Уроки</h1>
+            <p>Здесь вы найдете все доступные видео и уроки</p>
+        </section>
+
+        <section class="content-section">
+            <div class="videos-grid" id="videosGrid">
+                <p>Загрузка видео...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Olga Website. Все права защищены.</p>
+    </footer>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="scripts/videos.js"></script>
+</body>
+</html>

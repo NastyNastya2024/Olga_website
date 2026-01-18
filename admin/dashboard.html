@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд - Админ-панель</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-item active">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="videos.html" class="sidebar-item">
+                    <span class="sidebar-icon">🎥</span>
+                    <span>Видео</span>
+                </a>
+                <a href="students.html" class="sidebar-item">
+                    <span class="sidebar-icon">👥</span>
+                    <span>Ученики</span>
+                </a>
+                <a href="tours.html" class="sidebar-item">
+                    <span class="sidebar-icon">✈️</span>
+                    <span>Туры</span>
+                </a>
+                <a href="blog.html" class="sidebar-item">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Блог</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <header class="admin-header">
+                <h1>Дашборд</h1>
+                <div class="admin-header-actions">
+                    <div class="user-info">
+                        <span id="userEmail"></span>
+                        <button class="btn btn-danger" onclick="logout()">Выход</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="admin-main">
+                <div class="dashboard-stats">
+                    <div class="card">
+                        <h3>Видео</h3>
+                        <p class="stat-value" id="videosCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Ученики</h3>
+                        <p class="stat-value" id="studentsCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Туры</h3>
+                        <p class="stat-value" id="toursCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Статьи блога</h3>
+                        <p class="stat-value" id="blogCount">0</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="../shared/scripts/auth.js"></script>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

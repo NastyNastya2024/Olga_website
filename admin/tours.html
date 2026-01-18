@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Туры - Админ-панель</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-item">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="videos.html" class="sidebar-item">
+                    <span class="sidebar-icon">🎥</span>
+                    <span>Видео</span>
+                </a>
+                <a href="students.html" class="sidebar-item">
+                    <span class="sidebar-icon">👥</span>
+                    <span>Ученики</span>
+                </a>
+                <a href="tours.html" class="sidebar-item active">
+                    <span class="sidebar-icon">✈️</span>
+                    <span>Туры</span>
+                </a>
+                <a href="blog.html" class="sidebar-item">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Блог</span>
+                </a>
+            </nav>
+        </aside>
+
+        <div class="admin-content">
+            <header class="admin-header">
+                <h1>Управление турами</h1>
+                <div class="admin-header-actions">
+                    <span id="userEmail"></span>
+                    <button class="btn btn-danger" onclick="logout()">Выход</button>
+                </div>
+            </header>
+
+            <main class="admin-main">
+                <div id="accessDenied" style="display: none;">
+                    <div class="alert alert-error">
+                        У вас нет доступа к этому разделу. Только администраторы могут управлять турами.
+                    </div>
+                </div>
+
+                <div id="toursContent" style="display: none;">
+                    <div class="page-header">
+                        <h1>Туры</h1>
+                        <button class="btn btn-primary" onclick="showAddTourModal()">Добавить тур</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название</th>
+                                    <th>Даты</th>
+                                    <th>Локация</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toursTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal для добавления/редактирования тура -->
+    <div id="tourModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeTourModal()">&times;</span>
+            <h2 id="modalTitle">Добавить тур</h2>
+            <form id="tourForm">
+                <div class="form-group">
+                    <label>Название тура</label>
+                    <input type="text" id="tourTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="tourDescription" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Дата начала</label>
+                    <input type="date" id="tourStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Дата окончания</label>
+                    <input type="date" id="tourEndDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Локация</label>
+                    <input type="text" id="tourLocation" required>
+                </div>
+                <div class="form-group">
+                    <label>Программа</label>
+                    <textarea id="tourProgram" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Цена</label>
+                    <input type="number" id="tourPrice" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>URL для записи</label>
+                    <input type="url" id="tourBookingUrl">
+                </div>
+                <div class="form-group">
+                    <label>Галерея (загрузить фото)</label>
+                    <input type="file" id="tourGallery" multiple accept="image/*">
+                    <div id="galleryPreview" style="margin-top: 1rem;"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="../shared/scripts/auth.js"></script>
+    <script src="scripts/tours.js"></script>
+</body>
+</html>

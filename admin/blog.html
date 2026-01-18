@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог - Админ-панель</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-item">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="videos.html" class="sidebar-item">
+                    <span class="sidebar-icon">🎥</span>
+                    <span>Видео</span>
+                </a>
+                <a href="students.html" class="sidebar-item">
+                    <span class="sidebar-icon">👥</span>
+                    <span>Ученики</span>
+                </a>
+                <a href="tours.html" class="sidebar-item">
+                    <span class="sidebar-icon">✈️</span>
+                    <span>Туры</span>
+                </a>
+                <a href="blog.html" class="sidebar-item active">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Блог</span>
+                </a>
+            </nav>
+        </aside>
+
+        <div class="admin-content">
+            <header class="admin-header">
+                <h1>Управление блогом</h1>
+                <div class="admin-header-actions">
+                    <span id="userEmail"></span>
+                    <button class="btn btn-danger" onclick="logout()">Выход</button>
+                </div>
+            </header>
+
+            <main class="admin-main">
+                <div id="accessDenied" style="display: none;">
+                    <div class="alert alert-error">
+                        У вас нет доступа к этому разделу. Только администраторы могут управлять блогом.
+                    </div>
+                </div>
+
+                <div id="blogContent" style="display: none;">
+                    <div class="page-header">
+                        <h1>Статьи блога</h1>
+                        <button class="btn btn-primary" onclick="showAddPostModal()">Добавить статью</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Заголовок</th>
+                                    <th>Категория</th>
+                                    <th>Дата публикации</th>
+                                    <th>Статус</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blogTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal для добавления/редактирования статьи -->
+    <div id="postModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closePostModal()">&times;</span>
+            <h2 id="modalTitle">Добавить статью</h2>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Заголовок</label>
+                    <input type="text" id="postTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Содержание</label>
+                    <textarea id="postContent" rows="10" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Обложка</label>
+                    <input type="file" id="postCover" accept="image/*">
+                    <div id="coverPreview" style="margin-top: 1rem;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="postCategory">
+                        <option value="">Выберите категорию</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select id="postStatus">
+                        <option value="draft">Черновик</option>
+                        <option value="published">Опубликовано</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Meta Title (SEO)</label>
+                    <input type="text" id="postMetaTitle">
+                </div>
+                <div class="form-group">
+                    <label>Meta Description (SEO)</label>
+                    <textarea id="postMetaDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="../shared/scripts/auth.js"></script>
+    <script src="scripts/blog.js"></script>
+</body>
+</html>

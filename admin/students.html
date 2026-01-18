@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ученики - Админ-панель</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-item">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="videos.html" class="sidebar-item">
+                    <span class="sidebar-icon">🎥</span>
+                    <span>Видео</span>
+                </a>
+                <a href="students.html" class="sidebar-item active">
+                    <span class="sidebar-icon">👥</span>
+                    <span>Ученики</span>
+                </a>
+                <a href="tours.html" class="sidebar-item">
+                    <span class="sidebar-icon">✈️</span>
+                    <span>Туры</span>
+                </a>
+                <a href="blog.html" class="sidebar-item">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Блог</span>
+                </a>
+            </nav>
+        </aside>
+
+        <div class="admin-content">
+            <header class="admin-header">
+                <h1 id="pageTitle">Ученики</h1>
+                <div class="admin-header-actions">
+                    <span id="userEmail"></span>
+                    <button class="btn btn-danger" onclick="logout()">Выход</button>
+                </div>
+            </header>
+
+            <main class="admin-main">
+                <!-- Для обычного пользователя - профиль -->
+                <div id="userProfile" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Мой профиль</h2>
+                        </div>
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label>Имя</label>
+                                <input type="text" id="userName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="userEmailInput" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Телефон</label>
+                                <input type="tel" id="userPhone">
+                            </div>
+                            <div class="form-group">
+                                <label>Фото профиля</label>
+                                <input type="file" id="userPhoto" accept="image/*">
+                                <div id="photoPreview" style="margin-top: 1rem;"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Для админа - список всех пользователей -->
+                <div id="adminUsersList" style="display: none;">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Имя</th>
+                                    <th>Email</th>
+                                    <th>Роль</th>
+                                    <th>Тариф</th>
+                                    <th>Дата регистрации</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="../shared/scripts/auth.js"></script>
+    <script src="scripts/students.js"></script>
+</body>
+</html>

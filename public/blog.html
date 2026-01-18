@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог - Olga Website</title>
+    <link rel="stylesheet" href="../shared/styles/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">Olga Website</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="videos.html">Видео</a></li>
+                <li><a href="tours.html">Туры</a></li>
+                <li><a href="club.html">Клуб</a></li>
+                <li><a href="blog.html" class="active">Блог</a></li>
+            </ul>
+            <a href="../admin/index.html" class="btn-login">Вход</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Блог</h1>
+            <p>Статьи и новости</p>
+        </section>
+
+        <section class="content-section">
+            <div class="blog-list" id="blogList">
+                <p class="loading">Загрузка статей...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Olga Website. Все права защищены.</p>
+    </footer>
+
+    <script src="../shared/scripts/api.js"></script>
+    <script src="scripts/blog.js"></script>
+</body>
+</html>
