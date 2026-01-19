@@ -25,6 +25,13 @@
     </header>
 
     <main class="main-content">
+        <section class="hero">
+            <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+                <!-- Видео загружается динамически из S3 -->
+                Ваш браузер не поддерживает видео.
+            </video>
+        </section>
+
         <section class="page-header">
             <h1>Ретриты</h1>
             <p>Информация о предстоящих и прошедших ретритах</p>
@@ -32,7 +39,7 @@
 
         <section class="content-section">
             <div class="tours-list" id="toursList">
-                <p class="loading">Загрузка туров...</p>
+                <p class="loading">Загрузка ретритов...</p>
             </div>
         </section>
     </main>
@@ -43,5 +50,115 @@
 
     <script src="/shared/scripts/api.js"></script>
     <script src="/scripts/tours.js"></script>
+    <script>
+        // Загрузка hero видео из S3 для страницы ретритов
+        async function loadHeroVideo() {
+            const video = document.getElementById('heroVideo');
+            if (!video) {
+                console.error('❌ Элемент video не найден');
+                return;
+            }
+
+            try {
+                console.log('🔍 Запрос видео ретритов из S3...');
+                
+                // Получаем URL видео ретритов из S3 через специальный endpoint
+                const response = await api.get('/public/hero/video/retrits');
+                
+                console.log('📥 Ответ от API:', response);
+                
+                // Проверяем формат ответа
+                let videoUrl = null;
+                let isSuccess = false;
+                
+                if (response && typeof response === 'object') {
+                    // API клиент может вернуть данные напрямую или обернуть в data
+                    videoUrl = response.url || (response.data && response.data.url);
+                    isSuccess = response.success === true || (response.data && response.data.success === true);
+                    
+                    // Если нет success, но есть url, считаем успешным
+                    if (!isSuccess && videoUrl) {
+                        isSuccess = true;
+                    }
+                }
+                
+                console.log('📊 Парсинг ответа:', { videoUrl, isSuccess, response });
+                
+                if (isSuccess && videoUrl) {
+                    console.log('✅ Получен URL видео:', videoUrl);
+                    
+                    // Создаем source элемент с URL из S3
+                    const source = document.createElement('source');
+                    source.src = videoUrl;
+                    source.type = 'video/mp4';
+                    
+                    // Очищаем старые source элементы
+                    video.innerHTML = '';
+                    video.appendChild(source);
+                    
+                    // Обработчики событий для отладки
+                    video.addEventListener('loadeddata', () => {
+                        console.log('✅ Видео загружено успешно');
+                        // Убираем сообщение об ошибке если оно было
+                        const errorMsg = document.querySelector('.hero .error-msg');
+                        if (errorMsg) errorMsg.remove();
+                    });
+                    
+                    video.addEventListener('error', (e) => {
+                        console.error('❌ Ошибка воспроизведения видео:', e);
+                        console.error('   URL:', videoUrl);
+                        console.error('   Video error:', video.error);
+                        showError('Ошибка воспроизведения видео. Проверьте консоль.');
+                    });
+                    
+                    // Загружаем видео
+                    video.load();
+                    
+                    // Пытаемся запустить воспроизведение
+                    video.play().catch(err => {
+                        console.warn('⚠️ Автозапуск заблокирован:', err);
+                    });
+                } else {
+                    console.warn('⚠️ Видео ретритов не найдено в S3');
+                    console.warn('   Ответ:', response);
+                    console.warn('   videoUrl:', videoUrl);
+                    console.warn('   isSuccess:', isSuccess);
+                    
+                    if (response && response.availableVideos && response.availableVideos.length > 0) {
+                        console.log('📹 Доступные видео в S3:');
+                        response.availableVideos.forEach(v => console.log(`   - ${v.key}`));
+                    }
+                    
+                    // Скрываем видео, но не показываем ошибку
+                    video.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('❌ Ошибка загрузки hero видео:', error);
+                console.error('   Детали:', error.message);
+                console.error('   Stack:', error.stack);
+                console.error('   Полный объект ошибки:', error);
+                
+                showError('Ошибка загрузки видео из S3: ' + (error.message || 'Неизвестная ошибка'));
+            }
+        }
+        
+        function showError(message) {
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                // Убираем старое сообщение об ошибке если есть
+                const oldError = hero.querySelector('.error-msg');
+                if (oldError) oldError.remove();
+                
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-msg';
+                errorMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(255,0,0,0.8); padding: 1rem; border-radius: 5px; z-index: 10; text-align: center; max-width: 80%;';
+                errorMsg.textContent = message;
+                hero.appendChild(errorMsg);
+            }
+        }
+
+        // Загружаем видео при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadHeroVideo);
+    </script>
 </body>
 </html>

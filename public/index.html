@@ -59,10 +59,24 @@
                 const response = await api.get('/public/hero/video');
                 
                 console.log('📥 Ответ от API:', response);
+                console.log('📊 Тип ответа:', typeof response);
+                console.log('📊 Ключи ответа:', response ? Object.keys(response) : 'null');
                 
                 // API клиент возвращает данные напрямую
-                const videoUrl = response.url;
-                const isSuccess = response.success === true;
+                let videoUrl = null;
+                let isSuccess = false;
+                
+                if (response && typeof response === 'object') {
+                    videoUrl = response.url || (response.data && response.data.url);
+                    isSuccess = response.success === true || (response.data && response.data.success === true);
+                    
+                    // Если нет success, но есть url, считаем успешным
+                    if (!isSuccess && videoUrl) {
+                        isSuccess = true;
+                    }
+                }
+                
+                console.log('📊 Парсинг ответа:', { videoUrl, isSuccess, response });
                 
                 if (isSuccess && videoUrl) {
                     console.log('✅ Получен URL видео:', videoUrl);
@@ -87,6 +101,8 @@
                     video.addEventListener('error', (e) => {
                         console.error('❌ Ошибка воспроизведения видео:', e);
                         console.error('   URL:', videoUrl);
+                        console.error('   Video error:', video.error);
+                        console.error('   Video networkState:', video.networkState);
                         showError('Ошибка воспроизведения видео. Проверьте консоль.');
                     });
                     
@@ -100,8 +116,10 @@
                 } else {
                     console.warn('⚠️ Hero видео не найдено в S3');
                     console.warn('   Ответ:', response);
+                    console.warn('   videoUrl:', videoUrl);
+                    console.warn('   isSuccess:', isSuccess);
                     
-                    if (response.availableVideos && response.availableVideos.length > 0) {
+                    if (response && response.availableVideos && response.availableVideos.length > 0) {
                         console.log('📹 Доступные видео в S3:');
                         response.availableVideos.forEach(v => console.log(`   - ${v.key}`));
                     }
@@ -113,8 +131,19 @@
                 console.error('❌ Ошибка загрузки hero видео:', error);
                 console.error('   Детали:', error.message);
                 console.error('   Stack:', error.stack);
+                console.error('   Полный объект ошибки:', error);
                 
-                showError('Ошибка загрузки видео из S3. Проверьте консоль браузера.');
+                // Более информативное сообщение об ошибке
+                let errorMessage = 'Ошибка загрузки видео из S3';
+                if (error.message) {
+                    if (error.message.includes('подключиться к серверу')) {
+                        errorMessage = 'Не удалось подключиться к серверу. Убедитесь, что backend запущен.';
+                    } else {
+                        errorMessage = 'Ошибка загрузки видео: ' + error.message;
+                    }
+                }
+                
+                showError(errorMessage);
             }
         }
         
