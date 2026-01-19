@@ -69,7 +69,7 @@ async function loadVideos() {
                     <div class="video-card-content">
                         <h3>${video.title}</h3>
                         <p>${video.description || ''}</p>
-                        <a href="${video.video_url}" target="_blank" class="btn btn-primary">Смотреть</a>
+                        <button onclick="showVideoPlayer('${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')" class="btn btn-primary">Смотреть</button>
                     </div>
                 </div>
             `;
@@ -79,6 +79,48 @@ async function loadVideos() {
         grid.innerHTML = '<p class="empty-state">Ошибка загрузки видео</p>';
     }
 }
+
+function showVideoPlayer(videoUrl, videoTitle) {
+    const modal = document.getElementById('videoPlayerModal');
+    const videoElement = document.getElementById('videoPlayer');
+    const titleElement = document.getElementById('videoPlayerTitle');
+    
+    if (!modal || !videoElement) {
+        console.error('Элементы видеоплеера не найдены');
+        return;
+    }
+    
+    titleElement.textContent = videoTitle || 'Видео';
+    videoElement.src = videoUrl;
+    modal.style.display = 'block';
+    
+    // Автоматически запускаем воспроизведение
+    videoElement.play().catch(error => {
+        console.log('Автозапуск видео заблокирован браузером:', error);
+    });
+}
+
+function closeVideoPlayer() {
+    const modal = document.getElementById('videoPlayerModal');
+    const videoElement = document.getElementById('videoPlayer');
+    
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    if (videoElement) {
+        videoElement.pause();
+        videoElement.src = '';
+    }
+}
+
+// Закрытие модального окна при клике вне его
+document.addEventListener('click', function(event) {
+    const videoPlayerModal = document.getElementById('videoPlayerModal');
+    if (videoPlayerModal && event.target === videoPlayerModal) {
+        closeVideoPlayer();
+    }
+});
 
 // Загружаем видео при загрузке страницы
 if (document.getElementById('videosGrid')) {
