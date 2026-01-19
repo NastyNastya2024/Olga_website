@@ -4,10 +4,17 @@
 
 const express = require('express');
 const router = express.Router();
+const { loadData, saveData } = require('../utils/data-storage');
 
-// Временное хранилище статей блога (в реальном проекте использовать БД)
-let posts = [];
-let nextId = 1;
+// Загружаем данные из файла при старте
+let data = loadData('blog');
+let posts = data.items || [];
+let nextId = data.nextId || 1;
+
+// Функция для сохранения данных
+function persistData() {
+  saveData('blog', { items: posts, nextId });
+}
 
 // Функция для получения всех статей (для публичного роута)
 const getPosts = () => posts;
@@ -61,6 +68,7 @@ router.post('/', (req, res) => {
   };
   
   posts.push(newPost);
+  persistData();
   
   res.status(201).json(newPost);
 });
@@ -94,6 +102,7 @@ router.put('/:id', (req, res) => {
     updated_at: new Date().toISOString(),
   };
   
+  persistData();
   res.json(posts[postIndex]);
 });
 
@@ -110,6 +119,7 @@ router.delete('/:id', (req, res) => {
   }
   
   posts.splice(postIndex, 1);
+  persistData();
   
   res.json({ success: true, message: 'Статья удалена' });
 });

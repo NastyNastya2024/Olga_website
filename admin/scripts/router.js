@@ -195,19 +195,14 @@ class Router {
                 if (BlogPage.default && BlogPage.default.init) {
                     await BlogPage.default.init();
                 }
-            } else if (path === '/club/prices') {
-                const ClubPricesPage = await import('./pages/club-prices.js');
-                if (ClubPricesPage.default && ClubPricesPage.default.init) {
-                    await ClubPricesPage.default.init();
+            } else if (path === '/club') {
+                const ClubPage = await import('./pages/club.js');
+                if (ClubPage.default && ClubPage.default.init) {
+                    await ClubPage.default.init();
                 }
-            } else if (path === '/club/reviews') {
-                const ReviewsPage = await import('./pages/reviews.js');
-                if (ReviewsPage.default && ReviewsPage.default.init) {
-                    await ReviewsPage.default.init();
-                }
-            } else if (path === '/reviews') {
-                // Редирект со старого маршрута на новый
-                this.navigate('/club/reviews');
+            } else if (path === '/club/prices' || path === '/club/reviews' || path === '/reviews') {
+                // Редирект со старых маршрутов на новый
+                this.navigate('/club');
                 return;
             }
         } catch (error) {
@@ -226,13 +221,6 @@ class Router {
             const route = item.getAttribute('data-route');
             if (route === path) {
                 item.classList.add('active');
-                // Если это подраздел клуба, открываем группу
-                if (path.startsWith('/club/')) {
-                    const clubGroup = document.getElementById('clubGroup');
-                    if (clubGroup) {
-                        clubGroup.classList.add('active');
-                    }
-                }
             }
         });
     }

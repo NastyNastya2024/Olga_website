@@ -4,13 +4,10 @@
 
 const express = require('express');
 const router = express.Router();
+const { loadData, saveData } = require('../utils/data-storage');
 
-// Временное хранилище цен клуба (в реальном проекте использовать БД)
-let clubPrices = {
-  price_1_month: null,
-  price_3_months: null,
-  price_6_months: null,
-};
+// Загружаем данные из файла при старте
+let clubPrices = loadData('clubPrices');
 
 /**
  * GET /api/admin/club/prices
@@ -37,6 +34,7 @@ router.put('/', (req, res) => {
     clubPrices.price_6_months = price_6_months ? parseFloat(price_6_months) : null;
   }
   
+  saveData('clubPrices', clubPrices);
   res.json(clubPrices);
 });
 

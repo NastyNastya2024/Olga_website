@@ -4,10 +4,17 @@
 
 const express = require('express');
 const router = express.Router();
+const { loadData, saveData } = require('../utils/data-storage');
 
-// Временное хранилище видео (в реальном проекте использовать БД)
-let videos = [];
-let nextId = 1;
+// Загружаем данные из файла при старте
+let data = loadData('videos');
+let videos = data.items || [];
+let nextId = data.nextId || 1;
+
+// Функция для сохранения данных
+function persistData() {
+  saveData('videos', { items: videos, nextId });
+}
 
 // Функция для получения всех видео (для публичного роута)
 const getVideos = () => videos;
@@ -59,6 +66,7 @@ router.post('/', (req, res) => {
   };
   
   videos.push(newVideo);
+  persistData();
   
   res.status(201).json(newVideo);
 });
@@ -87,6 +95,7 @@ router.put('/:id', (req, res) => {
     updated_at: new Date().toISOString(),
   };
   
+  persistData();
   res.json(videos[videoIndex]);
 });
 
@@ -103,6 +112,7 @@ router.delete('/:id', (req, res) => {
   }
   
   videos.splice(videoIndex, 1);
+  persistData();
   
   res.json({ success: true, message: 'Видео удалено' });
 });

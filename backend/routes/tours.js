@@ -4,10 +4,17 @@
 
 const express = require('express');
 const router = express.Router();
+const { loadData, saveData } = require('../utils/data-storage');
 
-// Временное хранилище туров (в реальном проекте использовать БД)
-let tours = [];
-let nextId = 1;
+// Загружаем данные из файла при старте
+let data = loadData('tours');
+let tours = data.items || [];
+let nextId = data.nextId || 1;
+
+// Функция для сохранения данных
+function persistData() {
+  saveData('tours', { items: tours, nextId });
+}
 
 // Функция для получения всех туров (для публичного роута)
 const getTours = () => tours;
@@ -62,6 +69,7 @@ router.post('/', (req, res) => {
   };
   
   tours.push(newTour);
+  persistData();
   
   res.status(201).json(newTour);
 });
@@ -94,6 +102,7 @@ router.put('/:id', (req, res) => {
     updated_at: new Date().toISOString(),
   };
   
+  persistData();
   res.json(tours[tourIndex]);
 });
 
@@ -110,6 +119,7 @@ router.delete('/:id', (req, res) => {
   }
   
   tours.splice(tourIndex, 1);
+  persistData();
   
   res.json({ success: true, message: 'Тур удален' });
 });

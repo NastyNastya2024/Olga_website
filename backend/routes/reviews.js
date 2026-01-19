@@ -4,10 +4,17 @@
 
 const express = require('express');
 const router = express.Router();
+const { loadData, saveData } = require('../utils/data-storage');
 
-// Временное хранилище отзывов (в реальном проекте использовать БД)
-let reviews = [];
-let nextId = 1;
+// Загружаем данные из файла при старте
+let data = loadData('reviews');
+let reviews = data.items || [];
+let nextId = data.nextId || 1;
+
+// Функция для сохранения данных
+function persistData() {
+  saveData('reviews', { items: reviews, nextId });
+}
 
 // Функция для получения всех отзывов (для публичного роута)
 const getReviews = () => reviews;
@@ -58,6 +65,7 @@ router.post('/', (req, res) => {
   };
   
   reviews.push(newReview);
+  persistData();
   
   res.status(201).json(newReview);
 });
@@ -86,6 +94,7 @@ router.put('/:id', (req, res) => {
     updated_at: new Date().toISOString(),
   };
   
+  persistData();
   res.json(reviews[reviewIndex]);
 });
 
@@ -102,6 +111,7 @@ router.delete('/:id', (req, res) => {
   }
   
   reviews.splice(reviewIndex, 1);
+  persistData();
   
   res.json({ success: true, message: 'Отзыв удален' });
 });

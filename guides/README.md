@@ -36,6 +36,7 @@ admin/
 - **[guides/SPA_STRUCTURE.md](../guides/SPA_STRUCTURE.md)** - Структура SPA админки
 - **[guides/SPA_SERVER_SETUP.md](../guides/SPA_SERVER_SETUP.md)** - Настройка сервера для SPA
 - **[guides/UPLOAD_VIDEO_GUIDE.md](../guides/UPLOAD_VIDEO_GUIDE.md)** - Загрузка видео через админ-панель
+- **[guides/S3_VIEW_FILES.md](../guides/S3_VIEW_FILES.md)** - Просмотр файлов в S3 (MinIO) ⭐ Новое
 
 ## Структура
 

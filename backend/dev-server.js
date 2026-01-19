@@ -19,6 +19,7 @@ const publicBlogRoutes = require('./routes/public-blog');
 const { router: reviewsRoutes, getReviews } = require('./routes/reviews');
 const publicReviewsRoutes = require('./routes/public-reviews');
 const clubPricesRoutes = require('./routes/club-prices');
+const usersRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.DEV_PORT || 3000;
@@ -45,6 +46,7 @@ app.use('/api/public/blog', publicBlogRoutes);
 app.use('/api/admin/reviews', reviewsRoutes);
 app.use('/api/public/reviews', publicReviewsRoutes);
 app.use('/api/admin/club/prices', clubPricesRoutes);
+app.use('/api/admin/users', usersRoutes);
 
 // Статические файлы для публичной части (корень сайта)
 app.use('/', express.static(path.join(__dirname, '../public')));
