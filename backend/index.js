@@ -6,6 +6,15 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const uploadRoutes = require('./routes/upload');
+const { router: videosRoutes, getVideos } = require('./routes/videos');
+const publicVideosRoutes = require('./routes/public-videos');
+const { router: toursRoutes, getTours } = require('./routes/tours');
+const publicToursRoutes = require('./routes/public-tours');
+const { router: blogRoutes, getPosts } = require('./routes/blog');
+const publicBlogRoutes = require('./routes/public-blog');
+const { router: reviewsRoutes, getReviews } = require('./routes/reviews');
+const publicReviewsRoutes = require('./routes/public-reviews');
+const clubPricesRoutes = require('./routes/club-prices');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,8 +24,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Настраиваем публичные роуты
+publicVideosRoutes.setVideosGetter(getVideos);
+publicToursRoutes.setToursGetter(getTours);
+publicBlogRoutes.setPostsGetter(getPosts);
+publicReviewsRoutes.setReviewsGetter(getReviews);
+
 // API роуты (должны быть ДО статических файлов)
 app.use('/api/upload', uploadRoutes);
+app.use('/api/admin/videos', videosRoutes);
+app.use('/api/public/videos', publicVideosRoutes);
+app.use('/api/admin/tours', toursRoutes);
+app.use('/api/public/tours', publicToursRoutes);
+app.use('/api/admin/blog', blogRoutes);
+app.use('/api/public/blog', publicBlogRoutes);
+app.use('/api/admin/reviews', reviewsRoutes);
+app.use('/api/public/reviews', publicReviewsRoutes);
+app.use('/api/admin/club/prices', clubPricesRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

@@ -50,6 +50,23 @@ const Sidebar = {
                             <span class="sidebar-icon">📝</span>
                             <span>Блог</span>
                         </a>
+                        <div class="sidebar-group" id="clubGroup">
+                            <a href="#" class="sidebar-item sidebar-group-toggle" onclick="toggleClubSubmenu(event)">
+                                <span class="sidebar-icon">🏢</span>
+                                <span>Клуб</span>
+                                <span class="sidebar-arrow">▼</span>
+                            </a>
+                            <div class="sidebar-submenu">
+                                <a href="#" data-route="/club/prices" class="sidebar-item sidebar-subitem">
+                                    <span class="sidebar-icon">💰</span>
+                                    <span>Цены</span>
+                                </a>
+                                <a href="#" data-route="/club/reviews" class="sidebar-item sidebar-subitem">
+                                    <span class="sidebar-icon">💬</span>
+                                    <span>Отзывы</span>
+                                </a>
+                            </div>
+                        </div>
                     ` : ''}
                 </nav>
             </aside>
@@ -120,6 +137,15 @@ window.LoginPage = {
 
 // Обработчик выхода убран - авторизация отключена
 
+// Функция для переключения подменю клуба
+window.toggleClubSubmenu = function(event) {
+    event.preventDefault();
+    const group = document.getElementById('clubGroup');
+    if (group) {
+        group.classList.toggle('active');
+    }
+};
+
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Инициализация приложения...');
@@ -139,6 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         console.log('🚀 Инициализация роутера...');
         router.init();
+        // Открываем подменю клуба по умолчанию
+        setTimeout(() => {
+            const clubGroup = document.getElementById('clubGroup');
+            if (clubGroup) {
+                clubGroup.classList.add('active');
+            }
+        }, 200);
     }, 10);
     
     // Дополнительная инициализация для страниц, которые уже загружены (login)
@@ -176,6 +209,22 @@ function loadPageComponents() {
     router.route('/blog', async () => {
         const BlogPage = await import('./pages/blog.js');
         const content = await BlogPage.default.render();
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
+    });
+    
+    // Клуб - Цены
+    router.route('/club/prices', async () => {
+        const ClubPricesPage = await import('./pages/club-prices.js');
+        const content = await ClubPricesPage.default.render();
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
+    });
+    
+    // Клуб - Отзывы
+    router.route('/club/reviews', async () => {
+        const ReviewsPage = await import('./pages/reviews.js');
+        const content = await ReviewsPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     });

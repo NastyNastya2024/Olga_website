@@ -129,13 +129,13 @@ router.get('/list', async (req, res) => {
  * GET /api/upload/presigned/:key
  * Генерация временного URL для доступа к файлу
  */
-router.get('/presigned/:key', (req, res) => {
+router.get('/presigned/:key', async (req, res) => {
   try {
     const { key } = req.params;
     const decodedKey = decodeURIComponent(key);
     const expiresIn = parseInt(req.query.expires) || 3600; // По умолчанию 1 час
 
-    const url = s3Service.getPresignedUrl(decodedKey, expiresIn);
+    const url = await s3Service.getPresignedUrl(decodedKey, expiresIn);
 
     res.json({
       success: true,

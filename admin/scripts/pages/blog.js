@@ -44,8 +44,19 @@ export default {
     },
     
     init: async () => {
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) {
+            pageTitle.textContent = 'Управление блогом';
+        }
+        window.loadPosts = loadPosts;
+        window.showAddPostModal = showAddPostModal;
+        window.closePostModal = closePostModal;
+        window.editPost = editPost;
+        window.deletePost = deletePost;
         await loadPosts();
-        setupPostForm();
+        setTimeout(() => {
+            setupPostForm();
+        }, 100);
     }
 };
 
@@ -179,28 +190,58 @@ window.deletePost = async function(id) {
 
 function setupPostForm() {
     const form = document.getElementById('postForm');
-    if (!form) return;
+    if (!form) {
+        console.warn('Форма postForm не найдена в DOM. Повторная попытка через 200ms...');
+        setTimeout(setupPostForm, 200);
+        return;
+    }
     
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('title', document.getElementById('postTitle').value);
-        formData.append('content', document.getElementById('postContent').value);
-        formData.append('status', document.getElementById('postStatus').value);
-        formData.append('meta_title', document.getElementById('postMetaTitle').value);
-        formData.append('meta_description', document.getElementById('postMetaDescription').value);
-
+        let coverUrl = null;
+        const coverPreview = document.getElementById('coverPreview');
+        if (coverPreview) {
+            const existingImg = coverPreview.querySelector('img');
+            if (existingImg && existingImg.src && !existingImg.src.startsWith('data:')) {
+                coverUrl = existingImg.src;
+            }
+        }
+        
+        // Если выбрано новое изображение, загружаем его в S3
         const coverFile = document.getElementById('postCover').files[0];
         if (coverFile) {
-            formData.append('cover', coverFile);
+            try {
+                const formData = new FormData();
+                formData.append('file', coverFile);
+                
+                const uploadResponse = await api.uploadFile('/upload', formData, (percent) => {
+                    console.log(`Загрузка обложки: ${percent}%`);
+                });
+                
+                if (uploadResponse.success && uploadResponse.data) {
+                    coverUrl = uploadResponse.data.publicUrl || uploadResponse.data.url;
+                }
+            } catch (error) {
+                alert('Ошибка загрузки обложки: ' + error.message);
+                return;
+            }
         }
+
+        const data = {
+            title: document.getElementById('postTitle').value,
+            content: document.getElementById('postContent').value,
+            status: document.getElementById('postStatus').value,
+            meta_title: document.getElementById('postMetaTitle').value || null,
+            meta_description: document.getElementById('postMetaDescription').value || null,
+            cover_url: coverUrl,
+        };
 
         try {
             if (currentPostId) {
-                await api.put(`/admin/blog/${currentPostId}`, Object.fromEntries(formData));
+                await api.put(`/admin/blog/${currentPostId}`, data);
             } else {
-                await api.post('/admin/blog', Object.fromEntries(formData));
+                await api.post('/admin/blog', data);
             }
             
             closePostModal();

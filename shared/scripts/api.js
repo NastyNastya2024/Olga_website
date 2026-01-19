@@ -2,7 +2,18 @@
  * Общий API клиент для всего проекта
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Автоматически определяем порт API на основе текущего порта страницы
+const getApiBaseUrl = () => {
+    // Если мы на порту 3000 (dev-server), используем тот же порт
+    // Если на порту 5000 или другом, используем порт 5000
+    const currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+    if (currentPort === '3000') {
+        return `http://localhost:3000/api`;
+    }
+    return 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiClient {
     constructor(baseUrl = API_BASE_URL) {
@@ -171,6 +182,9 @@ class ApiClient {
 
 // Создаем глобальный экземпляр
 const api = new ApiClient();
+
+// Делаем доступным глобально для использования в скриптах
+window.api = api;
 
 // Экспорт для использования в модулях
 if (typeof module !== 'undefined' && module.exports) {

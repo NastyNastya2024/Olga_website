@@ -17,10 +17,16 @@ async function loadTours() {
 
         list.innerHTML = tours.map(tour => `
             <div class="tour-card">
-                <h3>${tour.title}</h3>
-                <p class="tour-date">Даты: ${formatDateRange(tour.start_date, tour.end_date)}</p>
-                <p class="tour-location">Локация: ${tour.location || '-'}</p>
-                <p>${tour.description || ''}</p>
+                <div class="tour-header">
+                    <h3>${tour.title}</h3>
+                    ${tour.price ? `<div class="tour-price">${tour.price.toLocaleString('ru-RU')} ₽</div>` : ''}
+                </div>
+                <div class="tour-info">
+                    <p class="tour-date">📅 ${formatDateRange(tour.start_date, tour.end_date)}</p>
+                    ${tour.location ? `<p class="tour-location">📍 ${tour.location}</p>` : ''}
+                </div>
+                ${tour.description ? `<p class="tour-description">${tour.description}</p>` : ''}
+                ${tour.program ? `<div class="tour-program"><strong>Программа:</strong><p>${tour.program}</p></div>` : ''}
                 ${tour.booking_url ? `<a href="${tour.booking_url}" class="btn btn-primary" target="_blank">Записаться</a>` : ''}
             </div>
         `).join('');

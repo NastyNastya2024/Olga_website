@@ -1,9 +1,12 @@
 /**
  * Сервис для работы с S3 (MinIO)
  * Предоставляет функции для загрузки, получения и удаления файлов
+ * Использует AWS SDK v3
  */
 
 const { s3, BUCKET_NAME } = require('../config/s3-config');
+const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const path = require('path');
 
 class S3Service {
@@ -22,21 +25,27 @@ class S3Service {
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
       const key = `${folder}/${timestamp}-${sanitizedFileName}`;
 
-      const params = {
+      const command = new PutObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
         Body: fileBuffer,
         ContentType: mimeType,
         ACL: 'public-read', // Публичный доступ для чтения
-      };
+      });
 
-      const result = await s3.upload(params).promise();
+      await s3.send(command);
+
+      // Генерируем публичный URL
+      const endpoint = process.env.S3_ENDPOINT || 'http://localhost:9000';
+      const baseUrl = endpoint.replace(/\/$/, '');
+      const url = `${baseUrl}/${BUCKET_NAME}/${key}`;
 
       return {
         success: true,
-        url: result.Location,
-        key: result.Key,
-        bucket: result.Bucket,
+        url: url,
+        publicUrl: url,
+        key: key,
+        bucket: BUCKET_NAME,
         fileName: sanitizedFileName,
       };
     } catch (error) {
@@ -52,16 +61,23 @@ class S3Service {
    */
   async getFile(key) {
     try {
-      const params = {
+      const command = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-      };
+      });
 
-      const result = await s3.getObject(params).promise();
+      const result = await s3.send(command);
+
+      // В SDK v3 Body - это Readable stream, нужно преобразовать в Buffer
+      const chunks = [];
+      for await (const chunk of result.Body) {
+        chunks.push(chunk);
+      }
+      const body = Buffer.concat(chunks);
 
       return {
         success: true,
-        body: result.Body,
+        body: body,
         contentType: result.ContentType,
         contentLength: result.ContentLength,
         lastModified: result.LastModified,
@@ -79,12 +95,12 @@ class S3Service {
    */
   async deleteFile(key) {
     try {
-      const params = {
+      const command = new DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-      };
+      });
 
-      await s3.deleteObject(params).promise();
+      await s3.send(command);
 
       return {
         success: true,
@@ -103,15 +119,14 @@ class S3Service {
    * @param {number} expiresIn - Время жизни URL в секундах (по умолчанию 1 час)
    * @returns {string} Presigned URL
    */
-  getPresignedUrl(key, expiresIn = 3600) {
+  async getPresignedUrl(key, expiresIn = 3600) {
     try {
-      const params = {
+      const command = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-        Expires: expiresIn,
-      };
+      });
 
-      const url = s3.getSignedUrl('getObject', params);
+      const url = await getSignedUrl(s3, command, { expiresIn });
       return url;
     } catch (error) {
       console.error('Ошибка генерации presigned URL:', error);
@@ -138,15 +153,15 @@ class S3Service {
    */
   async fileExists(key) {
     try {
-      const params = {
+      const command = new HeadObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-      };
+      });
 
-      await s3.headObject(params).promise();
+      await s3.send(command);
       return true;
     } catch (error) {
-      if (error.code === 'NotFound') {
+      if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
         return false;
       }
       throw error;
@@ -160,14 +175,14 @@ class S3Service {
    */
   async listFiles(prefix = '') {
     try {
-      const params = {
+      const command = new ListObjectsV2Command({
         Bucket: BUCKET_NAME,
         Prefix: prefix,
-      };
+      });
 
-      const result = await s3.listObjectsV2(params).promise();
+      const result = await s3.send(command);
 
-      return result.Contents.map(item => ({
+      return (result.Contents || []).map(item => ({
         key: item.Key,
         size: item.Size,
         lastModified: item.LastModified,

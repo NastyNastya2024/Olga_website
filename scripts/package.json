@@ -6,10 +6,10 @@
     "upload": "node upload-to-s3.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.1500.0",
+    "@aws-sdk/client-s3": "^3.490.0",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "yandex-disk": "^1.1.7"
+    "yandex-disk": "^0.0.8"
   }
 }

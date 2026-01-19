@@ -1,0 +1,117 @@
+/**
+ * Роуты для работы с турами
+ */
+
+const express = require('express');
+const router = express.Router();
+
+// Временное хранилище туров (в реальном проекте использовать БД)
+let tours = [];
+let nextId = 1;
+
+// Функция для получения всех туров (для публичного роута)
+const getTours = () => tours;
+
+/**
+ * GET /api/admin/tours
+ * Получить список всех туров
+ */
+router.get('/', (req, res) => {
+  res.json(tours);
+});
+
+/**
+ * GET /api/admin/tours/:id
+ * Получить тур по ID
+ */
+router.get('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const tour = tours.find(t => t.id === id);
+  
+  if (!tour) {
+    return res.status(404).json({ error: 'Тур не найден' });
+  }
+  
+  res.json(tour);
+});
+
+/**
+ * POST /api/admin/tours
+ * Создать новый тур
+ */
+router.post('/', (req, res) => {
+  const { title, description, start_date, end_date, location, program, price, booking_url, status } = req.body;
+  
+  if (!title) {
+    return res.status(400).json({ error: 'Название тура обязательно' });
+  }
+  
+  const newTour = {
+    id: nextId++,
+    title,
+    description: description || '',
+    start_date: start_date || null,
+    end_date: end_date || null,
+    location: location || '',
+    program: program || '',
+    price: price ? parseFloat(price) : null,
+    booking_url: booking_url || '',
+    status: status || 'upcoming',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  
+  tours.push(newTour);
+  
+  res.status(201).json(newTour);
+});
+
+/**
+ * PUT /api/admin/tours/:id
+ * Обновить тур
+ */
+router.put('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const tourIndex = tours.findIndex(t => t.id === id);
+  
+  if (tourIndex === -1) {
+    return res.status(404).json({ error: 'Тур не найден' });
+  }
+  
+  const { title, description, start_date, end_date, location, program, price, booking_url, status } = req.body;
+  
+  tours[tourIndex] = {
+    ...tours[tourIndex],
+    title: title || tours[tourIndex].title,
+    description: description !== undefined ? description : tours[tourIndex].description,
+    start_date: start_date !== undefined ? start_date : tours[tourIndex].start_date,
+    end_date: end_date !== undefined ? end_date : tours[tourIndex].end_date,
+    location: location !== undefined ? location : tours[tourIndex].location,
+    program: program !== undefined ? program : tours[tourIndex].program,
+    price: price !== undefined ? (price ? parseFloat(price) : null) : tours[tourIndex].price,
+    booking_url: booking_url !== undefined ? booking_url : tours[tourIndex].booking_url,
+    status: status || tours[tourIndex].status,
+    updated_at: new Date().toISOString(),
+  };
+  
+  res.json(tours[tourIndex]);
+});
+
+/**
+ * DELETE /api/admin/tours/:id
+ * Удалить тур
+ */
+router.delete('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const tourIndex = tours.findIndex(t => t.id === id);
+  
+  if (tourIndex === -1) {
+    return res.status(404).json({ error: 'Тур не найден' });
+  }
+  
+  tours.splice(tourIndex, 1);
+  
+  res.json({ success: true, message: 'Тур удален' });
+});
+
+module.exports = { router, getTours };

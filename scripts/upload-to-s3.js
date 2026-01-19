@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const AWS = require('aws-sdk');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 // Загружаем переменные окружения
 require('dotenv').config({ path: path.join(__dirname, '../backend/.env') });
@@ -22,12 +22,13 @@ const S3_BUCKET = process.env.S3_BUCKET || 'olga-media';
 const S3_REGION = process.env.S3_REGION || 'us-east-1';
 
 // Настройка S3 клиента
-const s3Client = new AWS.S3({
+const s3Client = new S3Client({
     endpoint: S3_ENDPOINT,
-    accessKeyId: S3_ACCESS_KEY,
-    secretAccessKey: S3_SECRET_KEY,
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4',
+    credentials: {
+        accessKeyId: S3_ACCESS_KEY,
+        secretAccessKey: S3_SECRET_KEY,
+    },
+    forcePathStyle: true,
     region: S3_REGION,
 });
 
@@ -50,25 +51,30 @@ async function uploadFile(filePath) {
     
     console.log(`Загрузка: ${fileName} (${(stats.size / 1024 / 1024).toFixed(2)} MB)...`);
     
-    const params = {
+    const command = new PutObjectCommand({
         Bucket: S3_BUCKET,
         Key: key,
         Body: fileStream,
         ContentType: contentType,
         ACL: 'public-read',
-    };
+    });
     
     try {
-        const result = await s3Client.upload(params).promise();
+        await s3Client.send(command);
+        
+        // Генерируем публичный URL
+        const baseUrl = S3_ENDPOINT.replace(/\/$/, '');
+        const url = `${baseUrl}/${S3_BUCKET}/${key}`;
+        
         console.log(`✅ Загружено: ${fileName}`);
-        console.log(`   URL: ${result.Location}`);
-        console.log(`   Key: ${result.Key}\n`);
+        console.log(`   URL: ${url}`);
+        console.log(`   Key: ${key}\n`);
         
         return {
             success: true,
             fileName,
-            url: result.Location,
-            key: result.Key,
+            url: url,
+            key: key,
             size: stats.size,
         };
     } catch (error) {

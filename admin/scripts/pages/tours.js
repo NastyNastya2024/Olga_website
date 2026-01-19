@@ -44,8 +44,19 @@ export default {
     },
     
     init: async () => {
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) {
+            pageTitle.textContent = 'Управление турами';
+        }
+        window.loadTours = loadTours;
+        window.showAddTourModal = showAddTourModal;
+        window.closeTourModal = closeTourModal;
+        window.editTour = editTour;
+        window.deleteTour = deleteTour;
         await loadTours();
-        setupTourForm();
+        setTimeout(() => {
+            setupTourForm();
+        }, 100);
     }
 };
 
@@ -197,26 +208,23 @@ function setupTourForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('title', document.getElementById('tourTitle').value);
-        formData.append('description', document.getElementById('tourDescription').value);
-        formData.append('start_date', document.getElementById('tourStartDate').value);
-        formData.append('end_date', document.getElementById('tourEndDate').value);
-        formData.append('location', document.getElementById('tourLocation').value);
-        formData.append('program', document.getElementById('tourProgram').value);
-        formData.append('price', document.getElementById('tourPrice').value);
-        formData.append('booking_url', document.getElementById('tourBookingUrl').value);
-
-        const galleryFiles = document.getElementById('tourGallery').files;
-        for (let i = 0; i < galleryFiles.length; i++) {
-            formData.append('gallery[]', galleryFiles[i]);
-        }
+        const data = {
+            title: document.getElementById('tourTitle').value,
+            description: document.getElementById('tourDescription').value,
+            start_date: document.getElementById('tourStartDate').value || null,
+            end_date: document.getElementById('tourEndDate').value || null,
+            location: document.getElementById('tourLocation').value || '',
+            program: document.getElementById('tourProgram').value || '',
+            price: document.getElementById('tourPrice').value ? parseFloat(document.getElementById('tourPrice').value) : null,
+            booking_url: document.getElementById('tourBookingUrl').value || '',
+            status: 'upcoming',
+        };
 
         try {
             if (currentTourId) {
-                await api.put(`/admin/tours/${currentTourId}`, Object.fromEntries(formData));
+                await api.put(`/admin/tours/${currentTourId}`, data);
             } else {
-                await api.post('/admin/tours', Object.fromEntries(formData));
+                await api.post('/admin/tours', data);
             }
             
             closeTourModal();

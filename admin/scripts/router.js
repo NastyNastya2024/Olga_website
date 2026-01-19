@@ -195,6 +195,20 @@ class Router {
                 if (BlogPage.default && BlogPage.default.init) {
                     await BlogPage.default.init();
                 }
+            } else if (path === '/club/prices') {
+                const ClubPricesPage = await import('./pages/club-prices.js');
+                if (ClubPricesPage.default && ClubPricesPage.default.init) {
+                    await ClubPricesPage.default.init();
+                }
+            } else if (path === '/club/reviews') {
+                const ReviewsPage = await import('./pages/reviews.js');
+                if (ReviewsPage.default && ReviewsPage.default.init) {
+                    await ReviewsPage.default.init();
+                }
+            } else if (path === '/reviews') {
+                // Редирект со старого маршрута на новый
+                this.navigate('/club/reviews');
+                return;
             }
         } catch (error) {
             console.error('Ошибка инициализации страницы:', error);
@@ -212,6 +226,13 @@ class Router {
             const route = item.getAttribute('data-route');
             if (route === path) {
                 item.classList.add('active');
+                // Если это подраздел клуба, открываем группу
+                if (path.startsWith('/club/')) {
+                    const clubGroup = document.getElementById('clubGroup');
+                    if (clubGroup) {
+                        clubGroup.classList.add('active');
+                    }
+                }
             }
         });
     }

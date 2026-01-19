@@ -15,16 +15,65 @@ async function loadVideos() {
             return;
         }
 
-        grid.innerHTML = videos.map(video => `
-            <div class="video-card">
-                <div class="video-placeholder">
-                    ${video.preview_url ? `<img src="${video.preview_url}" alt="${video.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 'Видео'}
+        grid.innerHTML = videos.map(video => {
+            // Определяем, является ли URL видео файлом или YouTube/Vimeo ссылкой
+            const isVideoFile = video.video_url && (
+                video.video_url.endsWith('.mp4') || 
+                video.video_url.endsWith('.webm') || 
+                video.video_url.endsWith('.mov') ||
+                video.video_url.includes('/videos/') ||
+                video.video_url.includes('/uploads/')
+            );
+            
+            const isYouTube = video.video_url && video.video_url.includes('youtube.com');
+            const isVimeo = video.video_url && video.video_url.includes('vimeo.com');
+            
+            let videoContent = '';
+            
+            if (isVideoFile) {
+                // Прямая ссылка на видео файл - используем HTML5 video player
+                videoContent = `
+                    <video controls style="width: 100%; height: 100%; object-fit: cover;">
+                        <source src="${video.video_url}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                `;
+            } else if (isYouTube) {
+                // YouTube видео - извлекаем ID и используем embed
+                const videoId = video.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+                if (videoId) {
+                    videoContent = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+                } else {
+                    videoContent = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">Видео</div>';
+                }
+            } else if (isVimeo) {
+                // Vimeo видео - извлекаем ID и используем embed
+                const videoId = video.video_url.match(/vimeo\.com\/(\d+)/)?.[1];
+                if (videoId) {
+                    videoContent = `<iframe src="https://player.vimeo.com/video/${videoId}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+                } else {
+                    videoContent = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">Видео</div>';
+                }
+            } else {
+                // Другой тип ссылки - показываем превью или плейсхолдер
+                videoContent = video.preview_url 
+                    ? `<img src="${video.preview_url}" alt="${video.title}" style="width: 100%; height: 100%; object-fit: cover;">`
+                    : '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎥 Видео</div>';
+            }
+            
+            return `
+                <div class="video-card">
+                    <div class="video-placeholder">
+                        ${videoContent}
+                    </div>
+                    <div class="video-card-content">
+                        <h3>${video.title}</h3>
+                        <p>${video.description || ''}</p>
+                        <a href="${video.video_url}" target="_blank" class="btn btn-primary">Смотреть</a>
+                    </div>
                 </div>
-                <h3>${video.title}</h3>
-                <p>${video.description || ''}</p>
-                <a href="${video.video_url}" target="_blank" class="btn btn-primary" style="margin: 1rem;">Смотреть</a>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
         grid.innerHTML = '<p class="empty-state">Ошибка загрузки видео</p>';
