@@ -87,15 +87,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Генерируем JWT токен
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    
+    console.log('Создание токена для пользователя:', { userId: user.id, userIdType: typeof user.id, email: user.email });
+    
     const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      tokenPayload,
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
+    
+    console.log('Токен создан, payload:', tokenPayload);
 
     res.json({
       success: true,

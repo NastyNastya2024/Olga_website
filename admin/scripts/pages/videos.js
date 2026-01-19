@@ -4,12 +4,14 @@
 
 export default {
     render: async () => {
-        // Авторизация отключена - показываем кнопку добавления всем
+        const userRole = getUserRole();
+        const isStudent = userRole === 'student';
+        
         return `
             <div id="videos-page">
                 <div class="page-header">
                     <h1>Видео</h1>
-                    <button class="btn btn-primary" onclick="showAddVideoModal()">Добавить видео</button>
+                    ${!isStudent ? '<button class="btn btn-primary" onclick="showAddVideoModal()">Добавить видео</button>' : ''}
                 </div>
 
                 <div class="table-container">
@@ -34,14 +36,18 @@ export default {
             </div>
             
             ${getVideoModal()}
+            ${getVideoPlayerModal()}
         `;
     },
     
     init: async () => {
         // Обновляем заголовок страницы
         const pageTitle = document.getElementById('page-title');
+        const userRole = getUserRole();
+        const isStudent = userRole === 'student';
+        
         if (pageTitle) {
-            pageTitle.textContent = 'Управление видео';
+            pageTitle.textContent = isStudent ? 'Мои видео' : 'Управление видео';
         }
         
         // Делаем функции доступными глобально (до загрузки данных)
@@ -50,14 +56,18 @@ export default {
         window.closeVideoModal = closeVideoModal;
         window.editVideo = editVideo;
         window.deleteVideo = deleteVideo;
+        window.showVideoPlayer = showVideoPlayer;
+        window.closeVideoPlayer = closeVideoPlayer;
         
         // Загружаем видео
         await loadVideos();
         
-        // Настраиваем форму загрузки (после того как DOM готов)
-        setTimeout(() => {
-            setupVideoForm();
-        }, 100);
+        // Настраиваем форму загрузки только для не-студентов (после того как DOM готов)
+        if (!isStudent) {
+            setTimeout(() => {
+                setupVideoForm();
+            }, 100);
+        }
     }
 };
 
@@ -130,10 +140,53 @@ async function loadVideos() {
     tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...</td></tr>';
 
     try {
-        // Используем админский endpoint (авторизация отключена)
-        const endpoint = '/admin/videos';
-        const response = await api.get(endpoint);
-        const videos = response.data || response;
+        const userRole = getUserRole();
+        const isStudent = userRole === 'student';
+        let videos = [];
+        
+        if (isStudent) {
+            // Студент видит только назначенные ему видео
+            try {
+                const userResponse = await api.get('/admin/users/me');
+                const user = userResponse.data || userResponse;
+                // Преобразуем ID в числа для корректного сравнения
+                const assignedVideoIds = (user.assigned_videos || []).map(id => parseInt(id));
+                
+                console.log('Данные пользователя:', user);
+                console.log('Назначенные видео (ID):', assignedVideoIds);
+                
+                if (assignedVideoIds.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Вам не назначено ни одного видео</td></tr>';
+                    return;
+                }
+                
+                // Получаем все видео и фильтруем по назначенным
+                const allVideosResponse = await api.get('/admin/videos');
+                const allVideos = allVideosResponse.data || allVideosResponse;
+                
+                console.log('Всего видео на платформе:', allVideos.length);
+                console.log('ID всех видео:', allVideos.map(v => v.id));
+                
+                // Фильтруем видео, преобразуя ID в числа для сравнения
+                videos = allVideos.filter(video => {
+                    const videoId = parseInt(video.id);
+                    const isAssigned = assignedVideoIds.includes(videoId);
+                    console.log(`Видео ${videoId} (${video.title}): назначено = ${isAssigned}`);
+                    return isAssigned;
+                });
+                
+                console.log('Отфильтрованные видео для студента:', videos.length);
+            } catch (error) {
+                console.error('Ошибка загрузки данных пользователя:', error);
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
+                return;
+            }
+        } else {
+            // Админ и другие роли видят все видео
+            const endpoint = '/admin/videos';
+            const response = await api.get(endpoint);
+            videos = response.data || response;
+        }
 
         if (videos.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет видео</td></tr>';
@@ -148,9 +201,11 @@ async function loadVideos() {
                 <td><span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span></td>
                 <td>${video.access_type === 'open' ? 'Открыто' : 'По подписке'}</td>
                 <td>
-                    <button class="btn btn-primary" onclick="editVideo(${video.id})">Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteVideo(${video.id})">Удалить</button>
-                    <a href="${video.video_url}" target="_blank" class="btn btn-success">Смотреть</a>
+                    ${!isStudent ? `
+                        <button class="btn btn-primary" onclick="editVideo(${video.id})">Редактировать</button>
+                        <button class="btn btn-danger" onclick="deleteVideo(${video.id})">Удалить</button>
+                    ` : ''}
+                    ${video.video_url ? `<button class="btn btn-primary" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">Смотреть</button>` : ''}
                 </td>
             </tr>
         `).join('');
@@ -337,10 +392,65 @@ function setupVideoForm() {
     });
 }
 
+function getVideoPlayerModal() {
+    return `
+        <div id="videoPlayerModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 90vw; width: 90vw; max-height: 90vh;">
+                <span class="close" onclick="closeVideoPlayer()">&times;</span>
+                <h2 id="videoPlayerTitle" style="margin-bottom: 1rem;"></h2>
+                <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000;">
+                    <video id="videoPlayer" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                        Ваш браузер не поддерживает воспроизведение видео.
+                    </video>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function showVideoPlayer(videoId, videoUrl, videoTitle) {
+    const modal = document.getElementById('videoPlayerModal');
+    const videoElement = document.getElementById('videoPlayer');
+    const titleElement = document.getElementById('videoPlayerTitle');
+    
+    if (!modal || !videoElement) {
+        console.error('Элементы видеоплеера не найдены');
+        return;
+    }
+    
+    titleElement.textContent = videoTitle || 'Видео';
+    videoElement.src = videoUrl;
+    modal.style.display = 'block';
+    
+    // Автоматически запускаем воспроизведение
+    videoElement.play().catch(error => {
+        console.log('Автозапуск видео заблокирован браузером:', error);
+    });
+}
+
+function closeVideoPlayer() {
+    const modal = document.getElementById('videoPlayerModal');
+    const videoElement = document.getElementById('videoPlayer');
+    
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    if (videoElement) {
+        videoElement.pause();
+        videoElement.src = '';
+    }
+}
+
 // Закрытие модального окна при клике вне его
 document.addEventListener('click', function(event) {
-    const modal = document.getElementById('videoModal');
-    if (modal && event.target === modal) {
+    const videoModal = document.getElementById('videoModal');
+    if (videoModal && event.target === videoModal) {
         closeVideoModal();
+    }
+    
+    const videoPlayerModal = document.getElementById('videoPlayerModal');
+    if (videoPlayerModal && event.target === videoPlayerModal) {
+        closeVideoPlayer();
     }
 });

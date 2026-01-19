@@ -47,6 +47,8 @@ class ApiClient {
     async request(endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
         const token = this.getToken();
+        
+        console.log('API Request:', { url, endpoint, baseUrl: this.baseUrl, hasToken: !!token });
 
         const config = {
             ...options,

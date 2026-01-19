@@ -27,6 +27,9 @@ const Layout = {
 
 const Sidebar = {
     render: (isAdmin) => {
+        const userRole = getUserRole();
+        const isStudent = userRole === 'student';
+        
         return `
             <aside class="sidebar">
                 <div class="sidebar-header">
@@ -37,10 +40,12 @@ const Sidebar = {
                         <span class="sidebar-icon">🎥</span>
                         <span>Видео</span>
                     </a>
-                    <a href="#" data-route="/students" class="sidebar-item">
-                        <span class="sidebar-icon">👥</span>
-                        <span>Ученики</span>
-                    </a>
+                    ${!isStudent ? `
+                        <a href="#" data-route="/students" class="sidebar-item">
+                            <span class="sidebar-icon">👥</span>
+                            <span>Ученики</span>
+                        </a>
+                    ` : ''}
                     ${isAdmin ? `
                         <a href="#" data-route="/tours" class="sidebar-item">
                             <span class="sidebar-icon">✈️</span>

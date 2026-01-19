@@ -20,7 +20,9 @@ function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Middleware auth - декодированный токен:', JSON.stringify(decoded, null, 2));
     req.user = decoded;
+    console.log('Middleware auth - req.user установлен:', { userId: req.user?.userId, email: req.user?.email });
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

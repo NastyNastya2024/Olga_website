@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { loadData, saveData } = require('../utils/data-storage');
+const { authenticateToken } = require('../middleware/auth');
 
 // Загружаем данные из файла при старте
 let data = loadData('users');
@@ -92,6 +93,112 @@ router.post('/', async (req, res) => {
 });
 
 /**
+ * GET /api/admin/users/me
+ * Получить данные текущего пользователя
+ * ВАЖНО: Этот роут должен быть ПЕРЕД /:id, иначе Express будет перехватывать /me как /:id
+ */
+router.get('/me', authenticateToken, (req, res) => {
+  const userId = req.user?.userId;
+  
+  console.log('GET /me - req.user:', JSON.stringify(req.user, null, 2));
+  console.log('GET /me - userId:', userId, 'тип:', typeof userId);
+  
+  if (!userId) {
+    console.error('GET /me - userId отсутствует в req.user');
+    return res.status(401).json({ error: 'Не авторизован' });
+  }
+  
+  // ВАЖНО: Перезагружаем данные из файла для гарантии актуальности
+  const freshData = loadData('users');
+  const currentUsers = freshData.items || users;
+  
+  // Преобразуем userId в число для корректного сравнения
+  const userIdNumber = parseInt(userId);
+  
+  console.log('GET /me - userIdNumber:', userIdNumber);
+  console.log('GET /me - все пользователи из файла:', currentUsers.map(u => ({ id: u.id, idType: typeof u.id, email: u.email, assigned_videos: u.assigned_videos })));
+  
+  // Ищем пользователя, сравнивая как числа
+  const user = currentUsers.find(u => parseInt(u.id) === userIdNumber);
+  
+  console.log('GET /me - найденный пользователь:', user ? { id: user.id, email: user.email, assigned_videos: user.assigned_videos } : 'не найден');
+  
+  if (!user) {
+    console.error('GET /me - Пользователь не найден! userId:', userIdNumber, 'доступные ID:', currentUsers.map(u => u.id));
+    return res.status(404).json({ error: 'Пользователь не найден' });
+  }
+  
+  // Не возвращаем пароль
+  const { password: _, ...userResponse } = user;
+  console.log('GET /me - возвращаем пользователя с assigned_videos:', userResponse.assigned_videos);
+  res.json(userResponse);
+});
+
+/**
+ * PUT /api/admin/users/me
+ * Обновить данные текущего пользователя
+ * ВАЖНО: Этот роут должен быть ПЕРЕД /:id
+ */
+router.put('/me', authenticateToken, async (req, res) => {
+  const userId = req.user?.userId;
+  
+  if (!userId) {
+    return res.status(401).json({ error: 'Не авторизован' });
+  }
+  
+  // Перезагружаем данные из файла
+  const freshData = loadData('users');
+  const currentUsers = freshData.items || users;
+  const userIndex = currentUsers.findIndex(u => parseInt(u.id) === parseInt(userId));
+  
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'Пользователь не найден' });
+  }
+  
+  const { name, email, password, currentPassword } = req.body;
+  
+  const updatedUser = {
+    ...currentUsers[userIndex],
+    name: name !== undefined ? name : currentUsers[userIndex].name,
+    email: email !== undefined ? email : currentUsers[userIndex].email,
+    updated_at: new Date().toISOString(),
+  };
+  
+  // Если указан новый пароль, проверяем текущий и хешируем новый
+  if (password && password.trim() !== '') {
+    if (!currentPassword || currentPassword.trim() === '') {
+      return res.status(400).json({ error: 'Для изменения пароля необходимо ввести текущий пароль' });
+    }
+    
+    try {
+      const bcrypt = require('bcryptjs');
+      // Проверяем текущий пароль
+      const currentPasswordValid = await bcrypt.compare(currentPassword, currentUsers[userIndex].password);
+      
+      if (!currentPasswordValid) {
+        return res.status(401).json({ error: 'Неверный текущий пароль' });
+      }
+      
+      // Хешируем новый пароль
+      updatedUser.password = await bcrypt.hash(password, 10);
+    } catch (error) {
+      console.error('Ошибка обработки пароля:', error);
+      return res.status(500).json({ error: 'Ошибка при обработке пароля' });
+    }
+  } else {
+    // Если пароль не указан, сохраняем существующий
+    updatedUser.password = currentUsers[userIndex].password;
+  }
+  
+  currentUsers[userIndex] = updatedUser;
+  saveData('users', { items: currentUsers, nextId });
+  
+  // Не возвращаем пароль в ответе
+  const { password: _, ...userResponse } = currentUsers[userIndex];
+  res.json(userResponse);
+});
+
+/**
  * GET /api/admin/users/:id
  * Получить пользователя по ID
  */
@@ -122,6 +229,10 @@ router.put('/:id', async (req, res) => {
   
   const { name, email, password, role, tariff, assigned_videos, program_notes } = req.body;
   
+  console.log('PUT /users/:id - Обновление пользователя ID:', id);
+  console.log('PUT /users/:id - assigned_videos из запроса:', assigned_videos);
+  console.log('PUT /users/:id - Текущие assigned_videos:', users[userIndex].assigned_videos);
+  
   const updatedUser = {
     ...users[userIndex],
     name: name !== undefined ? name : users[userIndex].name,
@@ -132,6 +243,8 @@ router.put('/:id', async (req, res) => {
     program_notes: program_notes !== undefined ? program_notes : users[userIndex].program_notes,
     updated_at: new Date().toISOString(),
   };
+  
+  console.log('PUT /users/:id - Обновленные assigned_videos:', updatedUser.assigned_videos);
   
   // Если указан новый пароль, хешируем его
   if (password && password.trim() !== '') {
@@ -156,8 +269,15 @@ router.put('/:id', async (req, res) => {
   users[userIndex] = updatedUser;
   persistData();
   
+  // Перезагружаем данные из файла для гарантии актуальности
+  const freshData = loadData('users');
+  users = freshData.items || users;
+  const updatedUserFromFile = users.find(u => u.id === id);
+  
+  console.log('PUT /users/:id - Пользователь после сохранения (из файла):', updatedUserFromFile ? { id: updatedUserFromFile.id, assigned_videos: updatedUserFromFile.assigned_videos } : 'не найден');
+  
   // Не возвращаем пароль в ответе
-  const { password: _, ...userResponse } = users[userIndex];
+  const { password: _, ...userResponse } = updatedUserFromFile || updatedUser;
   res.json(userResponse);
 });
 
