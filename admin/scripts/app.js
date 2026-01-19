@@ -49,7 +49,7 @@ const Sidebar = {
                     ${isAdmin ? `
                         <a href="#" data-route="/tours" class="sidebar-item">
                             <span class="sidebar-icon">✈️</span>
-                            <span>Туры</span>
+                            <span>Ретриты</span>
                         </a>
                         <a href="#" data-route="/blog" class="sidebar-item">
                             <span class="sidebar-icon">📝</span>

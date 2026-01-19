@@ -1,17 +1,17 @@
 /**
- * Скрипт загрузки туров на публичной странице
+ * Скрипт загрузки ретритов на публичной странице
  */
 
 async function loadTours() {
     const list = document.getElementById('toursList');
-    list.innerHTML = '<p class="loading">Загрузка туров...</p>';
+    list.innerHTML = '<p class="loading">Загрузка ретритов...</p>';
 
     try {
         const response = await api.get('/public/tours');
         const tours = response.data || response;
 
         if (!tours || tours.length === 0) {
-            list.innerHTML = '<p class="empty-state">Туры пока не добавлены</p>';
+            list.innerHTML = '<p class="empty-state">Ретриты пока не добавлены</p>';
             return;
         }
 
@@ -31,8 +31,8 @@ async function loadTours() {
             </div>
         `).join('');
     } catch (error) {
-        console.error('Ошибка загрузки туров:', error);
-        list.innerHTML = '<p class="empty-state">Ошибка загрузки туров</p>';
+        console.error('Ошибка загрузки ретритов:', error);
+        list.innerHTML = '<p class="empty-state">Ошибка загрузки ретритов</p>';
     }
 }
 

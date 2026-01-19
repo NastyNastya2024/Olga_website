@@ -8,6 +8,7 @@ const path = require('path');
 const uploadRoutes = require('./routes/upload');
 const { router: videosRoutes, getVideos } = require('./routes/videos');
 const publicVideosRoutes = require('./routes/public-videos');
+const publicHeroRoutes = require('./routes/public-hero');
 const { router: toursRoutes, getTours } = require('./routes/tours');
 const publicToursRoutes = require('./routes/public-tours');
 const { router: blogRoutes, getPosts } = require('./routes/blog');
@@ -37,6 +38,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin/videos', videosRoutes);
 app.use('/api/public/videos', publicVideosRoutes);
+app.use('/api/public/hero', publicHeroRoutes);
 app.use('/api/admin/tours', toursRoutes);
 app.use('/api/public/tours', publicToursRoutes);
 app.use('/api/admin/blog', blogRoutes);
@@ -53,6 +55,19 @@ app.get('/health', (req, res) => {
     message: 'Server is running',
   });
 });
+
+// Статические файлы для видео (должно быть ДО других маршрутов)
+app.use('/video', express.static(path.join(__dirname, '../video'), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.mp4')) {
+            res.setHeader('Content-Type', 'video/mp4');
+            res.setHeader('Accept-Ranges', 'bytes');
+        }
+    }
+}));
+
+// Статические файлы для изображений
+app.use('/img', express.static(path.join(__dirname, '../img')));
 
 // Статические файлы для публичной части сайта (корень сайта)
 app.use('/', express.static(path.join(__dirname, '../public')));

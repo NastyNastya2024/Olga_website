@@ -1,5 +1,5 @@
 /**
- * Страница управления турами (только для админов)
+ * Страница управления ретритами (только для админов)
  */
 
 export default {
@@ -7,8 +7,8 @@ export default {
         return `
             <div id="tours-page">
                 <div class="page-header">
-                    <h1>Туры</h1>
-                    <button class="btn btn-primary" onclick="showAddTourModal()">Добавить тур</button>
+                    <h1>Ретриты</h1>
+                    <button class="btn btn-primary" onclick="showAddTourModal()">Добавить ретрит</button>
                 </div>
 
                 <div class="table-container">
@@ -36,7 +36,7 @@ export default {
             
             <script>
                 (async function() {
-                    document.getElementById('page-title').textContent = 'Управление турами';
+                    document.getElementById('page-title').textContent = 'Управление ретритами';
                     await loadTours();
                 })();
             </script>
@@ -46,7 +46,7 @@ export default {
     init: async () => {
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {
-            pageTitle.textContent = 'Управление турами';
+            pageTitle.textContent = 'Управление ретритами';
         }
         window.loadTours = loadTours;
         window.showAddTourModal = showAddTourModal;
@@ -65,10 +65,10 @@ function getTourModal() {
         <div id="tourModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close" onclick="closeTourModal()">&times;</span>
-                <h2 id="modalTitle">Добавить тур</h2>
+                <h2 id="modalTitle">Добавить ретрит</h2>
                 <form id="tourForm">
                     <div class="form-group">
-                        <label>Название тура</label>
+                        <label>Название ретрита</label>
                         <input type="text" id="tourTitle" required>
                     </div>
                     <div class="form-group">
@@ -124,7 +124,7 @@ async function loadTours() {
         const tours = response.data || response;
 
         if (tours.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет туров</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет ретритов</td></tr>';
             return;
         }
 
@@ -142,7 +142,7 @@ async function loadTours() {
             </tr>
         `).join('');
     } catch (error) {
-        console.error('Ошибка загрузки туров:', error);
+        console.error('Ошибка загрузки ретритов:', error);
         tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
 }
@@ -156,7 +156,7 @@ function formatDateRange(startDate, endDate) {
 
 window.showAddTourModal = function() {
     currentTourId = null;
-    document.getElementById('modalTitle').textContent = 'Добавить тур';
+    document.getElementById('modalTitle').textContent = 'Добавить ретрит';
     document.getElementById('tourForm').reset();
     document.getElementById('galleryPreview').innerHTML = '';
     document.getElementById('tourModal').style.display = 'block';
@@ -172,7 +172,7 @@ window.editTour = async function(id) {
         const tour = await api.get(`/admin/tours/${id}`);
         currentTourId = id;
         
-        document.getElementById('modalTitle').textContent = 'Редактировать тур';
+        document.getElementById('modalTitle').textContent = 'Редактировать ретрит';
         document.getElementById('tourTitle').value = tour.title || '';
         document.getElementById('tourDescription').value = tour.description || '';
         document.getElementById('tourStartDate').value = tour.start_date || '';
@@ -184,12 +184,12 @@ window.editTour = async function(id) {
         
         document.getElementById('tourModal').style.display = 'block';
     } catch (error) {
-        alert('Ошибка загрузки тура: ' + error.message);
+        alert('Ошибка загрузки ретрита: ' + error.message);
     }
 };
 
 window.deleteTour = async function(id) {
-    if (!confirm('Вы уверены, что хотите удалить этот тур?')) {
+    if (!confirm('Вы уверены, что хотите удалить этот ретрит?')) {
         return;
     }
 

@@ -1,0 +1,39 @@
+# Зависимости
+node_modules/
+package-lock.json
+
+# Переменные окружения
+.env
+.env.local
+
+# Логи
+*.log
+npm-debug.log*
+
+# Временные файлы
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Видео файлы - НЕ хранить в Git!
+video/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Большие медиа файлы
+*.zip
+*.tar.gz
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Build
+dist/
+build/
