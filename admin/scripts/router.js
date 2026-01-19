@@ -171,10 +171,6 @@ class Router {
                 if (window.LoginPage && window.LoginPage.init) {
                     window.LoginPage.init();
                 }
-            } else if (path === '/dashboard') {
-                if (window.DashboardPage && window.DashboardPage.init) {
-                    await window.DashboardPage.init();
-                }
             } else if (path === '/videos') {
                 // Путь относительно router.js: admin/scripts/router.js -> admin/scripts/pages/videos.js
                 const VideosPage = await import('./pages/videos.js');
@@ -256,6 +252,11 @@ class Router {
         // Если путь пустой или это корень/index.html, показываем логин
         if (!initialPath || initialPath === '/' || initialPath === '/index.html') {
             initialPath = '/login';
+        }
+        
+        // Если запрашивается /dashboard, редиректим на /videos
+        if (initialPath === '/dashboard') {
+            initialPath = '/videos';
         }
         
         console.log('Обработанный путь:', initialPath);

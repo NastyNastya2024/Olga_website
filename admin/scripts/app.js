@@ -33,10 +33,6 @@ const Sidebar = {
                     <h2>Admin Panel</h2>
                 </div>
                 <nav class="sidebar-nav">
-                    <a href="#" data-route="/dashboard" class="sidebar-item">
-                        <span class="sidebar-icon">📊</span>
-                        <span>Дашборд</span>
-                    </a>
                     <a href="#" data-route="/videos" class="sidebar-item">
                         <span class="sidebar-icon">🎥</span>
                         <span>Видео</span>
@@ -111,54 +107,13 @@ window.LoginPage = {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 // Переход в админку без проверки авторизации
-                router.navigate('/dashboard');
+                router.navigate('/videos');
             });
         }
     }
 };
 
-window.DashboardPage = {
-    render: async () => {
-        const layout = Layout.render();
-        const mainContent = `
-            <div id="dashboard-content">
-                <div class="dashboard-stats" id="dashboardStats">
-                    <div class="loading">Загрузка статистики...</div>
-                </div>
-            </div>
-        `;
-        return layout.replace('<main class="admin-main" id="main-content">', `<main class="admin-main" id="main-content">${mainContent}`);
-    },
-    
-    init: async () => {
-        document.getElementById('page-title').textContent = 'Дашборд';
-        const statsDiv = document.getElementById('dashboardStats');
-        
-        try {
-            const stats = await api.get('/admin/dashboard/stats');
-            statsDiv.innerHTML = `
-                <div class="card">
-                    <h3>Видео</h3>
-                    <p class="stat-value">${stats.videos || 0}</p>
-                </div>
-                <div class="card">
-                    <h3>Ученики</h3>
-                    <p class="stat-value">${stats.users || 0}</p>
-                </div>
-                <div class="card">
-                    <h3>Туры</h3>
-                    <p class="stat-value">${stats.tours || 0}</p>
-                </div>
-                <div class="card">
-                    <h3>Статьи блога</h3>
-                    <p class="stat-value">${stats.posts || 0}</p>
-                </div>
-            `;
-        } catch (error) {
-            statsDiv.innerHTML = '<div class="alert alert-error">Ошибка загрузки статистики</div>';
-        }
-    }
-};
+// DashboardPage удален - раздел дашборда больше не используется
 
 // Импортируем страницы из отдельных файлов
 // (они будут загружены динамически)
@@ -172,10 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Регистрируем маршруты (guards отключены - авторизация не требуется)
     router.route('/', LoginPage.render);
     router.route('/login', LoginPage.render);
-    router.route('/dashboard', async () => {
-        const content = await DashboardPage.render();
-        return content;
-    });
     
     // Загружаем остальные страницы динамически
     loadPageComponents();
@@ -190,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         router.init();
     }, 10);
     
-    // Дополнительная инициализация для страниц, которые уже загружены (login, dashboard)
+    // Дополнительная инициализация для страниц, которые уже загружены (login)
     // Для остальных страниц init вызывается через router.initCurrentPage()
 });
 
@@ -200,28 +151,33 @@ function loadPageComponents() {
     router.route('/videos', async () => {
         const VideosPage = await import('./pages/videos.js');
         const content = await VideosPage.default.render();
-        return Layout.render() + content;
+        // Вставляем контент внутрь admin-main
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     });
     
     // Ученики
     router.route('/students', async () => {
         const StudentsPage = await import('./pages/students.js');
         const content = await StudentsPage.default.render();
-        return Layout.render() + content;
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     });
     
     // Туры
     router.route('/tours', async () => {
         const ToursPage = await import('./pages/tours.js');
         const content = await ToursPage.default.render();
-        return Layout.render() + content;
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     });
     
     // Блог
     router.route('/blog', async () => {
         const BlogPage = await import('./pages/blog.js');
         const content = await BlogPage.default.render();
-        return Layout.render() + content;
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     });
     
     // 403 - Доступ запрещен (показываем страницу логина)
