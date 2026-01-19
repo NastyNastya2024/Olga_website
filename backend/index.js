@@ -16,6 +16,7 @@ const { router: reviewsRoutes, getReviews } = require('./routes/reviews');
 const publicReviewsRoutes = require('./routes/public-reviews');
 const clubPricesRoutes = require('./routes/club-prices');
 const usersRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,7 @@ publicReviewsRoutes.setReviewsGetter(getReviews);
 
 // API роуты (должны быть ДО статических файлов)
 app.use('/api/upload', uploadRoutes);
+app.use('/api/admin/auth', authRoutes);
 app.use('/api/admin/videos', videosRoutes);
 app.use('/api/public/videos', publicVideosRoutes);
 app.use('/api/admin/tours', toursRoutes);

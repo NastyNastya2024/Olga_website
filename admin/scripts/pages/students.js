@@ -8,6 +8,7 @@ export default {
             <div id="students-page">
                 <div class="page-header">
                     <h1>Ученики</h1>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">Добавить пользователя</button>
                 </div>
 
                 <div class="table-container">
@@ -47,6 +48,7 @@ export default {
         window.editUser = editUser;
         window.deleteUser = deleteUser;
         window.closeUserModal = closeUserModal;
+        window.showAddUserModal = showAddUserModal;
         
         await loadAllUsers();
         setTimeout(() => {
@@ -70,6 +72,14 @@ function getUserModal() {
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" id="userEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="userPassword" placeholder="" required>
+                        <small id="passwordHint" style="color: #666; display: block; margin-top: 0.5rem;">
+                            Введите новый пароль только если хотите его изменить
+                        </small>
                     </div>
                     
                     <div class="form-group">
@@ -167,6 +177,34 @@ async function loadAllVideos() {
     }
 }
 
+function showAddUserModal() {
+    currentUserId = null;
+    
+    document.getElementById('modalTitle').textContent = 'Добавить пользователя';
+    document.getElementById('userName').value = '';
+    document.getElementById('userEmail').value = '';
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userPassword').required = true;
+    document.getElementById('userPassword').placeholder = 'Введите пароль';
+    const passwordHint = document.getElementById('passwordHint');
+    if (passwordHint) {
+        passwordHint.textContent = 'Пароль обязателен для нового пользователя';
+    }
+    document.getElementById('userRole').value = 'student';
+    document.getElementById('userTariff').value = '';
+    document.getElementById('userProgramNotes').value = '';
+    
+    // Загружаем список всех видео
+    loadAllVideos().then(videos => {
+        renderVideosSelect(videos, []);
+    });
+    
+    const userModal = document.getElementById('userModal');
+    if (userModal) {
+        userModal.style.display = 'block';
+    }
+}
+
 async function editUser(id) {
     try {
         const user = await api.get(`/admin/users/${id}`);
@@ -175,6 +213,13 @@ async function editUser(id) {
         document.getElementById('modalTitle').textContent = `Редактировать: ${user.name || user.email}`;
         document.getElementById('userName').value = user.name || '';
         document.getElementById('userEmail').value = user.email || '';
+        document.getElementById('userPassword').value = ''; // Пароль не показываем, поле всегда пустое
+        document.getElementById('userPassword').required = false;
+        document.getElementById('userPassword').placeholder = 'Оставьте пустым, чтобы не изменять';
+        const passwordHint = document.getElementById('passwordHint');
+        if (passwordHint) {
+            passwordHint.textContent = 'Введите новый пароль только если хотите его изменить';
+        }
         document.getElementById('userRole').value = user.role || 'student';
         document.getElementById('userTariff').value = user.tariff || '';
         document.getElementById('userProgramNotes').value = user.program_notes || '';
@@ -229,7 +274,15 @@ function closeUserModal() {
     currentUserId = null;
     
     const form = document.getElementById('userForm');
-    if (form) form.reset();
+    if (form) {
+        form.reset();
+        // Очищаем поле пароля при закрытии модального окна
+        const passwordField = document.getElementById('userPassword');
+        if (passwordField) {
+            passwordField.value = '';
+            passwordField.required = false;
+        }
+    }
 }
 
 async function deleteUser(id) {
@@ -262,6 +315,8 @@ function setupUserForm() {
             selectedVideos.push(parseInt(checkbox.value));
         });
         
+        const password = document.getElementById('userPassword').value;
+        
         const data = {
             name: document.getElementById('userName').value,
             email: document.getElementById('userEmail').value,
@@ -271,8 +326,27 @@ function setupUserForm() {
             program_notes: document.getElementById('userProgramNotes').value,
         };
         
+        // Добавляем пароль
+        if (password && password.trim() !== '') {
+            data.password = password;
+        }
+        
         try {
-            await api.put(`/admin/users/${currentUserId}`, data);
+            if (currentUserId) {
+                // Редактирование существующего пользователя
+                if (!data.password) {
+                    // Если пароль не указан при редактировании, не отправляем его
+                    delete data.password;
+                }
+                await api.put(`/admin/users/${currentUserId}`, data);
+            } else {
+                // Создание нового пользователя
+                if (!data.password || data.password.trim() === '') {
+                    alert('Пароль обязателен для нового пользователя');
+                    return;
+                }
+                await api.post('/admin/users', data);
+            }
             closeUserModal();
             loadAllUsers();
         } catch (error) {

@@ -52,7 +52,6 @@ class ApiClient {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
-                // Авторизация отключена - токен не требуется, но оставляем для совместимости
                 ...(token && { Authorization: `Bearer ${token}` }),
                 ...options.headers,
             },

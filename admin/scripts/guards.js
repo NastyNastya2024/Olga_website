@@ -1,25 +1,42 @@
 /**
  * Guards для проверки доступа к маршрутам
- * Авторизация отключена - все маршруты доступны без проверки
  */
 
 /**
- * Проверка авторизации (отключена - всегда разрешаем)
+ * Проверка авторизации
  */
 async function authGuard() {
+    if (!isAuthenticated()) {
+        router.navigate('/login');
+        return false;
+    }
     return true;
 }
 
 /**
- * Проверка роли админа (отключена - всегда разрешаем)
+ * Проверка роли админа
  */
 async function adminGuard() {
+    if (!isAuthenticated()) {
+        router.navigate('/login');
+        return false;
+    }
+    
+    if (!isAdmin()) {
+        router.navigate('/403');
+        return false;
+    }
+    
     return true;
 }
 
 /**
- * Редирект если уже авторизован (отключен)
+ * Редирект если уже авторизован (для страницы логина)
  */
 async function guestGuard() {
+    if (isAuthenticated()) {
+        router.navigate('/videos');
+        return false;
+    }
     return true;
 }

@@ -8,14 +8,14 @@
 // Импортируем компоненты
 const Layout = {
     render: () => {
-        // Авторизация отключена - показываем все разделы всем
-        const isUserAdmin = true;
+        const user = getUserData();
+        const isUserAdmin = isAdmin();
         
         return `
             <div class="admin-layout">
                 ${Sidebar.render(isUserAdmin)}
                 <div class="admin-content">
-                    ${Header.render(null)}
+                    ${Header.render(user)}
                     <main class="admin-main" id="main-content">
                         <!-- Контент страницы будет здесь -->
                     </main>
@@ -63,14 +63,33 @@ const Sidebar = {
 
 const Header = {
     render: (userData) => {
+        const user = userData || getUserData();
         return `
             <header class="admin-header">
                 <h1 id="page-title">Админ-панель</h1>
                 <div class="admin-header-actions">
+                    ${user ? `
+                        <span style="margin-right: 1rem; color: #666;">${user.name || user.email}</span>
+                        <button onclick="handleLogout()" class="btn btn-secondary">Выйти</button>
+                    ` : ''}
                     <a href="/" class="btn btn-primary">Вернуться на сайт</a>
                 </div>
             </header>
         `;
+    }
+};
+
+// Функция для выхода
+window.handleLogout = async function() {
+    if (confirm('Вы уверены, что хотите выйти?')) {
+        await logout();
+    }
+};
+
+// Функция для выхода
+window.handleLogout = async function() {
+    if (confirm('Вы уверены, что хотите выйти?')) {
+        await logout();
     }
 };
 
@@ -105,13 +124,30 @@ window.LoginPage = {
             </div>
         `;
     },
-    init: () => {
+    init: async () => {
         const form = document.getElementById('loginForm');
         if (form) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                // Переход в админку без проверки авторизации
-                router.navigate('/videos');
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                
+                // Показываем загрузку
+                submitButton.disabled = true;
+                submitButton.textContent = 'Вход...';
+                
+                try {
+                    await login(email, password);
+                    // Успешный вход - переходим в админку
+                    router.navigate('/videos');
+                } catch (error) {
+                    alert('Ошибка входа: ' + error.message);
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
             });
         }
     }
@@ -137,9 +173,9 @@ window.toggleClubSubmenu = function(event) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Инициализация приложения...');
     
-    // Регистрируем маршруты (guards отключены - авторизация не требуется)
-    router.route('/', LoginPage.render);
-    router.route('/login', LoginPage.render);
+    // Регистрируем маршруты
+    router.route('/', LoginPage.render, [guestGuard]);
+    router.route('/login', LoginPage.render, [guestGuard]);
     
     // Загружаем остальные страницы динамически
     loadPageComponents();
@@ -160,46 +196,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Загрузка компонентов страниц
 function loadPageComponents() {
-    // Видео
+    // Видео (требует авторизации)
     router.route('/videos', async () => {
         const VideosPage = await import('./pages/videos.js');
         const content = await VideosPage.default.render();
         // Вставляем контент внутрь admin-main
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
-    });
+    }, [authGuard]);
     
-    // Ученики
+    // Ученики (требует авторизации)
     router.route('/students', async () => {
         const StudentsPage = await import('./pages/students.js');
         const content = await StudentsPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
-    });
+    }, [authGuard]);
     
-    // Туры
+    // Туры (требует авторизации и роли админа)
     router.route('/tours', async () => {
         const ToursPage = await import('./pages/tours.js');
         const content = await ToursPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
-    });
+    }, [authGuard, adminGuard]);
     
-    // Блог
+    // Блог (требует авторизации и роли админа)
     router.route('/blog', async () => {
         const BlogPage = await import('./pages/blog.js');
         const content = await BlogPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
-    });
+    }, [authGuard, adminGuard]);
     
-    // Клуб (цены и отзывы на одной странице)
+    // Клуб (требует авторизации и роли админа)
     router.route('/club', async () => {
         const ClubPage = await import('./pages/club.js');
         const content = await ClubPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
-    });
+    }, [authGuard, adminGuard]);
     
     // 403 - Доступ запрещен (показываем страницу логина)
     router.route('/403', async () => {

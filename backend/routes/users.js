@@ -8,12 +8,15 @@ const { loadData, saveData } = require('../utils/data-storage');
 
 // Загружаем данные из файла при старте
 let data = loadData('users');
+// Хэш пароля для admin123: $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
 let users = data.items || [
   {
     id: 1,
     email: 'admin@example.com',
     name: 'Admin User',
+    password: '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', // admin123
     role: 'admin',
+    status: 'active',
     tariff: null,
     assigned_videos: [],
     program_notes: '',
@@ -33,7 +36,59 @@ function persistData() {
  * Получить список всех пользователей
  */
 router.get('/', (req, res) => {
-  res.json(users);
+  // Не возвращаем пароли в списке пользователей
+  const usersWithoutPasswords = users.map(({ password: _, ...user }) => user);
+  res.json(usersWithoutPasswords);
+});
+
+/**
+ * POST /api/admin/users
+ * Создать нового пользователя
+ */
+router.post('/', async (req, res) => {
+  const { name, email, password, role, tariff, assigned_videos, program_notes } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email и пароль обязательны' });
+  }
+  
+  // Проверяем, не существует ли уже пользователь с таким email
+  if (users.find(u => u.email === email)) {
+    return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
+  }
+  
+  const newUser = {
+    id: nextId++,
+    email,
+    name: name || '',
+    role: role || 'student',
+    status: 'active',
+    tariff: tariff || null,
+    assigned_videos: assigned_videos || [],
+    program_notes: program_notes || '',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  
+  // Хешируем пароль
+  try {
+    const bcrypt = require('bcryptjs');
+    if (!password.startsWith('$2a$')) {
+      newUser.password = await bcrypt.hash(password, 10);
+    } else {
+      newUser.password = password;
+    }
+  } catch (error) {
+    console.error('Ошибка хеширования пароля:', error);
+    return res.status(500).json({ error: 'Ошибка при обработке пароля' });
+  }
+  
+  users.push(newUser);
+  persistData();
+  
+  // Не возвращаем пароль в ответе
+  const { password: _, ...userResponse } = newUser;
+  res.status(201).json(userResponse);
 });
 
 /**
@@ -48,14 +103,16 @@ router.get('/:id', (req, res) => {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
   
-  res.json(user);
+  // Не возвращаем пароль в ответе
+  const { password: _, ...userResponse } = user;
+  res.json(userResponse);
 });
 
 /**
  * PUT /api/admin/users/:id
  * Обновить пользователя
  */
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const userIndex = users.findIndex(u => u.id === id);
   
@@ -63,9 +120,9 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
   
-  const { name, email, role, tariff, assigned_videos, program_notes } = req.body;
+  const { name, email, password, role, tariff, assigned_videos, program_notes } = req.body;
   
-  users[userIndex] = {
+  const updatedUser = {
     ...users[userIndex],
     name: name !== undefined ? name : users[userIndex].name,
     email: email !== undefined ? email : users[userIndex].email,
@@ -76,8 +133,32 @@ router.put('/:id', (req, res) => {
     updated_at: new Date().toISOString(),
   };
   
+  // Если указан новый пароль, хешируем его
+  if (password && password.trim() !== '') {
+    try {
+      const bcrypt = require('bcryptjs');
+      // Если пароль уже захеширован, оставляем как есть, иначе хешируем
+      if (!password.startsWith('$2a$')) {
+        updatedUser.password = await bcrypt.hash(password, 10);
+      } else {
+        updatedUser.password = password;
+      }
+    } catch (error) {
+      console.error('Ошибка хеширования пароля:', error);
+      return res.status(500).json({ error: 'Ошибка при обработке пароля' });
+    }
+  }
+  // Если пароль не указан, сохраняем существующий
+  else {
+    updatedUser.password = users[userIndex].password;
+  }
+  
+  users[userIndex] = updatedUser;
   persistData();
-  res.json(users[userIndex]);
+  
+  // Не возвращаем пароль в ответе
+  const { password: _, ...userResponse } = users[userIndex];
+  res.json(userResponse);
 });
 
 /**
