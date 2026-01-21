@@ -87,6 +87,11 @@ function getVideoModal() {
                         <textarea id="videoDescription"></textarea>
                     </div>
                     
+                    <div class="form-group">
+                        <label>Категория</label>
+                        <input type="text" id="videoCategory" value="blog_1" placeholder="blog_1">
+                    </div>
+                    
                     <!-- Загрузка видео файла -->
                     <div class="form-group">
                         <label>Загрузить видео файл</label>
@@ -220,6 +225,12 @@ function showAddVideoModal() {
     document.getElementById('modalTitle').textContent = 'Добавить видео';
     document.getElementById('videoForm').reset();
     
+    // Устанавливаем категорию по умолчанию
+    const categoryInput = document.getElementById('videoCategory');
+    if (categoryInput) {
+        categoryInput.value = 'blog_1';
+    }
+    
     // Сбрасываем прогресс загрузки
     const uploadProgress = document.getElementById('uploadProgress');
     const uploadStatus = document.getElementById('uploadStatus');
@@ -264,6 +275,7 @@ async function editVideo(id) {
         document.getElementById('modalTitle').textContent = 'Редактировать видео';
         document.getElementById('videoTitle').value = video.title || '';
         document.getElementById('videoDescription').value = video.description || '';
+        document.getElementById('videoCategory').value = video.category || 'blog_1';
         document.getElementById('videoUrl').value = video.video_url || '';
         document.getElementById('videoStatus').value = video.status || 'published';
         document.getElementById('videoAccess').value = video.access_type || 'open';
@@ -372,6 +384,7 @@ function setupVideoForm() {
         const data = {
             title: document.getElementById('videoTitle').value,
             description: document.getElementById('videoDescription').value,
+            category: document.getElementById('videoCategory').value || 'blog_1',
             video_url: videoUrl,
             status: document.getElementById('videoStatus').value,
             access_type: document.getElementById('videoAccess').value,

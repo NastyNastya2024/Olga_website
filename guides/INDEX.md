@@ -1,6 +1,6 @@
 # Полный индекс всех инструкций
 
-Всего инструкций: **18**
+Всего инструкций: **19**
 
 ## 📋 По категориям
 
@@ -13,7 +13,8 @@
 - [AUTH_SETUP.md](./AUTH_SETUP.md) - Настройка авторизации ⭐ Новое
 - [NO_AUTH.md](./NO_AUTH.md) - Информация об отключенной авторизации (устарело)
 
-### 🗄️ Развертывание и настройка (5)
+### 🗄️ Развертывание и настройка (6)
+- [BACKEND_STARTUP.md](./BACKEND_STARTUP.md) - 🚀 Запуск бэкенда ⭐ Новое
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание PostgreSQL и S3 (MinIO)
 - [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Решение распространенных проблем
 - [SPA_SERVER_SETUP.md](./SPA_SERVER_SETUP.md) - Настройка сервера для SPA админки
@@ -37,27 +38,29 @@
 
 1. [ADMIN_PANEL_ARCHITECTURE.md](./ADMIN_PANEL_ARCHITECTURE.md) - ⭐ Детальная архитектура админ-панели и загрузки видео
 2. [AUTH_SETUP.md](./AUTH_SETUP.md) - Настройка авторизации ⭐ Новое
-3. [CREDENTIALS.md](./CREDENTIALS.md) - Учетные данные по умолчанию
-4. [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание PostgreSQL и S3 (MinIO)
-5. [NO_AUTH.md](./NO_AUTH.md) - Информация об отключенной авторизации (устарело)
-5. [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Подробное описание структуры проекта
-6. [README.md](./README.md) - Главный файл с содержанием
-7. [README_S3.md](./README_S3.md) - Работа с S3 (MinIO)
-8. [README_URL.md](./README_URL.md) - Как правильно открывать админ-панель
-9. [S3_VIEW_FILES.md](./S3_VIEW_FILES.md) - Просмотр файлов в S3 (MinIO) ⭐ Новое
-10. [SPA_FALLBACK_SETUP.md](./SPA_FALLBACK_SETUP.md) - Настройка SPA fallback
-11. [SPA_SERVER_SETUP.md](./SPA_SERVER_SETUP.md) - Настройка сервера для SPA админки
-12. [SPA_STRUCTURE.md](./SPA_STRUCTURE.md) - Структура SPA админ-панели
-13. [SPA_TROUBLESHOOTING.md](./SPA_TROUBLESHOOTING.md) - Решение проблем с SPA админкой
-14. [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Решение распространенных проблем
-15. [UPLOAD_VIDEO_GUIDE.md](./UPLOAD_VIDEO_GUIDE.md) - Загрузка видео через админ-панель ⭐
-16. [VIDEO_DOWNLOAD_INSTRUCTIONS.md](./VIDEO_DOWNLOAD_INSTRUCTIONS.md) - Скачивание с Яндекс Диска
-17. [VIDEO_UPLOAD_IMPLEMENTATION.md](./VIDEO_UPLOAD_IMPLEMENTATION.md) - ⭐ План реализации функционала загрузки видео
+3. [BACKEND_STARTUP.md](./BACKEND_STARTUP.md) - 🚀 Запуск бэкенда ⭐ Новое
+4. [CREDENTIALS.md](./CREDENTIALS.md) - Учетные данные по умолчанию
+5. [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание PostgreSQL и S3 (MinIO)
+6. [NO_AUTH.md](./NO_AUTH.md) - Информация об отключенной авторизации (устарело)
+7. [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Подробное описание структуры проекта
+8. [README.md](./README.md) - Главный файл с содержанием
+9. [README_S3.md](./README_S3.md) - Работа с S3 (MinIO)
+10. [README_URL.md](./README_URL.md) - Как правильно открывать админ-панель
+11. [S3_VIEW_FILES.md](./S3_VIEW_FILES.md) - Просмотр файлов в S3 (MinIO) ⭐ Новое
+12. [SPA_FALLBACK_SETUP.md](./SPA_FALLBACK_SETUP.md) - Настройка SPA fallback
+13. [SPA_SERVER_SETUP.md](./SPA_SERVER_SETUP.md) - Настройка сервера для SPA админки
+14. [SPA_STRUCTURE.md](./SPA_STRUCTURE.md) - Структура SPA админ-панели
+15. [SPA_TROUBLESHOOTING.md](./SPA_TROUBLESHOOTING.md) - Решение проблем с SPA админкой
+16. [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Решение распространенных проблем
+17. [UPLOAD_VIDEO_GUIDE.md](./UPLOAD_VIDEO_GUIDE.md) - Загрузка видео через админ-панель ⭐
+18. [VIDEO_DOWNLOAD_INSTRUCTIONS.md](./VIDEO_DOWNLOAD_INSTRUCTIONS.md) - Скачивание с Яндекс Диска
+19. [VIDEO_UPLOAD_IMPLEMENTATION.md](./VIDEO_UPLOAD_IMPLEMENTATION.md) - ⭐ План реализации функционала загрузки видео
 
 ## 🎯 Быстрый поиск по задачам
 
 **Начало работы:**
 - Быстрый старт → [README.md](../README.md) в корне проекта
+- Запуск бэкенда → [BACKEND_STARTUP.md](./BACKEND_STARTUP.md) ⭐ Новое
 
 **Проблемы:**
 - Забыли пароль → [CREDENTIALS.md](./CREDENTIALS.md)
@@ -65,10 +68,12 @@
 - Страница не открывается → [README_URL.md](./README_URL.md)
 - Проблемы с SPA → [SPA_SERVER_SETUP.md](./SPA_SERVER_SETUP.md)
 - Обновление страницы не работает (Cannot GET) → [SPA_FALLBACK_SETUP.md](./SPA_FALLBACK_SETUP.md) ⭐
+- Проблемы с запуском бэкенда → [BACKEND_STARTUP.md](./BACKEND_STARTUP.md) ⭐ Новое
 
 **Развертывание:**
 - База данных и S3 → [DEPLOYMENT.md](./DEPLOYMENT.md)
 - Настройка сервера → [SPA_SERVER_SETUP.md](./SPA_SERVER_SETUP.md)
+- Запуск бэкенда → [BACKEND_STARTUP.md](./BACKEND_STARTUP.md) ⭐ Новое
 
 **Видео:**
 - Загрузка через админку → [UPLOAD_VIDEO_GUIDE.md](./UPLOAD_VIDEO_GUIDE.md)

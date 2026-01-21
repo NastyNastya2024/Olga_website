@@ -47,7 +47,7 @@ router.get('/:id', (req, res) => {
  * Создать новое видео
  */
 router.post('/', (req, res) => {
-  const { title, description, video_url, status, access_type } = req.body;
+  const { title, description, video_url, status, access_type, category } = req.body;
   
   if (!title || !video_url) {
     return res.status(400).json({ error: 'Название и URL видео обязательны' });
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
     video_url,
     status: status || 'published',
     access_type: access_type || 'open',
-    category: null,
+    category: category || 'blog_1',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -83,7 +83,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Видео не найдено' });
   }
   
-  const { title, description, video_url, status, access_type } = req.body;
+  const { title, description, video_url, status, access_type, category } = req.body;
   
   videos[videoIndex] = {
     ...videos[videoIndex],
@@ -92,6 +92,7 @@ router.put('/:id', (req, res) => {
     video_url: video_url || videos[videoIndex].video_url,
     status: status || videos[videoIndex].status,
     access_type: access_type || videos[videoIndex].access_type,
+    category: category !== undefined ? category : (videos[videoIndex].category || 'blog_1'),
     updated_at: new Date().toISOString(),
   };
   

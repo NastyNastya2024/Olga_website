@@ -18,15 +18,24 @@ router.setVideosGetter = (getter) => {
 /**
  * GET /api/public/videos
  * Получить список опубликованных видео для публичной части
+ * Поддерживает фильтрацию по категории через query параметр ?category=blog_1
  */
 router.get('/', (req, res) => {
   try {
     const allVideos = getVideos();
+    const category = req.query.category;
     
     // Фильтруем только опубликованные видео с открытым доступом
-    const publishedVideos = allVideos.filter(video => 
+    let publishedVideos = allVideos.filter(video => 
       video.status === 'published' && video.access_type === 'open'
     );
+    
+    // Если указана категория, фильтруем по ней
+    if (category) {
+      publishedVideos = publishedVideos.filter(video => 
+        video.category === category
+      );
+    }
     
     res.json(publishedVideos);
   } catch (error) {

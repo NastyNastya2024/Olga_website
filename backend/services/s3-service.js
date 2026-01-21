@@ -190,6 +190,12 @@ class S3Service {
       }));
     } catch (error) {
       console.error('Ошибка получения списка файлов:', error);
+      
+      // Улучшенная обработка ошибок подключения
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('ECONNREFUSED')) {
+        throw new Error(`Не удалось подключиться к MinIO на порту 9000. Убедитесь, что MinIO запущен: docker-compose up -d minio`);
+      }
+      
       throw new Error(`Не удалось получить список файлов: ${error.message}`);
     }
   }

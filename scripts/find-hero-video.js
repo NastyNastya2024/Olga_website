@@ -19,19 +19,25 @@ async function findHeroVideo() {
         let foundVideo = null;
 
         for (const folder of folders) {
-            console.log(`📁 Проверяю папку: ${folder || 'корень'}...`);
-            const files = await s3Service.listFiles(folder);
-            
-            // Ищем файл с именем main.mp4
-            const mainVideo = files.find(file => 
-                file.key.toLowerCase().includes('main') && 
-                (file.key.toLowerCase().endsWith('.mp4') || file.key.toLowerCase().endsWith('.mov'))
-            );
+            try {
+                console.log(`📁 Проверяю папку: ${folder || 'корень'}...`);
+                const files = await s3Service.listFiles(folder);
+                
+                // Ищем файл с именем main.mp4
+                const mainVideo = files.find(file => 
+                    file.key.toLowerCase().includes('main') && 
+                    (file.key.toLowerCase().endsWith('.mp4') || file.key.toLowerCase().endsWith('.mov'))
+                );
 
-            if (mainVideo) {
-                foundVideo = mainVideo;
-                console.log(`✅ Найдено видео: ${mainVideo.key}`);
-                break;
+                if (mainVideo) {
+                    foundVideo = mainVideo;
+                    console.log(`✅ Найдено видео: ${mainVideo.key}`);
+                    break;
+                }
+            } catch (folderError) {
+                console.error(`   Ошибка при проверке папки ${folder}: ${folderError.message}`);
+                // Продолжаем проверку других папок
+                continue;
             }
         }
 
@@ -71,6 +77,22 @@ async function findHeroVideo() {
         return foundVideo;
     } catch (error) {
         console.error('❌ Ошибка поиска видео:', error.message);
+        
+        // Проверяем тип ошибки и даем полезные советы
+        if (error.message.includes('ECONNREFUSED') || error.message.includes('connect')) {
+            console.error('\n💡 Не удалось подключиться к MinIO. Убедитесь, что:');
+            console.error('   1. MinIO запущен: docker-compose up -d minio');
+            console.error('   2. MinIO доступен на порту 9000');
+            console.error('   3. Проверьте статус: docker-compose ps');
+            console.error('\n   Для запуска MinIO выполните:');
+            console.error('   cd /Users/a1/Documents/GitHub/Olga_website');
+            console.error('   docker-compose up -d minio');
+        } else if (error.message.includes('NoSuchBucket')) {
+            console.error('\n💡 Bucket не найден. Убедитесь, что:');
+            console.error('   1. MinIO запущен: docker-compose up -d minio');
+            console.error('   2. Bucket создан: docker-compose up minio-setup');
+        }
+        
         process.exit(1);
     }
 }
