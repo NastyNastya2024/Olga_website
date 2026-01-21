@@ -899,6 +899,120 @@ body, html {
     padding: 0 2rem;
 }
 
+.yoga-club-image-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: calc(3rem + 100px);
+    position: relative;
+    z-index: 1;
+}
+
+.yoga-club-image {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    max-width: 600px;
+}
+
+.yoga-club-text {
+    color: white;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.8;
+    margin-top: 2rem;
+    padding: 0 2rem;
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+}
+
+.three-images-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: calc(3rem + 400px);
+    position: relative;
+    z-index: 1;
+    gap: 350px;
+}
+
+.three-images-wrapper .image-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.three-images-wrapper .image-item-with-cloud {
+    position: relative;
+}
+
+.three-images-wrapper .section-image {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    max-width: 900px;
+    transform: scale(1.95);
+    transform-origin: center;
+}
+
+.three-images-wrapper .cloud-image-background {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-width: 600px;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.four-images-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: calc(3rem * 1.3);
+    position: relative;
+    z-index: 1;
+    gap: 350px;
+}
+
+.four-images-wrapper .image-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.four-images-wrapper .section-image {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    max-width: 900px;
+    transform: scale(1.95);
+    transform-origin: center;
+}
+
+.four-images-wrapper .title-image {
+    transform: scale(0.975);
+}
+
 .featured-video-card {
     cursor: pointer;
     transition: transform 0.3s ease;
