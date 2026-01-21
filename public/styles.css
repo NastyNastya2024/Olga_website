@@ -168,18 +168,25 @@ body, html {
 .hero {
     position: relative;
     width: 100vw;
-    min-height: 70vh;
+    min-height: 100vh;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    padding-top: 60px;
     left: 50%;
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
+}
+
+/* Специфичные стили для страницы videos */
+body:has(.videos-page) .hero,
+.videos-page .hero {
+    min-height: 70vh;
+    align-items: flex-start;
+    padding-top: 60px;
 }
 
 .hero::after {
@@ -215,16 +222,24 @@ body, html {
 
 .hero video {
     position: absolute;
-    top: -250px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     width: 100vw;
     height: auto;
-    min-height: 70vh;
+    min-height: 100vh;
     object-fit: cover;
     object-position: center;
     z-index: 0;
     background: #000;
+}
+
+/* Специфичные стили для видео на странице videos */
+body:has(.videos-page) .hero video,
+.videos-page .hero video {
+    top: -250px;
+    transform: translateX(-50%);
+    min-height: 70vh;
 }
 
 .hero video[poster] {
