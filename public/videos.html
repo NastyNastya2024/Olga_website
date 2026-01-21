@@ -73,10 +73,10 @@
             }
 
             try {
-                console.log('🔍 Запрос видео practics из S3...');
+                console.log('🔍 Запрос видео practice из S3...');
                 
-                // Получаем URL видео practics из S3 через специальный endpoint
-                const response = await api.get('/public/hero/video/practics');
+                // Получаем URL видео practice из S3 через специальный endpoint
+                const response = await api.get('/public/hero/video/practice');
                 
                 console.log('📥 Ответ от API:', response);
                 console.log('📊 Тип ответа:', typeof response);
@@ -135,7 +135,7 @@
                         console.warn('⚠️ Автозапуск заблокирован:', err);
                     });
                 } else {
-                    console.warn('⚠️ Видео practics не найдено в S3');
+                    console.warn('⚠️ Видео practice не найдено в S3');
                     console.warn('   Ответ:', response);
                     console.warn('   videoUrl:', videoUrl);
                     console.warn('   isSuccess:', isSuccess);

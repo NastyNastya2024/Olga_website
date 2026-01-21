@@ -44,7 +44,7 @@
 
     <script src="/shared/scripts/api.js"></script>
     <script>
-        // Загрузка hero видео из S3
+        // Загрузка hero видео main1 из S3
         async function loadHeroVideo() {
             const video = document.getElementById('heroVideo');
             if (!video) {
@@ -53,20 +53,21 @@
             }
 
             try {
-                console.log('🔍 Запрос hero видео из S3...');
+                console.log('🔍 Запрос hero видео (main1) из S3...');
                 
-                // Получаем URL видео из S3 через API
+                // Получаем URL видео main1 из S3 через API
                 const response = await api.get('/public/hero/video');
                 
                 console.log('📥 Ответ от API:', response);
                 console.log('📊 Тип ответа:', typeof response);
                 console.log('📊 Ключи ответа:', response ? Object.keys(response) : 'null');
                 
-                // API клиент возвращает данные напрямую
+                // Проверяем формат ответа
                 let videoUrl = null;
                 let isSuccess = false;
                 
                 if (response && typeof response === 'object') {
+                    // API клиент может вернуть данные напрямую или обернуть в data
                     videoUrl = response.url || (response.data && response.data.url);
                     isSuccess = response.success === true || (response.data && response.data.success === true);
                     
@@ -92,7 +93,9 @@
                     
                     // Обработчики событий для отладки
                     video.addEventListener('loadeddata', () => {
-                        console.log('✅ Видео загружено успешно');
+                        console.log('✅ Видео main1 загружено успешно из S3');
+                        console.log('   Длительность:', video.duration, 'секунд');
+                        console.log('   Разрешение:', video.videoWidth + 'x' + video.videoHeight);
                         // Убираем сообщение об ошибке если оно было
                         const errorMsg = document.querySelector('.hero .error-msg');
                         if (errorMsg) errorMsg.remove();
