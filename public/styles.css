@@ -766,6 +766,24 @@ body, html {
     background-repeat: no-repeat;
     z-index: -1;
     opacity: 0.6;
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.3) 10%,
+        rgba(0, 0, 0, 1) 20%,
+        rgba(0, 0, 0, 1) 80%,
+        rgba(0, 0, 0, 0.3) 90%,
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.3) 10%,
+        rgba(0, 0, 0, 1) 20%,
+        rgba(0, 0, 0, 1) 80%,
+        rgba(0, 0, 0, 0.3) 90%,
+        transparent 100%
+    );
 }
 
 .olga-image-wrapper {
@@ -773,6 +791,8 @@ body, html {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
 }
 
 .olga-image-link {
@@ -800,6 +820,8 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .olga-text {
