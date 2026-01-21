@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная - Olga Website</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/shared/styles/common.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -13,14 +16,20 @@
             <div class="logo">
                 <img src="/img/logo.png" alt="Olga Website" class="logo-img">
             </div>
-            <ul class="nav-menu">
+            <button class="burger-menu" id="burgerMenu" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="/" class="active">Главная</a></li>
                 <li><a href="/videos.html">Видео</a></li>
                 <li><a href="/tours.html">Ретриты</a></li>
                 <li><a href="/club.html">Клуб</a></li>
                 <li><a href="/blog.html">Блог</a></li>
+                <li class="nav-login-mobile"><a href="/admin" class="btn-login">Вход</a></li>
             </ul>
-            <a href="/admin" class="btn-login">Вход</a>
+            <a href="/admin" class="btn-login btn-login-desktop">Вход</a>
         </nav>
     </header>
 
@@ -57,17 +66,62 @@
                 <div class="benefit-item benefit-5">
                     <img src="/img/Better_5.png" alt="Спокойный ум" class="benefit-icon">
                 </div>
+                
+                <div class="olga-section">
+                    <div class="olga-image-wrapper">
+                        <a href="/videos.html" class="olga-image-link">
+                            <img src="/img/Olga.png" alt="Olga" class="olga-image">
+                        </a>
+                    </div>
+                    
+                    <div class="olga-content">
+                        <p class="olga-text">
+                            Преподаю уже более 10 лет. Йога полностью изменила мою жизнь. Я переехала теплый Сочи из Сибири и продолжаю свое дело здесь, а мои ученицы имеют возможность заниматься со мной из любой точки мира.
+                        </p>
+                        
+                        <div class="featured-videos-container">
+                            <div id="featuredVideosGrid" class="featured-videos-grid">
+                                <!-- Видео загружаются динамически -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <footer class="footer">
+            </footer>
         </section>
 
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2026 Olga Website. Все права защищены.</p>
-    </footer>
-
     <script src="/shared/scripts/api.js"></script>
     <script>
+        // Бургер-меню
+        const burgerMenu = document.getElementById('burgerMenu');
+        const navMenu = document.getElementById('navMenu');
+
+        burgerMenu.addEventListener('click', () => {
+            burgerMenu.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Закрытие меню при клике на ссылку
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                burgerMenu.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Закрытие меню при клике вне меню
+        document.addEventListener('click', (e) => {
+            if (!burgerMenu.contains(e.target) && !navMenu.contains(e.target)) {
+                burgerMenu.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
         // Загрузка hero видео main1 из S3
         async function loadHeroVideo() {
             const video = document.getElementById('heroVideo');
@@ -191,6 +245,173 @@
 
         // Загружаем видео при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadHeroVideo);
+
+        // Загрузка трех видео под кнопкой
+        async function loadFeaturedVideos() {
+            const grid = document.getElementById('featuredVideosGrid');
+            if (!grid) {
+                console.log('Grid элемент не найден');
+                return;
+            }
+
+            try {
+                console.log('Загрузка видео...');
+                const response = await api.get('/public/videos');
+                console.log('Ответ API:', response);
+                
+                const videos = response.data || response;
+                console.log('Видео:', videos);
+
+                if (!videos || videos.length === 0) {
+                    console.log('Видео не найдено');
+                    grid.innerHTML = '<p style="color: white; text-align: center; padding: 2rem;">Видео пока нет</p>';
+                    return;
+                }
+
+                // Берем первые три видео (убираем фильтр по статусу, так как API уже возвращает только опубликованные)
+                const featuredVideos = videos.slice(0, 3);
+                console.log('Отображаемые видео:', featuredVideos);
+
+                if (featuredVideos.length === 0) {
+                    console.log('Нет видео для отображения');
+                    grid.innerHTML = '<p style="color: white; text-align: center; padding: 2rem;">Видео пока нет</p>';
+                    return;
+                }
+
+                grid.innerHTML = featuredVideos.map((video, index) => {
+                    console.log(`Обработка видео ${index + 1}:`, {
+                        title: video.title,
+                        video_url: video.video_url,
+                        preview_url: video.preview_url,
+                        keys: Object.keys(video)
+                    });
+                    
+                    const isVideoFile = video.video_url && (
+                        video.video_url.endsWith('.mp4') || 
+                        video.video_url.endsWith('.webm') || 
+                        video.video_url.endsWith('.mov') ||
+                        video.video_url.includes('/videos/') ||
+                        video.video_url.includes('/uploads/') ||
+                        video.video_url.includes('/video/')
+                    );
+                    
+                    const isYouTube = video.video_url && (
+                        video.video_url.includes('youtube.com') || 
+                        video.video_url.includes('youtu.be')
+                    );
+                    const isVimeo = video.video_url && video.video_url.includes('vimeo.com');
+                    
+                    let previewContent = '';
+                    
+                    // Приоритет: preview_url > YouTube thumbnail > placeholder
+                    if (video.preview_url) {
+                        // Если есть preview_url, используем его для всех типов видео
+                        console.log(`Используем preview_url для видео ${index + 1}:`, video.preview_url);
+                        previewContent = `<img src="${video.preview_url}" alt="${video.title || 'Видео'}" loading="lazy" onerror="console.error('Ошибка загрузки превью:', this.src); this.onerror=null; this.parentElement.innerHTML='<div class=\\'video-placeholder\\'>🎥</div>';">`;
+                    } else if (isYouTube) {
+                        const videoId = video.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+                        if (videoId) {
+                            console.log(`Используем YouTube thumbnail для видео ${index + 1}:`, videoId);
+                            previewContent = `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="${video.title || 'Видео'}" loading="lazy" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg';">`;
+                        } else {
+                            console.log(`Не удалось извлечь YouTube ID для видео ${index + 1}`);
+                            previewContent = `<div class="video-placeholder">🎥</div>`;
+                        }
+                    } else if (isVideoFile) {
+                        // Для видео файлов без preview_url используем video элемент для показа первого кадра
+                        console.log(`Видео файл без preview_url для видео ${index + 1}, используем video элемент`);
+                        previewContent = `<video muted playsinline preload="metadata" onloadedmetadata="this.currentTime=0.1" onerror="console.error('Ошибка загрузки видео:', this.src); this.onerror=null; this.parentElement.innerHTML='<div class=\\'video-placeholder\\'>🎥</div>';" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block;">
+                            <source src="${video.video_url}" type="video/mp4">
+                        </video>`;
+                    } else if (isVimeo) {
+                        const videoId = video.video_url.match(/vimeo\.com\/(\d+)/)?.[1];
+                        if (videoId) {
+                            console.log(`Vimeo видео ${index + 1}, но нет preview_url`);
+                            previewContent = `<div class="video-placeholder">🎥</div>`;
+                        } else {
+                            previewContent = `<div class="video-placeholder">🎥</div>`;
+                        }
+                    } else {
+                        console.log(`Неизвестный тип видео для видео ${index + 1}`);
+                        previewContent = `<div class="video-placeholder">🎥</div>`;
+                    }
+                    
+                    return `
+                        <div class="featured-video-card" onclick="showVideoPlayer('${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">
+                            <div class="featured-video-preview">
+                                ${previewContent}
+                                <div class="play-button">▶</div>
+                            </div>
+                            <h4 class="featured-video-title">${video.title || 'Видео'}</h4>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Ошибка загрузки видео:', error);
+                console.error('Детали ошибки:', error.message, error.stack);
+                grid.innerHTML = '<p style="color: white; text-align: center; padding: 2rem;">Ошибка загрузки видео. Проверьте консоль для деталей.</p>';
+            }
+        }
+
+        // Функция для показа видео в модальном окне
+        function showVideoPlayer(videoUrl, videoTitle) {
+            const modal = document.createElement('div');
+            modal.className = 'video-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+            
+            const isVideoFile = videoUrl && (
+                videoUrl.endsWith('.mp4') || 
+                videoUrl.endsWith('.webm') || 
+                videoUrl.endsWith('.mov') ||
+                videoUrl.includes('/videos/') ||
+                videoUrl.includes('/uploads/')
+            );
+            
+            const isYouTube = videoUrl && videoUrl.includes('youtube.com');
+            const isVimeo = videoUrl && videoUrl.includes('vimeo.com');
+            
+            let videoHTML = '';
+            
+            if (isVideoFile) {
+                videoHTML = `<video controls autoplay style="max-width: 90%; max-height: 90%;"><source src="${videoUrl}" type="video/mp4"></video>`;
+            } else if (isYouTube) {
+                const videoId = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+                if (videoId) {
+                    videoHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="width: 90vw; height: 90vh; max-width: 1200px;"></iframe>`;
+                }
+            } else if (isVimeo) {
+                const videoId = videoUrl.match(/vimeo\.com\/(\d+)/)?.[1];
+                if (videoId) {
+                    videoHTML = `<iframe src="https://player.vimeo.com/video/${videoId}" frameborder="0" allowfullscreen style="width: 90vw; height: 90vh; max-width: 1200px;"></iframe>`;
+                }
+            }
+            
+            modal.innerHTML = `
+                <div style="position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+                    <button onclick="this.closest('.video-modal').remove()" style="position: absolute; top: 20px; right: 20px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; z-index: 10001;">×</button>
+                    ${videoHTML}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Загружаем три видео при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            // Проверяем, что API доступен
+            if (typeof api === 'undefined') {
+                console.error('API не загружен! Убедитесь, что /shared/scripts/api.js подключен.');
+                return;
+            }
+            console.log('API доступен, начинаем загрузку видео');
+            loadFeaturedVideos();
+        });
     </script>
 </body>
 </html>
