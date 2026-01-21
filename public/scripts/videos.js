@@ -62,14 +62,16 @@ async function loadVideos() {
             }
             
             return `
-                <div class="video-card">
+                <div class="video-card" onclick="showVideoPlayer('${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">
                     <div class="video-placeholder">
                         ${videoContent}
+                        <div class="video-play-overlay">
+                            <div class="video-play-button">▶</div>
+                        </div>
                     </div>
                     <div class="video-card-content">
                         <h3>${video.title}</h3>
                         <p>${video.description || ''}</p>
-                        <button onclick="showVideoPlayer('${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')" class="btn btn-primary">Смотреть</button>
                     </div>
                 </div>
             `;

@@ -39,8 +39,6 @@
         </section>
 
         <section class="page-header">
-            <h1>Видео / Уроки</h1>
-            <p>Здесь вы найдете все доступные видео и уроки</p>
         </section>
 
         <section class="content-section">
@@ -51,7 +49,6 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; 2026 Olga Website. Все права защищены.</p>
     </footer>
 
     <!-- Модальное окно для видеоплеера -->
@@ -79,10 +76,10 @@
             }
 
             try {
-                console.log('🔍 Запрос видео practice из S3...');
+                console.log('🔍 Запрос видео practics из S3...');
                 
-                // Получаем URL видео practice из S3 через специальный endpoint
-                const response = await api.get('/public/hero/video/practice');
+                // Получаем URL видео practics из S3 через специальный endpoint
+                const response = await api.get('/public/hero/video/practics');
                 
                 console.log('📥 Ответ от API:', response);
                 console.log('📊 Тип ответа:', typeof response);
