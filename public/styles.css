@@ -753,38 +753,7 @@ body, html {
     padding: 0 2rem;
 }
 
-.olga-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background-image: url('/img/mountain.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-    opacity: 0.6;
-    mask-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(0, 0, 0, 0.3) 10%,
-        rgba(0, 0, 0, 1) 20%,
-        rgba(0, 0, 0, 1) 80%,
-        rgba(0, 0, 0, 0.3) 90%,
-        transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(0, 0, 0, 0.3) 10%,
-        rgba(0, 0, 0, 1) 20%,
-        rgba(0, 0, 0, 1) 80%,
-        rgba(0, 0, 0, 0.3) 90%,
-        transparent 100%
-    );
-}
+
 
 .olga-image-wrapper {
     width: 100%;
@@ -999,6 +968,11 @@ body, html {
     gap: 1rem;
 }
 
+.four-images-wrapper .image-item-continuing {
+    position: relative;
+}
+
+
 .four-images-wrapper .section-image {
     max-width: 100%;
     width: auto;
@@ -1108,6 +1082,103 @@ body, html {
 
 /* Footer */
 .footer {
+    width: 100%;
+    background-color: rgba(72, 189, 204, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 2rem 0;
+    margin-top: 4rem;
+    position: relative;
+    z-index: 10;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.footer-text {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.social-and-pages-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10rem;
+    margin-bottom: 10rem;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    color: white;
+}
+
+.social-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.pages-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-link {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+}
+
+.page-link:hover {
+    opacity: 1;
+    color: white;
+    transform: translateY(-2px);
+    border-bottom: 2px solid white;
+}
+
+/* Старые стили футера (если есть) */
+.footer-old {
     background-color: transparent;
     color: white;
     text-align: center;
