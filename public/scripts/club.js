@@ -13,7 +13,11 @@ async function loadReviews() {
         const reviews = response.data || response;
 
         if (!reviews || reviews.length === 0) {
-            list.innerHTML = '<p class="empty-state">Отзывов пока нет</p>';
+            // Скрываем секцию отзывов, если их нет
+            const reviewsSection = document.querySelector('.reviews-section');
+            if (reviewsSection) {
+                reviewsSection.style.display = 'none';
+            }
             return;
         }
 

@@ -100,9 +100,15 @@ function getTourModal() {
                         <input type="url" id="tourBookingUrl">
                     </div>
                     <div class="form-group">
-                        <label>Галерея (загрузить фото)</label>
-                        <input type="file" id="tourGallery" multiple accept="image/*">
-                        <div id="galleryPreview" style="margin-top: 1rem;"></div>
+                        <label>Галерея (загрузить фото и видео)</label>
+                        <input type="file" id="tourGallery" multiple accept="image/*,video/*">
+                        <div id="galleryPreview" style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                        <div id="galleryUploadProgress" style="margin-top: 1rem; display: none;">
+                            <div style="background: #f0f0f0; border-radius: 4px; height: 20px; position: relative;">
+                                <div id="galleryProgressFill" style="background: #48BDCC; height: 100%; width: 0%; border-radius: 4px; transition: width 0.3s;"></div>
+                            </div>
+                            <p id="galleryUploadStatus" style="margin-top: 5px; font-size: 0.9rem; color: #666;"></p>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
@@ -112,6 +118,7 @@ function getTourModal() {
 }
 
 let currentTourId = null;
+let tourGallery = []; // Массив URL загруженных файлов
 
 async function loadTours() {
     const tbody = document.getElementById('toursTableBody');
@@ -156,9 +163,11 @@ function formatDateRange(startDate, endDate) {
 
 window.showAddTourModal = function() {
     currentTourId = null;
+    tourGallery = [];
     document.getElementById('modalTitle').textContent = 'Добавить ретрит';
     document.getElementById('tourForm').reset();
     document.getElementById('galleryPreview').innerHTML = '';
+    document.getElementById('tourGallery').value = '';
     document.getElementById('tourModal').style.display = 'block';
 };
 
@@ -171,6 +180,7 @@ window.editTour = async function(id) {
     try {
         const tour = await api.get(`/admin/tours/${id}`);
         currentTourId = id;
+        tourGallery = tour.gallery || [];
         
         document.getElementById('modalTitle').textContent = 'Редактировать ретрит';
         document.getElementById('tourTitle').value = tour.title || '';
@@ -181,6 +191,9 @@ window.editTour = async function(id) {
         document.getElementById('tourProgram').value = tour.program || '';
         document.getElementById('tourPrice').value = tour.price || '';
         document.getElementById('tourBookingUrl').value = tour.booking_url || '';
+        
+        // Отображаем существующую галерею
+        renderGalleryPreview();
         
         document.getElementById('tourModal').style.display = 'block';
     } catch (error) {
@@ -218,6 +231,7 @@ function setupTourForm() {
             price: document.getElementById('tourPrice').value ? parseFloat(document.getElementById('tourPrice').value) : null,
             booking_url: document.getElementById('tourBookingUrl').value || '',
             status: 'upcoming',
+            gallery: tourGallery,
         };
 
         try {
@@ -234,27 +248,160 @@ function setupTourForm() {
         }
     });
 
-    // Превью галереи
+    // Превью и загрузка галереи
     const galleryInput = document.getElementById('tourGallery');
     if (galleryInput) {
-        galleryInput.addEventListener('change', function(e) {
-            const preview = document.getElementById('galleryPreview');
-            preview.innerHTML = '';
+        galleryInput.addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
             
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.maxWidth = '150px';
-                    img.style.margin = '5px';
-                    img.style.borderRadius = '5px';
-                    preview.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
+            const preview = document.getElementById('galleryPreview');
+            const progressContainer = document.getElementById('galleryUploadProgress');
+            const progressFill = document.getElementById('galleryProgressFill');
+            const uploadStatus = document.getElementById('galleryUploadStatus');
+            
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            uploadStatus.textContent = 'Подготовка к загрузке...';
+            
+            try {
+                // Загружаем файлы по очереди
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    uploadStatus.textContent = `Загрузка ${i + 1} из ${files.length}: ${file.name}...`;
+                    
+                    // Создаем FormData для загрузки
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    // Загружаем файл
+                    const response = await api.uploadFile('/upload', formData, (percent) => {
+                        const totalPercent = ((i / files.length) * 100) + (percent / files.length);
+                        progressFill.style.width = totalPercent + '%';
+                        uploadStatus.textContent = `Загрузка ${i + 1} из ${files.length}: ${file.name}... ${Math.round(percent)}%`;
+                    });
+                    
+                    if (response.success && response.data) {
+                        const fileUrl = response.data.publicUrl || response.data.url;
+                        tourGallery.push(fileUrl);
+                        
+                        // Добавляем превью
+                        addGalleryPreviewItem(fileUrl, file.type);
+                    } else {
+                        throw new Error('Ошибка загрузки файла');
+                    }
+                }
+                
+                progressFill.style.width = '100%';
+                uploadStatus.textContent = `✅ Загружено ${files.length} файл(ов)`;
+                uploadStatus.style.color = '#27ae60';
+                
+                // Очищаем input
+                galleryInput.value = '';
+                
+                // Скрываем прогресс через 2 секунды
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 2000);
+            } catch (error) {
+                progressContainer.style.display = 'none';
+                alert('Ошибка загрузки файлов: ' + error.message);
+                console.error('Upload error:', error);
+            }
         });
     }
+    
+    // Функция для отображения превью элемента галереи
+    function addGalleryPreviewItem(url, mimeType) {
+        const preview = document.getElementById('galleryPreview');
+        const item = document.createElement('div');
+        item.style.position = 'relative';
+        item.style.width = '150px';
+        item.style.height = '150px';
+        item.style.margin = '5px';
+        item.style.borderRadius = '5px';
+        item.style.overflow = 'hidden';
+        item.style.background = '#f0f0f0';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        
+        if (mimeType && mimeType.startsWith('video/')) {
+            // Для видео показываем видео элемент
+            const video = document.createElement('video');
+            video.src = url;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.controls = false;
+            video.muted = true;
+            item.appendChild(video);
+            
+            // Добавляем иконку play
+            const playIcon = document.createElement('div');
+            playIcon.innerHTML = '▶';
+            playIcon.style.position = 'absolute';
+            playIcon.style.top = '50%';
+            playIcon.style.left = '50%';
+            playIcon.style.transform = 'translate(-50%, -50%)';
+            playIcon.style.fontSize = '30px';
+            playIcon.style.color = 'white';
+            playIcon.style.textShadow = '0 2px 4px rgba(0,0,0,0.5)';
+            playIcon.style.pointerEvents = 'none';
+            item.appendChild(playIcon);
+        } else {
+            // Для изображений показываем img
+            const img = document.createElement('img');
+            img.src = url;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            item.appendChild(img);
+        }
+        
+        // Кнопка удаления
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '×';
+        removeBtn.style.position = 'absolute';
+        removeBtn.style.top = '5px';
+        removeBtn.style.right = '5px';
+        removeBtn.style.background = 'rgba(255, 0, 0, 0.8)';
+        removeBtn.style.color = 'white';
+        removeBtn.style.border = 'none';
+        removeBtn.style.borderRadius = '50%';
+        removeBtn.style.width = '25px';
+        removeBtn.style.height = '25px';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.style.fontSize = '18px';
+        removeBtn.style.lineHeight = '1';
+        removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            const index = tourGallery.indexOf(url);
+            if (index > -1) {
+                tourGallery.splice(index, 1);
+            }
+            item.remove();
+        };
+        item.appendChild(removeBtn);
+        
+        preview.appendChild(item);
+    }
+    
+    // Функция для отображения существующей галереи
+    function renderGalleryPreview() {
+        const preview = document.getElementById('galleryPreview');
+        preview.innerHTML = '';
+        
+        tourGallery.forEach(url => {
+            // Определяем тип файла по расширению или URL
+            const isVideo = url.match(/\.(mp4|webm|mov|avi|mkv)(\?|$)/i) || url.includes('/videos/');
+            const mimeType = isVideo ? 'video/mp4' : 'image/jpeg';
+            addGalleryPreviewItem(url, mimeType);
+        });
+    }
+    
+    // Делаем функцию доступной глобально
+    window.renderGalleryPreview = renderGalleryPreview;
 }
 
 // Закрытие модального окна при клике вне его

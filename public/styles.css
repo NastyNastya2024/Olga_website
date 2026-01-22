@@ -282,10 +282,17 @@ body:has(.videos-page) .hero video,
 
 /* Videos Grid */
 .videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 2rem;
     margin-top: 0;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 2rem;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .video-card {
@@ -294,10 +301,13 @@ body:has(.videos-page) .hero video,
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     cursor: pointer;
     aspect-ratio: 9 / 16;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .video-card:hover {
@@ -365,6 +375,56 @@ body:has(.videos-page) .hero video,
     background: white;
 }
 
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid #48BDCC;
+    border-radius: 8px;
+    color: #48BDCC;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(.pagination-btn-disabled) {
+    background: #48BDCC;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pagination-btn-active {
+    background: #48BDCC;
+    color: white;
+    border-color: #48BDCC;
+}
+
+.pagination-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-dots {
+    padding: 0 0.5rem;
+    color: #7f8c8d;
+    font-size: 1.2rem;
+}
+
 .video-card-content {
     padding: 1.8rem;
     flex-shrink: 0;
@@ -400,49 +460,208 @@ body:has(.videos-page) .hero video,
     margin-top: 2rem;
 }
 
-.tours-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
 .tour-card {
-    background: white;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
-    border-left: 4px solid #3498db;
+    border-left: 4px solid #48BDCC;
+    overflow: hidden;
 }
 
 .tour-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .tour-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .tour-card h3 {
     color: #2c3e50;
     margin: 0;
-    flex: 1;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Tour Gallery */
+.tour-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.gallery-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0f0f0;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+}
+
+.gallery-item img,
+.gallery-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-video {
+    position: relative;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #48BDCC;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.gallery-video:hover .play-overlay {
+    background: white;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.gallery-video video {
+    cursor: pointer;
+}
+
+.gallery-video video:hover {
+    opacity: 0.9;
+}
+
+/* Tour Details (скрытый контент) */
+.tour-details {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tour-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .tour-price {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #27ae60;
-    margin-left: 1rem;
+    color: #48BDCC;
+    margin-bottom: 0.5rem;
 }
 
-.tour-info {
-    margin-bottom: 1rem;
+.tour-date,
+.tour-location {
+    color: #7f8c8d;
+    margin: 0.25rem 0;
+    font-size: 1rem;
+}
+
+.tour-description {
+    color: #555;
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.tour-program {
+    margin: 1rem 0;
+}
+
+.tour-program strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.tour-program p {
+    color: #555;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* Кнопка "Подробнее" */
+.tour-toggle-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #48BDCC;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.tour-toggle-btn:hover {
+    background: #3a9ba8;
+    transform: translateY(-2px);
+}
+
+.tour-toggle-btn.active {
+    background: #e74c3c;
+}
+
+.tour-toggle-btn.active:hover {
+    background: #c0392b;
+}
+
+.tour-toggle-btn .btn-icon {
+    transition: transform 0.3s ease;
+}
+
+.tour-toggle-btn.active .btn-icon {
+    transform: rotate(180deg);
+}
+
+.gallery-empty {
+    color: #7f8c8d;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+    margin: 1rem 0;
 }
 
 .tour-date,
@@ -481,6 +700,76 @@ body:has(.videos-page) .hero video,
 .club-description {
     max-width: 800px;
     margin: 0 auto 3rem auto;
+}
+
+/* Club Services */
+.club-services {
+    max-width: 1200px;
+    margin: 0 auto 4rem auto;
+    padding: 0;
+}
+
+.club-services h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.services-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 0;
+}
+
+.benefits-section {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.benefits-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: calc(6rem + 100px);
+}
+
+.benefit-card {
+    background: transparent;
+    padding: 0;
+    text-align: center;
+    margin: 0 3rem;
+}
+
+.benefit-card img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    transform: scale(1.2);
+}
+
+.service-card {
+    background: transparent;
+    padding: 0;
+    text-align: center;
+}
+
+.service-card img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    transform: scale(1.5);
 }
 
 .reviews-section {
@@ -689,11 +978,10 @@ body:has(.videos-page) .hero video,
 
 /* Benefits Section */
 .benefits-section {
-    padding: 4rem 2rem;
+    padding: 0 2rem 35rem 2rem;
     background-color: transparent;
     position: relative;
     z-index: 50; /* Над hero и blur эффектом */
-    padding-bottom: 35rem; /* Место для olga-section и футера */
 }
 
 /* Стили для скроллбара в адаптиве */
@@ -759,43 +1047,35 @@ body:has(.videos-page) .hero video,
     object-fit: contain;
 }
 
-/* Позиционирование элементов плавным полукругом ВНИЗ под summary */
-/* Summary находится на top: calc(50% - 400px), его нижний край примерно на calc(50% - 250px) */
-/* Используем математически точное позиционирование для плавной дуги */
-/* Радиус дуги увеличен для большего расстояния между иконками */
+/* Позиционирование элементов в один горизонтальный ряд */
 .benefit-1 {
-    /* Крайняя левая - угол ~-50°, очень близко к summary */
-    top: calc(50% - 300px);
+    top: 0;
     left: calc(50% - 600px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
 .benefit-2 {
-    /* Левая средняя - угол ~-25°, плавный переход */
-    top: calc(50% - 200px);
+    top: 0;
     left: calc(50% - 300px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
 .benefit-3 {
-    /* Центральная - угол 0°, самая нижняя точка дуги, но ближе к summary */
-    top: calc(50% - 120px);
+    top: 0;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
 .benefit-4 {
-    /* Правая средняя - угол ~+25°, плавный переход */
-    top: calc(50% - 200px);
+    top: 0;
     left: calc(50% + 300px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
 .benefit-5 {
-    /* Крайняя правая - угол ~+50°, очень близко к summary */
-    top: calc(50% - 300px);
+    top: 0;
     left: calc(50% + 600px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
 }
 
 /* Секция Olga - вертикальная композиция */
@@ -808,9 +1088,10 @@ body:has(.videos-page) .hero video,
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1400px;
     width: 100%;
     padding: 0 2rem;
+    overflow: visible;
 }
 
 
@@ -840,8 +1121,98 @@ body:has(.videos-page) .hero video,
     height: auto;
     display: block;
     max-width: 700px;
-    transform: scale(1.4);
+    transform: scale(1.82);
     transform-origin: center;
+}
+
+.videos-section {
+    width: 100% !important;
+    padding: 2rem;
+    position: relative !important;
+    z-index: 11 !important;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+.olga-video-card {
+    cursor: pointer;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.olga-video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.olga-video-preview {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+    background: #000;
+}
+
+.olga-video-preview img,
+.olga-video-preview video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.olga-video-preview .video-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.olga-video-card:hover .olga-video-preview .video-play-overlay {
+    opacity: 1;
+}
+
+.olga-video-preview .video-play-button {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #00A0A7;
+    transition: transform 0.3s ease;
+}
+
+.olga-video-card:hover .olga-video-preview .video-play-button {
+    transform: scale(1.1);
+}
+
+.olga-video-title {
+    padding: 1rem;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 0;
 }
 
 .olga-content {
@@ -851,18 +1222,20 @@ body:has(.videos-page) .hero video,
     align-items: center;
     position: relative;
     z-index: 1;
+    overflow: visible;
 }
 
 .olga-text {
     color: white;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     font-weight: 400;
-    line-height: 1.8;
+    line-height: 1.5;
     margin: 20px auto 2.5rem auto;
     padding: 0 2rem;
-    max-width: 900px;
+    max-width: 1400px;
+    width: 100%;
     position: relative;
 }
 
@@ -915,17 +1288,24 @@ body:has(.videos-page) .hero video,
 /* Контейнер для трех видео */
 .featured-videos-container {
     width: 100%;
-    display: flex;
+    display: flex !important;
     justify-content: center;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .featured-videos-grid {
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     max-width: 1200px;
     width: 100%;
     padding: 0 2rem;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .yoga-club-image-wrapper {
@@ -935,6 +1315,7 @@ body:has(.videos-page) .hero video,
     align-items: center;
     justify-content: center;
     margin-top: calc(3rem + 100px);
+    margin-bottom: calc((3rem + 400px) / 2);
     position: relative;
     z-index: 1;
 }
@@ -945,6 +1326,8 @@ body:has(.videos-page) .hero video,
     height: auto;
     display: block;
     max-width: 600px;
+    transform: scale(1.56);
+    transform-origin: center;
 }
 
 .yoga-club-text {
@@ -966,7 +1349,7 @@ body:has(.videos-page) .hero video,
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: calc(3rem + 400px);
+    margin-top: calc((3rem + 400px) / 2);
     position: relative;
     z-index: 1;
     gap: 350px;
@@ -1019,6 +1402,18 @@ body:has(.videos-page) .hero video,
     gap: 350px;
 }
 
+.content-section .four-images-wrapper {
+    margin-top: 4rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: calc(3rem * 1.3);
+    position: relative;
+    z-index: 1;
+    gap: 350px;
+}
+
 .four-images-wrapper .image-item {
     width: 100%;
     display: flex;
@@ -1039,7 +1434,7 @@ body:has(.videos-page) .hero video,
     height: auto;
     display: block;
     max-width: 900px;
-    transform: scale(1.95);
+    transform: scale(1.365);
     transform-origin: center;
 }
 
@@ -1251,225 +1646,4 @@ body:has(.videos-page) .hero video,
     left: 0;
     right: 0;
     z-index: 10;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .nav {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0;
-        position: relative;
-    }
-
-    .logo {
-        flex-shrink: 0;
-    }
-
-    .burger-menu {
-        display: flex;
-        order: 2;
-    }
-
-    .btn-login-desktop {
-        display: none;
-    }
-
-    .nav-login-mobile {
-        display: block;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .nav-menu {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        max-width: 300px;
-        height: 100vh;
-        background-color: rgba(72, 189, 204, 0.98);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding: 5rem 2rem 2rem;
-        gap: 0;
-        transition: right 0.3s ease;
-        z-index: 1000;
-        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-menu.active {
-        right: 0;
-    }
-
-    .nav-menu li {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    .nav-menu a {
-        display: block;
-        width: 100%;
-        padding: 1rem 0;
-        font-size: 1.2rem;
-    }
-
-    .nav-menu a.active {
-        border-bottom: 2px solid white;
-    }
-
-    .hero {
-        min-height: 100vh;
-    }
-
-    .hero-content {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .hero-content p {
-        font-size: 1rem;
-    }
-
-    .videos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .blog-card {
-        flex-direction: column;
-    }
-
-    .blog-image {
-        width: 100%;
-        min-width: 100%;
-    }
-
-    .benefits-section {
-        padding: 2rem 0;
-        overflow-x: auto;
-        overflow-y: visible;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .benefits-container {
-        min-height: 600px;
-        min-width: 1600px; /* Ширина достаточная для всех иконок с интервалами */
-        width: 100%;
-        position: relative;
-    }
-
-    .benefits-center {
-        top: calc(50% - 400px) !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        z-index: 100 !important; /* Всегда над blur */
-    }
-
-    .summary-image {
-        max-width: 300px; /* Сохраняем размер summary */
-        width: 100%;
-    }
-
-    .olga-section {
-        top: calc(50% + 267px) !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        max-width: 95% !important;
-        padding: 0 1rem !important;
-    }
-
-    .olga-image-wrapper {
-        margin-bottom: 1.5rem !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-    }
-
-    .olga-image {
-        max-width: 90% !important;
-        width: auto !important;
-        height: auto !important;
-        transform: scale(0.7) !important; /* Уменьшение на 30% для адаптива */
-        transform-origin: center !important;
-    }
-
-    .olga-text {
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 1.2rem !important;
-        padding: 0 1rem !important;
-        line-height: 1.6 !important;
-        margin-bottom: 2rem !important;
-        text-align: center !important;
-    }
-
-    .online-button-wrapper {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin: 1rem auto !important;
-        width: auto !important;
-        height: auto !important;
-    }
-
-    .online-button-inline {
-        max-width: 200px !important;
-        width: auto !important;
-        height: auto !important;
-    }
-
-    .featured-videos-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1.5rem !important;
-        padding: 0 1rem !important;
-    }
-
-    .featured-video-title {
-        font-size: 0.9rem !important;
-    }
-
-    .benefit-item {
-        width: 280px; /* Сохраняем размер иконок */
-        height: 280px;
-    }
-
-    /* Сохраняем позиционирование полукругом, как на десктопе */
-    .benefit-1 {
-        top: calc(50% - 300px) !important;
-        left: calc(50% - 600px) !important;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    .benefit-2 {
-        top: calc(50% - 200px) !important;
-        left: calc(50% - 300px) !important;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    .benefit-3 {
-        top: calc(50% - 120px) !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    .benefit-4 {
-        top: calc(50% - 200px) !important;
-        left: calc(50% + 300px) !important;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    .benefit-5 {
-        top: calc(50% - 300px) !important;
-        left: calc(50% + 600px) !important;
-        transform: translate(-50%, -50%) !important;
-    }
 }

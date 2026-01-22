@@ -47,7 +47,7 @@ router.get('/:id', (req, res) => {
  * Создать новый тур
  */
 router.post('/', (req, res) => {
-  const { title, description, start_date, end_date, location, program, price, booking_url, status } = req.body;
+  const { title, description, start_date, end_date, location, program, price, booking_url, status, gallery } = req.body;
   
   if (!title) {
     return res.status(400).json({ error: 'Название тура обязательно' });
@@ -64,6 +64,7 @@ router.post('/', (req, res) => {
     price: price ? parseFloat(price) : null,
     booking_url: booking_url || '',
     status: status || 'upcoming',
+    gallery: Array.isArray(gallery) ? gallery : [],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -86,7 +87,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Тур не найден' });
   }
   
-  const { title, description, start_date, end_date, location, program, price, booking_url, status } = req.body;
+  const { title, description, start_date, end_date, location, program, price, booking_url, status, gallery } = req.body;
   
   tours[tourIndex] = {
     ...tours[tourIndex],
@@ -99,6 +100,7 @@ router.put('/:id', (req, res) => {
     price: price !== undefined ? (price ? parseFloat(price) : null) : tours[tourIndex].price,
     booking_url: booking_url !== undefined ? booking_url : tours[tourIndex].booking_url,
     status: status || tours[tourIndex].status,
+    gallery: gallery !== undefined ? (Array.isArray(gallery) ? gallery : []) : tours[tourIndex].gallery,
     updated_at: new Date().toISOString(),
   };
   
