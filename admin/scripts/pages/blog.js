@@ -53,6 +53,7 @@ export default {
         window.closePostModal = closePostModal;
         window.editPost = editPost;
         window.deletePost = deletePost;
+        window.publishPost = publishPost;
         await loadPosts();
         setTimeout(() => {
             setupPostForm();
@@ -127,6 +128,7 @@ async function loadPosts() {
                 <td>${post.published_at ? new Date(post.published_at).toLocaleDateString('ru-RU') : '-'}</td>
                 <td><span class="status-badge ${post.status}">${post.status === 'published' ? 'Опубликовано' : 'Черновик'}</span></td>
                 <td>
+                    ${post.status === 'draft' ? `<button class="btn btn-success" onclick="publishPost(${post.id})" style="margin-right: 0.5rem;">Опубликовать</button>` : ''}
                     <button class="btn btn-primary" onclick="editPost(${post.id})">Редактировать</button>
                     <button class="btn btn-danger" onclick="deletePost(${post.id})">Удалить</button>
                 </td>
@@ -185,6 +187,29 @@ window.deletePost = async function(id) {
         loadPosts();
     } catch (error) {
         alert('Ошибка удаления: ' + error.message);
+    }
+};
+
+window.publishPost = async function(id) {
+    if (!confirm('Опубликовать эту статью? Она станет доступна на публичной странице блога.')) {
+        return;
+    }
+
+    try {
+        // Получаем текущую статью
+        const post = await api.get(`/admin/blog/${id}`);
+        
+        // Обновляем статус на published
+        const updatedData = {
+            ...post,
+            status: 'published',
+            published_at: post.published_at || new Date().toISOString()
+        };
+        
+        await api.put(`/admin/blog/${id}`, updatedData);
+        loadPosts();
+    } catch (error) {
+        alert('Ошибка публикации: ' + error.message);
     }
 };
 

@@ -38,38 +38,34 @@ async function loadTours() {
         });
 
         list.innerHTML = tours.map((tour, index) => {
+            // Инициализируем галерею для каждого тура
+            if (tour.gallery && Array.isArray(tour.gallery) && tour.gallery.length > 0) {
+                setTimeout(() => {
+                    initTourGallery(tour.id || index, tour.gallery, tour.title || '');
+                }, 0);
+            }
+            
             return `
             <div class="tour-card" data-tour-id="${tour.id || index}">
                 <div class="tour-header">
                     <h3>${tour.title}</h3>
                 </div>
                 
+                <button class="btn btn-secondary tour-toggle-btn" onclick="toggleTourDetails(${tour.id || index})">
+                    <span class="btn-text">Подробнее</span>
+                    <span class="btn-icon">▼</span>
+                </button>
+                
                 ${tour.gallery && Array.isArray(tour.gallery) && tour.gallery.length > 0 ? `
-                    <div class="tour-gallery">
-                        ${tour.gallery.map((item, itemIndex) => {
-                            if (!item) return '';
-                            const itemUrl = String(item).trim();
-                            if (!itemUrl) return '';
-                            
-                            const isVideo = itemUrl.match(/\.(mp4|webm|mov|avi|mkv)(\?|$)/i) || itemUrl.includes('/videos/');
-                            const escapedUrl = escapeHtml(itemUrl);
-                            const escapedTitle = escapeHtml(tour.title || '');
-                            
-                            if (isVideo) {
-                                return `
-                                    <div class="gallery-item gallery-video" onclick="playGalleryVideo(event, '${escapedUrl}')">
-                                        <video src="${escapedUrl}" muted loop playsinline preload="metadata"></video>
-                                        <div class="play-overlay">▶</div>
-                                    </div>
-                                `;
-                            } else {
-                                return `
-                                    <div class="gallery-item gallery-image" onclick="openGalleryImage('${escapedUrl}')">
-                                        <img src="${escapedUrl}" alt="${escapedTitle}" loading="lazy">
-                                    </div>
-                                `;
-                            }
-                        }).filter(item => item !== '').join('')}
+                    <div class="tour-gallery-container">
+                        <div class="tour-gallery" id="tourGallery-${tour.id || index}" data-tour-index="${index}">
+                            <!-- Галерея будет заполнена динамически -->
+                        </div>
+                        ${tour.gallery.filter(item => item && String(item).trim()).length > 6 ? `
+                            <div class="tour-gallery-pagination" id="tourGalleryPagination-${tour.id || index}">
+                                <!-- Пагинация будет добавлена динамически -->
+                            </div>
+                        ` : ''}
                     </div>
                 ` : '<p class="gallery-empty">Галерея пока не добавлена</p>'}
                 
@@ -83,11 +79,6 @@ async function loadTours() {
                     ${tour.program ? `<div class="tour-program"><strong>Программа:</strong><p>${tour.program}</p></div>` : ''}
                     ${tour.booking_url ? `<a href="${tour.booking_url}" class="btn btn-primary" target="_blank">Записаться</a>` : ''}
                 </div>
-                
-                <button class="btn btn-secondary tour-toggle-btn" onclick="toggleTourDetails(${tour.id || index})">
-                    <span class="btn-text">Подробнее</span>
-                    <span class="btn-icon">▼</span>
-                </button>
             </div>
         `;
         }).join('');
@@ -96,6 +87,100 @@ async function loadTours() {
         list.innerHTML = '<p class="empty-state">Ошибка загрузки ретритов</p>';
     }
 }
+
+// Хранилище данных галерей для каждого тура
+const tourGalleriesData = {};
+
+// Функция для инициализации галереи тура с пагинацией
+function initTourGallery(tourId, gallery, tourTitle) {
+    const galleryContainer = document.getElementById(`tourGallery-${tourId}`);
+    const paginationContainer = document.getElementById(`tourGalleryPagination-${tourId}`);
+    
+    if (!galleryContainer) return;
+    
+    const validItems = gallery.filter(item => item && String(item).trim());
+    const itemsPerPage = 6;
+    const totalPages = Math.ceil(validItems.length / itemsPerPage);
+    
+    // Сохраняем данные галереи для этого тура
+    tourGalleriesData[tourId] = {
+        items: validItems,
+        title: tourTitle,
+        currentPage: 1,
+        itemsPerPage: itemsPerPage,
+        totalPages: totalPages
+    };
+    
+    renderTourGallery(tourId, 1);
+}
+
+// Функция для отрисовки галереи тура
+function renderTourGallery(tourId, page) {
+    const data = tourGalleriesData[tourId];
+    if (!data) return;
+    
+    const galleryContainer = document.getElementById(`tourGallery-${tourId}`);
+    const paginationContainer = document.getElementById(`tourGalleryPagination-${tourId}`);
+    
+    if (!galleryContainer) return;
+    
+    if (page < 1 || page > data.totalPages) return;
+    
+    data.currentPage = page;
+    const startIndex = (page - 1) * data.itemsPerPage;
+    const endIndex = startIndex + data.itemsPerPage;
+    const pageItems = data.items.slice(startIndex, endIndex);
+    
+    galleryContainer.innerHTML = pageItems.map((item) => {
+        const itemUrl = String(item).trim();
+        const isVideo = itemUrl.match(/\.(mp4|webm|mov|avi|mkv)(\?|$)/i) || itemUrl.includes('/videos/');
+        const escapedUrl = escapeHtml(itemUrl);
+        const escapedTitle = escapeHtml(data.title);
+        
+        if (isVideo) {
+            return `
+                <div class="gallery-item gallery-video" onclick="playGalleryVideo(event, '${escapedUrl}')">
+                    <video src="${escapedUrl}" muted loop playsinline preload="metadata"></video>
+                    <div class="play-overlay">▶</div>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="gallery-item gallery-image" onclick="openGalleryImage('${escapedUrl}')">
+                    <img src="${escapedUrl}" alt="${escapedTitle}" loading="lazy">
+                </div>
+            `;
+        }
+    }).join('');
+    
+    // Обновляем пагинацию
+    if (paginationContainer && data.totalPages > 1) {
+        let paginationHTML = '';
+        
+        if (data.currentPage > 1) {
+            paginationHTML += `<button class="gallery-pagination-btn" onclick="goToGalleryPage(${tourId}, ${data.currentPage - 1})">‹</button>`;
+        }
+        
+        for (let i = 1; i <= data.totalPages; i++) {
+            if (i === 1 || i === data.totalPages || (i >= data.currentPage - 1 && i <= data.currentPage + 1)) {
+                paginationHTML += `<button class="gallery-pagination-btn ${i === data.currentPage ? 'active' : ''}" onclick="goToGalleryPage(${tourId}, ${i})">${i}</button>`;
+            } else if (i === data.currentPage - 2 || i === data.currentPage + 2) {
+                paginationHTML += `<span class="gallery-pagination-dots">...</span>`;
+            }
+        }
+        
+        if (data.currentPage < data.totalPages) {
+            paginationHTML += `<button class="gallery-pagination-btn" onclick="goToGalleryPage(${tourId}, ${data.currentPage + 1})">›</button>`;
+        }
+        
+        paginationContainer.innerHTML = paginationHTML;
+    }
+}
+
+// Глобальная функция для переключения страниц галереи
+window.goToGalleryPage = function(tourId, page) {
+    renderTourGallery(tourId, page);
+};
 
 function formatDateRange(startDate, endDate) {
     if (!startDate || !endDate) return '-';

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блог - Olga Website</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/shared/styles/common.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -33,20 +36,17 @@
         </section>
 
         <section class="page-header">
-            <h1>Блог</h1>
-            <p>Статьи и новости</p>
         </section>
 
         <section class="content-section">
-            <div class="blog-videos" id="blogVideos" style="margin-bottom: 3rem;">
-                <h2 style="margin-bottom: 1.5rem; text-align: center;">Видео</h2>
-                <div class="videos-grid" id="blogVideosGrid">
-                    <p class="loading">Загрузка видео...</p>
-                </div>
-            </div>
-            
             <div class="blog-list" id="blogList">
                 <p class="loading">Загрузка статей...</p>
+            </div>
+            
+            <div class="telegram-section">
+                <div class="telegram-container">
+                    <img src="/img/Telegram.png" alt="Телеграм канал" class="telegram-image">
+                </div>
             </div>
         </section>
     </main>
@@ -54,149 +54,17 @@
     <footer class="footer">
     </footer>
 
-    <!-- Модальное окно для видеоплеера -->
-    <div id="videoPlayerModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 90vw; width: 90vw; max-height: 90vh; background: #000;">
-            <span class="close" onclick="closeVideoPlayer()" style="color: #fff; font-size: 28px; font-weight: bold; cursor: pointer; position: absolute; right: 20px; top: 10px; z-index: 1001;">&times;</span>
-            <h2 id="videoPlayerTitle" style="margin-bottom: 1rem; color: #fff; padding: 20px 20px 0;"></h2>
-            <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000;">
-                <video id="videoPlayer" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                    Ваш браузер не поддерживает воспроизведение видео.
-                </video>
-            </div>
-        </div>
-    </div>
-
     <script src="/shared/scripts/api.js"></script>
     <script src="/scripts/blog.js"></script>
-    <script src="/scripts/videos.js"></script>
     <script>
-        // Загрузка видео с категорией blog_1 для страницы блога
-        async function loadBlogVideos() {
-            const grid = document.getElementById('blogVideosGrid');
-            if (!grid) return;
-            
-            grid.innerHTML = '<p class="loading">Загрузка видео...</p>';
-
-            try {
-                // Получаем видео с категорией blog_1
-                const response = await api.get('/public/videos?category=blog_1');
-                const videos = response.data || response;
-
-                if (!videos || videos.length === 0) {
-                    grid.innerHTML = '<p class="empty-state">Видео пока нет</p>';
-                    return;
-                }
-
-                grid.innerHTML = videos.map(video => {
-                    // Определяем, является ли URL видео файлом или YouTube/Vimeo ссылкой
-                    const isVideoFile = video.video_url && (
-                        video.video_url.endsWith('.mp4') || 
-                        video.video_url.endsWith('.webm') || 
-                        video.video_url.endsWith('.mov') ||
-                        video.video_url.includes('/videos/') ||
-                        video.video_url.includes('/uploads/')
-                    );
-                    
-                    const isYouTube = video.video_url && video.video_url.includes('youtube.com');
-                    const isVimeo = video.video_url && video.video_url.includes('vimeo.com');
-                    
-                    let videoContent = '';
-                    
-                    if (isVideoFile) {
-                        // Прямая ссылка на видео файл - используем HTML5 video player
-                        videoContent = `
-                            <video controls style="width: 100%; height: 100%; object-fit: cover;">
-                                <source src="${video.video_url}" type="video/mp4">
-                                Ваш браузер не поддерживает видео.
-                            </video>
-                        `;
-                    } else if (isYouTube) {
-                        // YouTube видео - извлекаем ID и используем embed
-                        const videoId = video.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-                        if (videoId) {
-                            videoContent = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
-                        } else {
-                            videoContent = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">Видео</div>';
-                        }
-                    } else if (isVimeo) {
-                        // Vimeo видео - извлекаем ID и используем embed
-                        const videoId = video.video_url.match(/vimeo\.com\/(\d+)/)?.[1];
-                        if (videoId) {
-                            videoContent = `<iframe src="https://player.vimeo.com/video/${videoId}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
-                        } else {
-                            videoContent = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d;">Видео</div>';
-                        }
-                    } else {
-                        // Другой тип ссылки - показываем превью или плейсхолдер
-                        videoContent = video.preview_url 
-                            ? `<img src="${video.preview_url}" alt="${video.title}" style="width: 100%; height: 100%; object-fit: cover;">`
-                            : '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #7f8c8d; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎥 Видео</div>';
-                    }
-                    
-                    return `
-                        <div class="video-card">
-                            <div class="video-placeholder">
-                                ${videoContent}
-                            </div>
-                            <div class="video-card-content">
-                                <h3>${video.title}</h3>
-                                <p>${video.description || ''}</p>
-                                <button onclick="showVideoPlayer('${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')" class="btn btn-primary">Смотреть</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Ошибка загрузки видео:', error);
-                grid.innerHTML = '<p class="empty-state">Ошибка загрузки видео</p>';
-            }
-        }
-
-        function showVideoPlayer(videoUrl, videoTitle) {
-            const modal = document.getElementById('videoPlayerModal');
-            const videoElement = document.getElementById('videoPlayer');
-            const titleElement = document.getElementById('videoPlayerTitle');
-            
-            if (!modal || !videoElement) {
-                console.error('Элементы видеоплеера не найдены');
-                return;
-            }
-            
-            titleElement.textContent = videoTitle || 'Видео';
-            videoElement.src = videoUrl;
-            modal.style.display = 'block';
-            
-            // Автоматически запускаем воспроизведение
-            videoElement.play().catch(error => {
-                console.log('Автозапуск видео заблокирован браузером:', error);
-            });
-        }
-
-        function closeVideoPlayer() {
-            const modal = document.getElementById('videoPlayerModal');
-            const videoElement = document.getElementById('videoPlayer');
-            
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            
-            if (videoElement) {
-                videoElement.pause();
-                videoElement.src = '';
-            }
-        }
-
-        // Закрытие модального окна при клике вне его
-        document.addEventListener('click', function(event) {
-            const videoPlayerModal = document.getElementById('videoPlayerModal');
-            if (videoPlayerModal && event.target === videoPlayerModal) {
-                closeVideoPlayer();
+        // Загружаем статьи блога при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadBlogPosts === 'function') {
+                loadBlogPosts();
+            } else {
+                console.error('Функция loadBlogPosts не найдена');
             }
         });
-
-        // Загружаем видео при загрузке страницы
-        document.addEventListener('DOMContentLoaded', loadBlogVideos);
     </script>
     <script>
         // Загрузка hero видео из S3 для страницы блога
