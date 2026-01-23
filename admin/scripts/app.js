@@ -56,8 +56,8 @@ const Sidebar = {
                             <span>Блог</span>
                         </a>
                         <a href="#" data-route="/club" class="sidebar-item">
-                            <span class="sidebar-icon">🏢</span>
-                            <span>Клуб</span>
+                            <span class="sidebar-icon">💰</span>
+                            <span>Тарифы</span>
                         </a>
                     ` : ''}
                 </nav>

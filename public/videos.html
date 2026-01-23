@@ -34,17 +34,14 @@
     </header>
 
     <main class="main-content">
-        <section class="hero">
-            <video id="heroVideo" autoplay muted loop playsinline preload="auto">
-                <!-- Видео загружается динамически из S3 -->
-                Ваш браузер не поддерживает видео.
-            </video>
-        </section>
-
         <section class="page-header">
         </section>
 
         <section class="content-section">
+            <div class="videos-header">
+                <h2 class="videos-title">Онлайн практики</h2>
+                <p class="videos-subtitle">Тренируйся самостоятельно в любом месте в любое время</p>
+            </div>
             <div class="videos-grid" id="videosGrid">
                 <p>Загрузка видео...</p>
             </div>
@@ -52,7 +49,70 @@
                 <!-- Пагинация будет добавлена динамически -->
             </div>
         </section>
+
+        <section class="about-olga-section">
+            <div class="about-olga-container">
+                <div class="about-olga-image-wrapper">
+                    <img src="/img/Olga.png" alt="Ольга" class="about-olga-image">
+                </div>
+                <div class="about-olga-content">
+                    <h2 class="about-olga-title">Ольга</h2>
+                    <div class="about-olga-text">
+                        <p class="about-olga-intro">Преподаю уже более 10 лет.</p>
+                        <p class="about-olga-main">Йога полностью изменила мою жизнь. Я переехала в теплый Сочи из Сибири и продолжаю свое дело здесь, а мои ученицы имеют возможность заниматься со мной из любой точки мира.</p>
+                        <p class="about-olga-value">Моя миссия — помочь каждой женщине обрести гармонию, силу и уверенность в себе через практику йоги.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-section">
+            <div class="pricing-container">
+                <h2 class="pricing-title">Практикуй вместе со мной</h2>
+                <p class="pricing-subtitle">С мастером практиковать эффективнее — получи персональный подход и поддержку на каждом занятии</p>
+                <div class="pricing-cards">
+                    <div class="pricing-card">
+                        <h3 class="pricing-card-title">Пробное занятие</h3>
+                        <div class="pricing-card-price">500₽</div>
+                        <ul class="pricing-features">
+                            <li>✓ Одно занятие</li>
+                            <li>✓ Знакомство с инструктором</li>
+                            <li>✓ Оценка уровня подготовки</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                    <div class="pricing-card pricing-card-popular">
+                        <span class="pricing-badge">Популярный</span>
+                        <h3 class="pricing-card-title">Базовый</h3>
+                        <div class="pricing-card-price">3500₽ / месяц</div>
+                        <ul class="pricing-features">
+                            <li>✓ 8 занятий в месяц</li>
+                            <li>✓ Доступ к утренним медитациям</li>
+                            <li>✓ Чат поддержки</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                    <div class="pricing-card">
+                        <h3 class="pricing-card-title">Премиум</h3>
+                        <div class="pricing-card-price">6000₽ / месяц</div>
+                        <ul class="pricing-features">
+                            <li>✓ Безлимитные занятия</li>
+                            <li>✓ Личная консультация</li>
+                            <li>✓ Доступ к видеотеке</li>
+                            <li>✓ Участие в мастер-классах</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">&copy; 2024 Olga Website. Все права защищены.</p>
+        </div>
+    </footer>
 
     <!-- Модальное окно для видеоплеера -->
     <div id="videoPlayerModal" class="modal" style="display: none;">
@@ -98,147 +158,12 @@
             });
         }
 
-        // Загрузка hero видео из S3 для страницы видео
-        async function loadHeroVideo() {
-            const video = document.getElementById('heroVideo');
-            if (!video) {
-                console.error('❌ Элемент video не найден');
-                return;
-            }
-
-            try {
-                console.log('🔍 Запрос видео practics из S3...');
-                
-                // Получаем URL видео practics из S3 через специальный endpoint
-                const response = await api.get('/public/hero/video/practics');
-                
-                console.log('📥 Ответ от API:', response);
-                console.log('📊 Тип ответа:', typeof response);
-                console.log('📊 Ключи ответа:', response ? Object.keys(response) : 'null');
-                
-                // Проверяем формат ответа
-                let videoUrl = null;
-                let isSuccess = false;
-                
-                if (response && typeof response === 'object') {
-                    // API клиент может вернуть данные напрямую или обернуть в data
-                    videoUrl = response.url || (response.data && response.data.url);
-                    isSuccess = response.success === true || (response.data && response.data.success === true);
-                    
-                    // Если нет success, но есть url, считаем успешным
-                    if (!isSuccess && videoUrl) {
-                        isSuccess = true;
-                    }
-                }
-                
-                console.log('📊 Парсинг ответа:', { videoUrl, isSuccess, response });
-                
-                if (isSuccess && videoUrl) {
-                    console.log('✅ Получен URL видео:', videoUrl);
-                    
-                    // Создаем source элемент с URL из S3
-                    const source = document.createElement('source');
-                    source.src = videoUrl;
-                    source.type = 'video/mp4';
-                    
-                    // Очищаем старые source элементы
-                    video.innerHTML = '';
-                    video.appendChild(source);
-                    
-                    // Обработчики событий для отладки
-                    video.addEventListener('loadeddata', () => {
-                        console.log('✅ Видео загружено успешно');
-                        // Убираем сообщение об ошибке если оно было
-                        const errorMsg = document.querySelector('.hero .error-msg');
-                        if (errorMsg) errorMsg.remove();
-                    });
-                    
-                    video.addEventListener('error', (e) => {
-                        console.error('❌ Ошибка воспроизведения видео:', e);
-                        console.error('   URL:', videoUrl);
-                        console.error('   Video error:', video.error);
-                        console.error('   Video networkState:', video.networkState);
-                        showError('Ошибка воспроизведения видео. Проверьте консоль.');
-                    });
-                    
-                    // Загружаем видео
-                    video.load();
-                    
-                    // Пытаемся запустить воспроизведение
-                    video.play().catch(err => {
-                        console.warn('⚠️ Автозапуск заблокирован:', err);
-                    });
-                } else {
-                    console.warn('⚠️ Видео practice не найдено в S3');
-                    console.warn('   Ответ:', response);
-                    console.warn('   videoUrl:', videoUrl);
-                    console.warn('   isSuccess:', isSuccess);
-                    
-                    if (response && response.availableVideos && response.availableVideos.length > 0) {
-                        console.log('📹 Доступные видео в S3:');
-                        response.availableVideos.forEach(v => console.log(`   - ${v.key}`));
-                    }
-                    
-                    // Скрываем видео, но не показываем ошибку
-                    video.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('❌ Ошибка загрузки hero видео:', error);
-                console.error('   Детали:', error.message);
-                console.error('   Stack:', error.stack);
-                console.error('   Полный объект ошибки:', error);
-                
-                // Более информативное сообщение об ошибке
-                let errorMessage = 'Ошибка загрузки видео из S3';
-                if (error.message) {
-                    if (error.message.includes('подключиться к серверу')) {
-                        errorMessage = 'Не удалось подключиться к серверу. Убедитесь, что backend запущен.';
-                    } else {
-                        errorMessage = 'Ошибка загрузки видео: ' + error.message;
-                    }
-                }
-                
-                showError(errorMessage);
-            }
-        }
-        
-        function showError(message) {
-            const hero = document.querySelector('.hero');
-            if (hero) {
-                // Убираем старое сообщение об ошибке если есть
-                const oldError = hero.querySelector('.error-msg');
-                if (oldError) oldError.remove();
-                
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-msg';
-                errorMsg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(255,0,0,0.8); padding: 1rem; border-radius: 5px; z-index: 10; text-align: center; max-width: 80%;';
-                errorMsg.textContent = message;
-                hero.appendChild(errorMsg);
-            }
-        }
-
-        // Загружаем видео при загрузке страницы
-        document.addEventListener('DOMContentLoaded', loadHeroVideo);
-
-        // Инверсия цветов меню при прокрутке
+        // Инверсия цветов меню с самого начала
         const header = document.querySelector('.header');
-        const hero = document.querySelector('.hero');
-        
-        function handleScroll() {
-            if (!hero) return;
-            
-            const heroBottom = hero.offsetTop + hero.offsetHeight;
-            const scrollPosition = window.scrollY;
-            
-            if (scrollPosition > heroBottom - 100) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+        if (header) {
+            header.classList.add('scrolled');
         }
-        
-        window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Проверяем при загрузке страницы
+
     </script>
 </body>
 </html>

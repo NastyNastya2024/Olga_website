@@ -88,10 +88,6 @@ function getTourModal() {
                         <input type="text" id="tourLocation" required>
                     </div>
                     <div class="form-group">
-                        <label>Программа</label>
-                        <textarea id="tourProgram" rows="5"></textarea>
-                    </div>
-                    <div class="form-group">
                         <label>Цена</label>
                         <input type="number" id="tourPrice" step="0.01">
                     </div>
@@ -188,7 +184,6 @@ window.editTour = async function(id) {
         document.getElementById('tourStartDate').value = tour.start_date || '';
         document.getElementById('tourEndDate').value = tour.end_date || '';
         document.getElementById('tourLocation').value = tour.location || '';
-        document.getElementById('tourProgram').value = tour.program || '';
         document.getElementById('tourPrice').value = tour.price || '';
         document.getElementById('tourBookingUrl').value = tour.booking_url || '';
         
@@ -227,7 +222,6 @@ function setupTourForm() {
             start_date: document.getElementById('tourStartDate').value || null,
             end_date: document.getElementById('tourEndDate').value || null,
             location: document.getElementById('tourLocation').value || '',
-            program: document.getElementById('tourProgram').value || '',
             price: document.getElementById('tourPrice').value ? parseFloat(document.getElementById('tourPrice').value) : null,
             booking_url: document.getElementById('tourBookingUrl').value || '',
             status: 'upcoming',

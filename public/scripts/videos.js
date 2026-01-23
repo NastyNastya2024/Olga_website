@@ -4,7 +4,7 @@
 
 let allVideos = [];
 let currentPage = 1;
-const videosPerPage = 6;
+const videosPerPage = 12;
 
 function renderVideoCard(video) {
     // Определяем, является ли URL видео файлом или YouTube/Vimeo ссылкой
@@ -80,6 +80,13 @@ async function loadVideos() {
             grid.innerHTML = '<p class="empty-state">Видео пока нет</p>';
             return;
         }
+
+        // Сортируем видео в обратном порядке - последние загруженные идут первыми
+        allVideos.sort((a, b) => {
+            const dateA = a.created_at ? new Date(a.created_at) : new Date(a.id || 0);
+            const dateB = b.created_at ? new Date(b.created_at) : new Date(b.id || 0);
+            return dateB - dateA; // Сортировка по убыванию (новые первыми)
+        });
 
         currentPage = 1;
         displayVideos();
