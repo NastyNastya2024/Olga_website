@@ -1027,7 +1027,7 @@ body:has(.videos-page) .hero video,
 
 .club-services h2 {
     text-align: center;
-    color: #2c3e50;
+    color: #008B9D;
     margin-bottom: 2rem;
     font-size: 2rem;
 }
@@ -1134,6 +1134,34 @@ body:has(.videos-page) .hero video,
     display: block;
     margin: 0 auto;
     transition: transform 0.5s ease;
+}
+
+/* Services Section */
+.services-section {
+    max-width: 1400px;
+    margin: 8rem auto 4rem;
+    padding: 0 2rem;
+}
+
+.services-section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.services-section-title {
+    color: #008B9D;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    font-family: 'Great Vibes', cursive;
+}
+
+.services-section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Service Info Cards */
@@ -1472,11 +1500,38 @@ body:has(.videos-page) .hero video,
 }
 
 /* Blog List */
+/* Blog Section */
+.blog-section {
+    max-width: 1400px;
+    margin: 8rem auto 4rem;
+    padding: 0 2rem;
+}
+
+.blog-section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.blog-section-title {
+    color: #008B9D;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    font-family: 'Great Vibes', cursive;
+}
+
+.blog-section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
 .blog-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2.5rem;
-    margin-top: 3rem;
     padding: 0 2rem;
     max-width: 1400px;
     margin-left: auto;
@@ -2865,6 +2920,231 @@ body:has(.videos-page) .hero video,
     
     .events-list {
         gap: 1.5rem;
+    }
+}
+
+/* Club Tariffs Section */
+.club-tariffs-section {
+    padding: 5rem 2rem;
+    background-color: #ffffff;
+    position: relative;
+    z-index: 10;
+}
+
+.club-tariffs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tariffs-section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.tariffs-section-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: #008B9D;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+}
+
+.tariffs-section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.tariffs-subsection-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 0 0 2rem 0;
+    font-weight: 600;
+    text-align: center;
+}
+
+.club-prices-section {
+    margin-bottom: 4rem;
+}
+
+.club-prices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.club-price-card {
+    background: linear-gradient(135deg, rgba(72, 189, 204, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+}
+
+.club-price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.price-period {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+}
+
+.price-amount {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    color: #008B9D;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.price-per-month {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+.price-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #555;
+    margin: 1rem 0 0 0;
+    line-height: 1.6;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.price-select-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    margin-top: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(72, 189, 204, 0.3);
+    width: 100%;
+}
+
+.price-select-btn:hover {
+    background: linear-gradient(135deg, #2a8a9a 0%, #1f6b7a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(72, 189, 204, 0.4);
+}
+
+.price-select-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(72, 189, 204, 0.3);
+}
+
+.lesson-tariffs-section {
+    margin-bottom: 2rem;
+}
+
+.lesson-tariffs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.lesson-tariff-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 2px solid rgba(72, 189, 204, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lesson-tariff-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-color: rgba(72, 189, 204, 0.4);
+}
+
+.tariff-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    color: #008B9D;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+}
+
+.tariff-price {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+}
+
+.tariff-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: #555;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+}
+
+.tariff-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tariff-features li {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    margin: 0 0 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.5;
+}
+
+.tariff-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #008B9D;
+    font-weight: 700;
+}
+
+.tariff-features li:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 968px) {
+    .club-tariffs-section {
+        padding: 3rem 1.5rem;
+    }
+    
+    .tariffs-section-title {
+        font-size: 2rem;
+    }
+    
+    .club-prices-grid,
+    .lesson-tariffs-grid {
+        grid-template-columns: 1fr;
     }
 }
 

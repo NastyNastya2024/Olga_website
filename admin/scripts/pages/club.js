@@ -13,26 +13,44 @@ export default {
                 <!-- Секция цен -->
                 <div class="club-prices-section">
                     <h2>Цены клуба</h2>
-                    <form id="clubPricesForm" class="club-prices-form-inline">
-                        <div class="price-input-group">
-                            <label for="price1Month">1 месяц</label>
-                            <input type="number" id="price1Month" step="0.01" min="0" placeholder="0.00">
-                            <span class="price-currency">руб.</span>
+                    <form id="clubPricesForm" class="club-prices-form">
+                        <div class="price-form-group">
+                            <div class="price-input-group">
+                                <label for="price1Month">1 месяц</label>
+                                <input type="number" id="price1Month" step="0.01" min="0" placeholder="0.00">
+                                <span class="price-currency">руб.</span>
+                            </div>
+                            <div class="price-description-group">
+                                <label for="description1Month">Описание (1 месяц)</label>
+                                <textarea id="description1Month" rows="3" placeholder="Описание тарифа на 1 месяц"></textarea>
+                            </div>
                         </div>
                         
-                        <div class="price-input-group">
-                            <label for="price3Months">3 месяца</label>
-                            <input type="number" id="price3Months" step="0.01" min="0" placeholder="0.00">
-                            <span class="price-currency">руб.</span>
+                        <div class="price-form-group">
+                            <div class="price-input-group">
+                                <label for="price3Months">3 месяца</label>
+                                <input type="number" id="price3Months" step="0.01" min="0" placeholder="0.00">
+                                <span class="price-currency">руб.</span>
+                            </div>
+                            <div class="price-description-group">
+                                <label for="description3Months">Описание (3 месяца)</label>
+                                <textarea id="description3Months" rows="3" placeholder="Описание тарифа на 3 месяца"></textarea>
+                            </div>
                         </div>
                         
-                        <div class="price-input-group">
-                            <label for="price6Months">6 месяцев</label>
-                            <input type="number" id="price6Months" step="0.01" min="0" placeholder="0.00">
-                            <span class="price-currency">руб.</span>
+                        <div class="price-form-group">
+                            <div class="price-input-group">
+                                <label for="price6Months">6 месяцев</label>
+                                <input type="number" id="price6Months" step="0.01" min="0" placeholder="0.00">
+                                <span class="price-currency">руб.</span>
+                            </div>
+                            <div class="price-description-group">
+                                <label for="description6Months">Описание (6 месяцев)</label>
+                                <textarea id="description6Months" rows="3" placeholder="Описание тарифа на 6 месяцев"></textarea>
+                            </div>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">Сохранить цены</button>
+                        <button type="submit" class="btn btn-primary">Сохранить цены и описания</button>
                     </form>
                 </div>
 
@@ -177,15 +195,46 @@ async function loadPrices() {
         const response = await api.get('/admin/club/prices');
         const prices = response.data || response;
         
+        console.log('Загруженные цены:', prices);
+        
+        const price1MonthEl = document.getElementById('price1Month');
+        const price3MonthsEl = document.getElementById('price3Months');
+        const price6MonthsEl = document.getElementById('price6Months');
+        const description1MonthEl = document.getElementById('description1Month');
+        const description3MonthsEl = document.getElementById('description3Months');
+        const description6MonthsEl = document.getElementById('description6Months');
+        
+        if (!price1MonthEl || !price3MonthsEl || !price6MonthsEl || !description1MonthEl || !description3MonthsEl || !description6MonthsEl) {
+            console.error('Элементы формы не найдены, повторная попытка через 200ms');
+            setTimeout(loadPrices, 200);
+            return;
+        }
+        
+        // Загружаем цены
         if (prices.price_1_month !== null && prices.price_1_month !== undefined) {
-            document.getElementById('price1Month').value = prices.price_1_month;
+            price1MonthEl.value = prices.price_1_month;
+        } else {
+            price1MonthEl.value = '';
         }
+        
         if (prices.price_3_months !== null && prices.price_3_months !== undefined) {
-            document.getElementById('price3Months').value = prices.price_3_months;
+            price3MonthsEl.value = prices.price_3_months;
+        } else {
+            price3MonthsEl.value = '';
         }
+        
         if (prices.price_6_months !== null && prices.price_6_months !== undefined) {
-            document.getElementById('price6Months').value = prices.price_6_months;
+            price6MonthsEl.value = prices.price_6_months;
+        } else {
+            price6MonthsEl.value = '';
         }
+        
+        // Загружаем описания
+        description1MonthEl.value = prices.description_1_month || '';
+        description3MonthsEl.value = prices.description_3_months || '';
+        description6MonthsEl.value = prices.description_6_months || '';
+        
+        console.log('Цены успешно загружены в форму');
     } catch (error) {
         console.error('Ошибка загрузки цен:', error);
         alert('Ошибка загрузки цен: ' + error.message);
@@ -202,17 +251,39 @@ function setupPricesForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const price1Month = document.getElementById('price1Month');
+        const price3Months = document.getElementById('price3Months');
+        const price6Months = document.getElementById('price6Months');
+        const description1Month = document.getElementById('description1Month');
+        const description3Months = document.getElementById('description3Months');
+        const description6Months = document.getElementById('description6Months');
+        
+        if (!price1Month || !price3Months || !price6Months || !description1Month || !description3Months || !description6Months) {
+            console.error('Не найдены элементы формы');
+            alert('Ошибка: элементы формы не найдены');
+            return;
+        }
+        
         const data = {
-            price_1_month: document.getElementById('price1Month').value || null,
-            price_3_months: document.getElementById('price3Months').value || null,
-            price_6_months: document.getElementById('price6Months').value || null,
+            price_1_month: price1Month.value ? parseFloat(price1Month.value) : null,
+            price_3_months: price3Months.value ? parseFloat(price3Months.value) : null,
+            price_6_months: price6Months.value ? parseFloat(price6Months.value) : null,
+            description_1_month: description1Month.value || '',
+            description_3_months: description3Months.value || '',
+            description_6_months: description6Months.value || '',
         };
         
+        console.log('Отправка данных:', data);
+        
         try {
-            await api.put('/admin/club/prices', data);
-            alert('Цены успешно сохранены!');
+            const response = await api.put('/admin/club/prices', data);
+            console.log('Ответ от сервера:', response);
+            alert('Цены и описания успешно сохранены!');
+            // Перезагружаем данные после сохранения
+            await loadPrices();
         } catch (error) {
-            alert('Ошибка сохранения цен: ' + error.message);
+            console.error('Ошибка сохранения:', error);
+            alert('Ошибка сохранения цен: ' + (error.message || 'Неизвестная ошибка'));
         }
     });
 }
@@ -522,23 +593,30 @@ function closeTariffModal() {
 }
 
 async function editTariff(id) {
-    const tariff = tariffsData.find(t => t.id === id);
-    if (!tariff) {
-        alert('Тариф не найден');
-        return;
-    }
-    
-    currentTariffId = id;
-    
-    document.getElementById('tariffModalTitle').textContent = 'Редактировать тариф';
-    document.getElementById('tariffName').value = tariff.name || '';
-    document.getElementById('tariffPrice').value = tariff.price || '';
-    document.getElementById('tariffDescription').value = tariff.description || '';
-    document.getElementById('tariffFeatures').value = tariff.features || '';
-    
-    const tariffModal = document.getElementById('tariffModal');
-    if (tariffModal) {
-        tariffModal.style.display = 'block';
+    try {
+        // Перезагружаем тарифы, чтобы получить актуальные данные
+        await loadTariffs();
+        
+        const tariff = tariffsData.find(t => t.id === id);
+        if (!tariff) {
+            alert('Тариф не найден');
+            return;
+        }
+        
+        currentTariffId = id;
+        
+        document.getElementById('tariffModalTitle').textContent = 'Редактировать тариф';
+        document.getElementById('tariffName').value = tariff.name || '';
+        document.getElementById('tariffPrice').value = tariff.price || '';
+        document.getElementById('tariffDescription').value = tariff.description || '';
+        document.getElementById('tariffFeatures').value = tariff.features || '';
+        
+        const tariffModal = document.getElementById('tariffModal');
+        if (tariffModal) {
+            tariffModal.style.display = 'block';
+        }
+    } catch (error) {
+        alert('Ошибка загрузки тарифа: ' + (error.message || 'Неизвестная ошибка'));
     }
 }
 
@@ -548,11 +626,10 @@ async function deleteTariff(id) {
     }
 
     try {
-        tariffsData = tariffsData.filter(t => t.id !== id);
-        localStorage.setItem('lessonTariffs', JSON.stringify(tariffsData));
+        await api.delete(`/admin/club/lesson-tariffs/${id}`);
         loadTariffs();
     } catch (error) {
-        alert('Ошибка удаления: ' + error.message);
+        alert('Ошибка удаления: ' + (error.message || 'Неизвестная ошибка'));
     }
 }
 
@@ -576,21 +653,16 @@ function setupTariffForm() {
         try {
             if (currentTariffId) {
                 // Редактирование
-                const index = tariffsData.findIndex(t => t.id === currentTariffId);
-                if (index !== -1) {
-                    tariffsData[index] = { ...tariffsData[index], ...data };
-                }
+                await api.put(`/admin/club/lesson-tariffs/${currentTariffId}`, data);
             } else {
                 // Добавление
-                const newId = tariffsData.length > 0 ? Math.max(...tariffsData.map(t => t.id)) + 1 : 1;
-                tariffsData.push({ id: newId, ...data });
+                await api.post('/admin/club/lesson-tariffs', data);
             }
             
-            localStorage.setItem('lessonTariffs', JSON.stringify(tariffsData));
             closeTariffModal();
             loadTariffs();
         } catch (error) {
-            alert('Ошибка сохранения: ' + error.message);
+            alert('Ошибка сохранения: ' + (error.message || 'Неизвестная ошибка'));
         }
     });
 }

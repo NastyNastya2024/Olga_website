@@ -18,6 +18,8 @@ const publicReviewsRoutes = require('./routes/public-reviews');
 const clubPricesRoutes = require('./routes/club-prices');
 const { router: clubEventsRoutes, getEvents } = require('./routes/club-events');
 const publicClubEventsRoutes = require('./routes/public-club-events');
+const lessonTariffsRoutes = require('./routes/lesson-tariffs');
+const publicClubTariffsRoutes = require('./routes/public-club-tariffs');
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 
@@ -54,6 +56,8 @@ app.use('/api/admin/club/prices', clubPricesRoutes);
 app.use('/api/admin/club/events', clubEventsRoutes);
 console.log('✅ Роут /api/admin/club/events зарегистрирован');
 app.use('/api/public/club/events', publicClubEventsRoutes);
+app.use('/api/admin/club/lesson-tariffs', lessonTariffsRoutes);
+app.use('/api/public/club/tariffs', publicClubTariffsRoutes);
 app.use('/api/admin/users', usersRoutes);
 
 // Health check
@@ -105,14 +109,14 @@ app.get('/admin/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin/index.html'));
 });
 
-// Fallback для корня (если нужно)
+// Fallback для корня (только для не-API запросов)
 app.get('*', (req, res) => {
-  // Если запрос не к API и не к статическим файлам, отдаем публичную страницу
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-  } else {
-    res.status(404).json({ error: 'Not found' });
+  // Не обрабатываем API запросы через fallback
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
   }
+  // Если запрос не к API и не к статическим файлам, отдаем публичную страницу
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Запуск сервера

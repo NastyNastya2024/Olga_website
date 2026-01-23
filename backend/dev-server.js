@@ -22,6 +22,8 @@ const publicReviewsRoutes = require('./routes/public-reviews');
 const clubPricesRoutes = require('./routes/club-prices');
 const { router: clubEventsRoutes, getEvents } = require('./routes/club-events');
 const publicClubEventsRoutes = require('./routes/public-club-events');
+const lessonTariffsRoutes = require('./routes/lesson-tariffs');
+const publicClubTariffsRoutes = require('./routes/public-club-tariffs');
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 
@@ -57,6 +59,8 @@ app.use('/api/public/reviews', publicReviewsRoutes);
 app.use('/api/admin/club/prices', clubPricesRoutes);
 app.use('/api/admin/club/events', clubEventsRoutes);
 app.use('/api/public/club/events', publicClubEventsRoutes);
+app.use('/api/admin/club/lesson-tariffs', lessonTariffsRoutes);
+app.use('/api/public/club/tariffs', publicClubTariffsRoutes);
 app.use('/api/admin/users', usersRoutes);
 
 // Статические файлы для видео (должно быть ДО других маршрутов)
@@ -107,8 +111,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Fallback для корня
+// Fallback для корня (только для не-API запросов)
 app.get('*', (req, res) => {
+  // Не обрабатываем API запросы через fallback
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 

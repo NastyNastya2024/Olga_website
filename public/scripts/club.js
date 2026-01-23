@@ -127,6 +127,83 @@ if (document.getElementById('eventsList')) {
 }
 
 /**
+ * Загрузка тарифов клуба
+ */
+async function loadClubTariffs() {
+    const pricesGrid = document.getElementById('clubPricesGrid');
+    
+    if (!pricesGrid) return;
+    
+    pricesGrid.innerHTML = '<p class="loading">Загрузка цен...</p>';
+
+    try {
+        const response = await api.get('/public/club/tariffs');
+        console.log('Ответ от API тарифов:', response);
+        
+        // API возвращает данные напрямую, не в response.data
+        const data = response;
+
+        // Загружаем цены клуба
+        if (!data) {
+            console.error('Пустой ответ от API');
+            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            return;
+        }
+
+        if (data.clubPrices) {
+            const prices = data.clubPrices;
+            console.log('Цены клуба:', prices);
+            console.log('Описания:', {
+                description_1_month: prices.description_1_month,
+                description_3_months: prices.description_3_months,
+                description_6_months: prices.description_6_months
+            });
+            
+            const pricesArray = [
+                { period: '1 месяц', price: prices.price_1_month, months: 1, description: prices.description_1_month || '' },
+                { period: '3 месяца', price: prices.price_3_months, months: 3, description: prices.description_3_months || '' },
+                { period: '6 месяцев', price: prices.price_6_months, months: 6, description: prices.description_6_months || '' }
+            ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
+
+            console.log('Отфильтрованные цены с описаниями:', pricesArray);
+
+            if (pricesArray.length === 0) {
+                pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            } else {
+                pricesGrid.innerHTML = pricesArray.map(p => {
+                    console.log(`Рендерим карточку для ${p.period}, описание: "${p.description}"`);
+                    return `
+                    <div class="club-price-card">
+                        <h4 class="price-period">${p.period}</h4>
+                        <div class="price-amount">${p.price.toFixed(0)} ₽</div>
+                        ${p.months > 1 ? `<div class="price-per-month">${(p.price / p.months).toFixed(0)} ₽/мес</div>` : ''}
+                        ${p.description && p.description.trim() ? `<p class="price-description">${escapeHtml(p.description)}</p>` : ''}
+                        <button class="price-select-btn" onclick="selectTariff('${p.period}', ${p.price}, ${p.months})">Выбрать тариф</button>
+                    </div>
+                `;
+                }).join('');
+            }
+        } else {
+            console.error('Некорректная структура данных. Ожидалось data.clubPrices, получено:', data);
+            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки тарифов:', error);
+        console.error('Тип ошибки:', error.constructor.name);
+        console.error('Сообщение ошибки:', error.message);
+        if (error.stack) {
+            console.error('Стек ошибки:', error.stack);
+        }
+        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки цен. Проверьте консоль для деталей.</p>';
+    }
+}
+
+// Загружаем тарифы при загрузке страницы
+if (document.getElementById('clubPricesGrid')) {
+    loadClubTariffs();
+}
+
+/**
  * Настройка стрелок для скролла мероприятий
  */
 function setupEventsScroll() {
@@ -195,3 +272,16 @@ function setupEventsScroll() {
     // Первоначальное обновление
     setTimeout(updateScrollButtons, 500);
 }
+
+/**
+ * Обработчик выбора тарифа
+ */
+function selectTariff(period, price, months) {
+    console.log('Выбран тариф:', { period, price, months });
+    // Здесь можно добавить логику обработки выбора тарифа
+    // Например, переход на страницу оплаты или открытие модального окна
+    alert(`Выбран тариф: ${period}\nЦена: ${price.toFixed(0)} ₽${months > 1 ? `\nВ месяц: ${(price / months).toFixed(0)} ₽` : ''}`);
+}
+
+// Делаем функцию доступной глобально
+window.selectTariff = selectTariff;

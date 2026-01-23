@@ -147,10 +147,26 @@ html, body {
     flex-wrap: wrap;
 }
 
+.club-prices-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.price-form-group {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
 .price-input-group {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 0 200px;
     min-width: 150px;
 }
 
@@ -173,6 +189,36 @@ html, body {
     margin-top: 0.5rem;
     font-size: 0.9rem;
     color: #666;
+}
+
+.price-description-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 300px;
+}
+
+.price-description-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.price-description-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    width: 100%;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.club-prices-form .btn {
+    align-self: flex-start;
+    margin-top: 1rem;
 }
 
 .club-prices-form-inline .btn {
