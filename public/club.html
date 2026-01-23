@@ -37,22 +37,30 @@
 
         <section class="content-section">
             <div class="club-services">
-                <div class="services-row">
-                    <div class="service-card">
-                        <img src="/img/Ароматерапевт.png" alt="Ароматерапевт">
+                <div class="services-carousel">
+                    <button class="carousel-arrow carousel-arrow-left" id="carouselLeft" aria-label="Предыдущая иконка">
+                        <span>‹</span>
+                    </button>
+                    <div class="services-row" id="servicesRow">
+                        <div class="service-card" data-index="0">
+                            <img src="/img/Ароматерапевт.png" alt="Ароматерапевт">
+                        </div>
+                        <div class="service-card service-card-center" data-index="1">
+                            <img src="/img/Медитации.png" alt="Медитации">
+                        </div>
+                        <div class="service-card" data-index="2">
+                            <img src="/img/Нутрицитолог.png" alt="Нутрицитолог">
+                        </div>
+                        <div class="service-card" data-index="3">
+                            <img src="/img/Общение (1).png" alt="Общение">
+                        </div>
+                        <div class="service-card" data-index="4">
+                            <img src="/img/Психолог.png" alt="Психолог">
+                        </div>
                     </div>
-                    <div class="service-card">
-                        <img src="/img/Медитации.png" alt="Медитации">
-                    </div>
-                    <div class="service-card">
-                        <img src="/img/Нутрицитолог.png" alt="Нутрицитолог">
-                    </div>
-                    <div class="service-card">
-                        <img src="/img/Общение (1).png" alt="Общение">
-                    </div>
-                    <div class="service-card">
-                        <img src="/img/Психолог.png" alt="Психолог">
-                    </div>
+                    <button class="carousel-arrow carousel-arrow-right" id="carouselRight" aria-label="Следующая иконка">
+                        <span>›</span>
+                    </button>
                 </div>
                 
                 <div class="benefits-section">
@@ -98,11 +106,53 @@
         </section>
     </main>
 
-    <footer class="footer">
-    </footer>
-
     <script src="/shared/scripts/api.js"></script>
     <script src="/scripts/club.js"></script>
+    <script>
+        // Карусель иконок сервисов
+        (function() {
+            const servicesRow = document.getElementById('servicesRow');
+            const cards = Array.from(servicesRow.querySelectorAll('.service-card'));
+            const leftArrow = document.getElementById('carouselLeft');
+            const rightArrow = document.getElementById('carouselRight');
+            let currentCenterIndex = 1; // Индекс центральной карточки (Медитации)
+
+            function updateCarousel() {
+                cards.forEach((card, index) => {
+                    const cardIndex = parseInt(card.dataset.index);
+                    card.classList.remove('service-card-center');
+                    
+                    // Вычисляем относительную позицию от центра
+                    let relativePos = cardIndex - currentCenterIndex;
+                    
+                    // Обрабатываем циклический переход
+                    if (relativePos > 2) relativePos -= 5;
+                    if (relativePos < -2) relativePos += 5;
+                    
+                    if (relativePos === 0) {
+                        // Центральная карточка
+                        card.classList.add('service-card-center');
+                    }
+                });
+            }
+
+            function moveLeft() {
+                currentCenterIndex = (currentCenterIndex - 1 + 5) % 5;
+                updateCarousel();
+            }
+
+            function moveRight() {
+                currentCenterIndex = (currentCenterIndex + 1) % 5;
+                updateCarousel();
+            }
+
+            if (leftArrow && rightArrow && servicesRow) {
+                leftArrow.addEventListener('click', moveLeft);
+                rightArrow.addEventListener('click', moveRight);
+                updateCarousel();
+            }
+        })();
+    </script>
     <script>
         // Загрузка hero видео из S3 для страницы клуба
         async function loadHeroVideo() {

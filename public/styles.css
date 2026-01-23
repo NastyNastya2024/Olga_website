@@ -271,10 +271,12 @@ body:has(.videos-page) .hero video,
 
 .content-section {
     background: transparent;
-    padding: 2rem;
+    padding: 3rem 2rem;
     border-radius: 8px;
     margin: 0 auto;
     margin-top: -100px;
+    position: relative;
+    max-width: 1400px;
     max-width: 1200px;
     position: relative;
     z-index: 2;
@@ -771,13 +773,48 @@ body:has(.videos-page) .hero video,
     font-size: 2rem;
 }
 
+.services-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    gap: 1rem;
+}
+
 .services-row {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2.88rem;
     flex-wrap: nowrap;
-    margin-top: 3rem;
+    position: relative;
+}
+
+.carousel-arrow {
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 2rem;
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-arrow:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+.carousel-arrow:active {
+    transform: scale(0.95);
 }
 
 .benefits-section {
@@ -819,6 +856,15 @@ body:has(.videos-page) .hero video,
     background: transparent;
     padding: 0;
     text-align: center;
+    transition: all 0.5s ease;
+    opacity: 0.6;
+    transform: scale(0.9);
+}
+
+.service-card-center {
+    opacity: 1;
+    transform: scale(1.5);
+    z-index: 5;
 }
 
 .service-card img {
@@ -828,7 +874,7 @@ body:has(.videos-page) .hero video,
     object-fit: contain;
     display: block;
     margin: 0 auto;
-    transform: scale(1.26);
+    transition: transform 0.5s ease;
 }
 
 .reviews-section {
@@ -937,102 +983,195 @@ body:has(.videos-page) .hero video,
 
 /* Blog List */
 .blog-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+    padding: 0 2rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .blog-card {
     display: flex;
-    gap: 2rem;
-    background: linear-gradient(135deg, rgba(30, 107, 122, 0.7) 0%, rgba(13, 74, 85, 0.7) 100%);
-    border-radius: 8px;
+    flex-direction: column;
+    background: linear-gradient(135deg, rgba(0, 139, 157, 0.95) 0%, rgba(0, 110, 125, 0.95) 100%);
+    border-radius: 32px;
     overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #48BDCC 0%, #5FB9BC 50%, #48BDCC 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
 .blog-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card:hover::before {
+    opacity: 1;
 }
 
 .blog-image {
-    width: 200px;
-    min-width: 200px;
-    height: 150px;
+    width: 100%;
+    height: 220px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 139, 157, 0.3) 100%);
+    pointer-events: none;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .blog-content {
-    padding: 1.5rem;
+    padding: 2rem;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .blog-content h3 {
     color: white;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
 }
 
 .blog-content p,
 .blog-excerpt {
     color: rgba(255, 255, 255, 0.9);
+    line-height: 1.7;
+    font-size: 1rem;
 }
 
 .blog-date {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-date::before {
+    content: '📅';
+    font-size: 0.875rem;
 }
 
 .read-more {
     color: white;
     text-decoration: none;
-    font-weight: 500;
-    display: inline-block;
-    margin-top: 1rem;
-    opacity: 0.9;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: fit-content;
+}
+
+.read-more::after {
+    content: '→';
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
 }
 
 .read-more:hover {
-    color: white;
-    opacity: 1;
-    text-decoration: underline;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(4px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.read-more:hover::after {
+    transform: translateX(4px);
 }
 
 .blog-full-content {
-    padding: 1.5rem;
-    margin-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    animation: slideDown 0.3s ease;
+    padding: 1.5rem 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    animation: slideDown 0.4s ease;
 }
 
 .blog-full-text {
-    color: white;
+    color: rgba(255, 255, 255, 0.95);
     line-height: 1.8;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     white-space: pre-line;
+    font-size: 1rem;
 }
 
 .read-less {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     color: white;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     margin-top: 1rem;
-    transition: color 0.3s;
-    opacity: 0.9;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: fit-content;
+}
+
+.read-less::before {
+    content: '↑';
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
 }
 
 .read-less:hover {
-    color: white;
-    opacity: 1;
-    text-decoration: underline;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.read-less:hover::before {
+    transform: translateY(-2px);
 }
 
 @keyframes slideDown {
@@ -1088,6 +1227,30 @@ body:has(.videos-page) .hero video,
 }
 
 /* Benefits Section */
+.benefits-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}
+
+.benefits-main-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3.5rem;
+    color: #008B9D;
+    margin: 0 0 1rem 0;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.benefits-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
 .benefits-section {
     padding: 0 2rem 35rem 2rem;
     background-color: transparent;
@@ -1143,19 +1306,73 @@ body:has(.videos-page) .hero video,
 
 .benefit-item {
     position: absolute;
-    width: 280px;
-    height: 280px;
+    width: 320px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 1rem;
 }
 
 .benefit-icon {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 200px;
+    max-height: 200px;
     width: auto;
     height: auto;
     object-fit: contain;
+    z-index: 2;
+}
+
+.benefit-card {
+    background: #ffffff;
+    border-radius: 32px;
+    padding: 0;
+    padding-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 150, 136, 0.08), 0 2px 6px rgba(0, 150, 136, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 280px;
+    height: 580px;
+    transition: all 0.3s ease;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.benefit-assana {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 32px 32px 0 0;
+    flex-shrink: 0;
+    display: block;
+}
+
+.benefit-item:hover .benefit-card {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 150, 136, 0.12), 0 4px 12px rgba(0, 150, 136, 0.08);
+}
+
+.benefit-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.16rem;
+    color: #008B9D;
+    margin: 2rem 1.5rem 0.75rem 1.5rem;
+    font-weight: 400;
+    line-height: 1.0;
+}
+
+.benefit-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    margin: 0 1.5rem;
+    line-height: 1.6;
+    font-weight: 400;
 }
 
 /* Позиционирование элементов в один горизонтальный ряд */
@@ -1654,9 +1871,9 @@ body:has(.videos-page) .hero video,
 /* Telegram Section */
 .reviews-images-container {
     position: relative;
-    width: 100%;
+    width: calc(100% - 4rem);
     min-height: 500px;
-    margin: 3rem 0;
+    margin: 3rem auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1678,31 +1895,31 @@ body:has(.videos-page) .hero video,
 
 .review-image-1 {
     top: 5%;
-    left: 5%;
+    left: 8%;
     transform: rotate(-8deg);
 }
 
 .review-image-2 {
     top: 0%;
-    right: 5%;
+    right: 8%;
     transform: rotate(12deg);
 }
 
 .review-image-3 {
     bottom: 15%;
-    left: 5%;
+    left: 8%;
     transform: rotate(-15deg);
 }
 
 .review-image-4 {
     top: 25%;
-    right: 8%;
+    right: 10%;
     transform: rotate(5deg);
 }
 
 .review-image-5 {
     bottom: 5%;
-    right: 5%;
+    right: 8%;
     transform: rotate(-10deg);
 }
 
