@@ -200,6 +200,11 @@ class Router {
                 if (ClubPage.default && ClubPage.default.init) {
                     await ClubPage.default.init();
                 }
+            } else if (path === '/pricing-tariffs') {
+                const PricingTariffsPage = await import('./pages/pricing-tariffs.js');
+                if (PricingTariffsPage.default && PricingTariffsPage.default.init) {
+                    await PricingTariffsPage.default.init();
+                }
             } else if (path === '/club/prices' || path === '/club/reviews' || path === '/reviews') {
                 // Редирект со старых маршрутов на новый
                 this.navigate('/club');
@@ -216,7 +221,7 @@ class Router {
      * Обновление активного пункта меню
      */
     updateActiveMenuItem(path) {
-        document.querySelectorAll('.sidebar-item').forEach(item => {
+        document.querySelectorAll('.nav-item, .sidebar-item').forEach(item => {
             item.classList.remove('active');
             const route = item.getAttribute('data-route');
             if (route === path) {

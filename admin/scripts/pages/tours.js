@@ -139,7 +139,7 @@ async function loadTours() {
                 <td>${tour.location || '-'}</td>
                 <td><span class="status-badge ${tour.status}">${tour.status === 'upcoming' ? 'Предстоящий' : 'Прошедший'}</span></td>
                 <td>
-                    <button class="btn btn-primary" onclick="editTour(${tour.id})">Редактировать</button>
+                    <button class="btn btn-edit" onclick="editTour(${tour.id})">Редактировать</button>
                     <button class="btn btn-danger" onclick="deleteTour(${tour.id})">Удалить</button>
                 </td>
             </tr>

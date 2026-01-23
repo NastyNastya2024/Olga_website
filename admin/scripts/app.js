@@ -13,9 +13,8 @@ const Layout = {
         
         return `
             <div class="admin-layout">
-                ${Sidebar.render(isUserAdmin)}
                 <div class="admin-content">
-                    ${Header.render(user)}
+                    ${Header.render(user, isUserAdmin)}
                     <main class="admin-main" id="main-content">
                         <!-- Контент страницы будет здесь -->
                     </main>
@@ -59,6 +58,10 @@ const Sidebar = {
                             <span class="sidebar-icon">💰</span>
                             <span>Клуб</span>
                         </a>
+                        <a href="#" data-route="/pricing-tariffs" class="sidebar-item">
+                            <span class="sidebar-icon">💳</span>
+                            <span>Тарифы</span>
+                        </a>
                     ` : ''}
                 </nav>
             </aside>
@@ -67,18 +70,60 @@ const Sidebar = {
 };
 
 const Header = {
-    render: (userData) => {
+    render: (userData, isAdmin) => {
         const user = userData || getUserData();
+        const userRole = getUserRole();
+        const isStudent = userRole === 'student';
+        
         return `
             <header class="admin-header">
-                <h1 id="page-title">Админ-панель</h1>
-                <div class="admin-header-actions">
-                    ${user ? `
-                        <span style="margin-right: 1rem; color: #666;">${user.name || user.email}</span>
-                        <button onclick="handleLogout()" class="btn btn-secondary">Выйти</button>
-                    ` : ''}
-                    <a href="/" class="btn btn-primary">Вернуться на сайт</a>
+                <div class="admin-header-top">
+                    <div class="admin-header-left">
+                        <a href="/" class="admin-logo-link">
+                            <img src="/img/logo.png" alt="Olga Website" class="admin-logo">
+                        </a>
+                        <h1 id="page-title">Admin Panel</h1>
+                    </div>
+                    <div class="admin-header-actions">
+                        ${user ? `
+                            <span class="admin-user-name">${user.name || user.email}</span>
+                        ` : ''}
+                        <a href="/" class="btn btn-return-site">Вернуться на сайт</a>
+                        ${user ? `
+                            <button onclick="handleLogout()" class="btn btn-logout">Выйти</button>
+                        ` : ''}
+                    </div>
                 </div>
+                <nav class="admin-top-nav">
+                    <a href="#" data-route="/videos" class="nav-item">
+                        <span class="nav-icon">🎥</span>
+                        <span>Видео</span>
+                    </a>
+                    ${!isStudent ? `
+                        <a href="#" data-route="/students" class="nav-item">
+                            <span class="nav-icon">👥</span>
+                            <span>Ученики</span>
+                        </a>
+                    ` : ''}
+                    ${isAdmin ? `
+                        <a href="#" data-route="/tours" class="nav-item">
+                            <span class="nav-icon">✈️</span>
+                            <span>Ретриты</span>
+                        </a>
+                        <a href="#" data-route="/blog" class="nav-item">
+                            <span class="nav-icon">📝</span>
+                            <span>Блог</span>
+                        </a>
+                        <a href="#" data-route="/club" class="nav-item">
+                            <span class="nav-icon">💰</span>
+                            <span>Клуб</span>
+                        </a>
+                        <a href="#" data-route="/pricing-tariffs" class="nav-item">
+                            <span class="nav-icon">💳</span>
+                            <span>Тарифы</span>
+                        </a>
+                    ` : ''}
+                </nav>
             </header>
         `;
     }
@@ -238,6 +283,14 @@ function loadPageComponents() {
     router.route('/club', async () => {
         const ClubPage = await import('./pages/club.js');
         const content = await ClubPage.default.render();
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
+    }, [authGuard, adminGuard]);
+    
+    // Тарифы (требует авторизации и роли админа)
+    router.route('/pricing-tariffs', async () => {
+        const PricingTariffsPage = await import('./pages/pricing-tariffs.js');
+        const content = await PricingTariffsPage.default.render();
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     }, [authGuard, adminGuard]);

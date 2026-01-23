@@ -42,7 +42,61 @@
                 </div>
             </div>
         </section>
+
+        <!-- Секция про Ольгу -->
+        <section class="about-olga-section">
+            <div class="about-olga-container">
+                <div class="about-olga-image-wrapper">
+                    <img src="/img/Olga.png" alt="Ольга" class="about-olga-image">
+                </div>
+                <div class="about-olga-content">
+                    <h2 class="about-olga-title">Ольга</h2>
+                    <div class="about-olga-text">
+                        <p class="about-olga-intro">Преподаю уже более 10 лет.</p>
+                        <p class="about-olga-main">Йога полностью изменила мою жизнь. Я переехала в теплый Сочи из Сибири и продолжаю свое дело здесь, а мои ученицы имеют возможность заниматься со мной из любой точки мира.</p>
+                        <p class="about-olga-value">Моя миссия — помочь каждой женщине обрести гармонию, силу и уверенность в себе через практику йоги.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция тарифов -->
+        <section class="club-tariffs-section">
+            <div class="club-tariffs-container">
+                <div class="tariffs-section-header">
+                    <h2 class="tariffs-section-title">Тарифы клуба</h2>
+                    <p class="tariffs-section-subtitle">Выберите подходящий вариант для себя</p>
+                </div>
+                
+                <!-- Цены клуба -->
+                <div class="club-prices-section" id="clubPricesSection">
+                    <div class="club-prices-grid" id="clubPricesGrid">
+                        <p class="loading">Загрузка цен...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">&copy; 2024 Olga Website. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно для статьи -->
+    <div id="blogModal" class="blog-modal" style="display: none;">
+        <div class="blog-modal-overlay" onclick="closeBlogModal()"></div>
+        <div class="blog-modal-content">
+            <button class="blog-modal-close" onclick="closeBlogModal()" aria-label="Закрыть">&times;</button>
+            <div id="blogModalImage" class="blog-modal-image"></div>
+            <div class="blog-modal-body">
+                <h2 id="blogModalTitle" class="blog-modal-title"></h2>
+                <p id="blogModalDate" class="blog-modal-date"></p>
+                <div id="blogModalText" class="blog-modal-text"></div>
+            </div>
+        </div>
+    </div>
 
     <script src="/shared/scripts/api.js"></script>
     <script src="/scripts/blog.js"></script>

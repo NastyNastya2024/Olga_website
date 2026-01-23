@@ -207,10 +207,10 @@ async function loadVideos() {
                 <td>${video.access_type === 'open' ? 'Открыто' : 'По подписке'}</td>
                 <td>
                     ${!isStudent ? `
-                        <button class="btn btn-primary" onclick="editVideo(${video.id})">Редактировать</button>
+                        <button class="btn btn-edit" onclick="editVideo(${video.id})">Редактировать</button>
                         <button class="btn btn-danger" onclick="deleteVideo(${video.id})">Удалить</button>
                     ` : ''}
-                    ${video.video_url ? `<button class="btn btn-primary" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">Смотреть</button>` : ''}
+                    ${video.video_url ? `<button class="btn btn-view" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">Смотреть</button>` : ''}
                 </td>
             </tr>
         `).join('');

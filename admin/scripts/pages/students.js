@@ -154,7 +154,7 @@ async function loadAllUsers() {
                     <td>${videosText}</td>
                     <td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-'}</td>
                     <td>
-                        <button class="btn btn-primary" onclick="editUser(${user.id})">Редактировать</button>
+                        <button class="btn btn-edit" onclick="editUser(${user.id})">Редактировать</button>
                         <button class="btn btn-danger" onclick="deleteUser(${user.id})">Удалить</button>
                     </td>
                 </tr>

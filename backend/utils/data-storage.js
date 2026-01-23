@@ -16,6 +16,7 @@ const FILES = {
   clubPrices: path.join(DATA_DIR, 'club-prices.json'),
   clubEvents: path.join(DATA_DIR, 'club-events.json'),
   lessonTariffs: path.join(DATA_DIR, 'lesson-tariffs.json'),
+  pricingTariffs: path.join(DATA_DIR, 'pricing-tariffs.json'),
 };
 
 // Создаем директорию для данных, если её нет
@@ -105,6 +106,8 @@ function getDefaultData(fileKey) {
     case 'clubEvents':
       return { items: [], nextId: 1 };
     case 'lessonTariffs':
+      return { items: [], nextId: 1 };
+    case 'pricingTariffs':
       return { items: [], nextId: 1 };
     default:
       return { items: [], nextId: 1 };

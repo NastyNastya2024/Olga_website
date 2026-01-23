@@ -129,7 +129,7 @@ async function loadPosts() {
                 <td><span class="status-badge ${post.status}">${post.status === 'published' ? 'Опубликовано' : 'Черновик'}</span></td>
                 <td>
                     ${post.status === 'draft' ? `<button class="btn btn-success" onclick="publishPost(${post.id})" style="margin-right: 0.5rem;">Опубликовать</button>` : ''}
-                    <button class="btn btn-primary" onclick="editPost(${post.id})">Редактировать</button>
+                    <button class="btn btn-edit" onclick="editPost(${post.id})">Редактировать</button>
                     <button class="btn btn-danger" onclick="deletePost(${post.id})">Удалить</button>
                 </td>
             </tr>

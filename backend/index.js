@@ -20,6 +20,8 @@ const { router: clubEventsRoutes, getEvents } = require('./routes/club-events');
 const publicClubEventsRoutes = require('./routes/public-club-events');
 const lessonTariffsRoutes = require('./routes/lesson-tariffs');
 const publicClubTariffsRoutes = require('./routes/public-club-tariffs');
+const pricingTariffsRoutes = require('./routes/pricing-tariffs');
+const publicPricingTariffsRoutes = require('./routes/public-pricing-tariffs');
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 
@@ -58,6 +60,8 @@ console.log('✅ Роут /api/admin/club/events зарегистрирован'
 app.use('/api/public/club/events', publicClubEventsRoutes);
 app.use('/api/admin/club/lesson-tariffs', lessonTariffsRoutes);
 app.use('/api/public/club/tariffs', publicClubTariffsRoutes);
+app.use('/api/admin/pricing-tariffs', pricingTariffsRoutes);
+app.use('/api/public/pricing-tariffs', publicPricingTariffsRoutes);
 app.use('/api/admin/users', usersRoutes);
 
 // Health check

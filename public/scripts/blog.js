@@ -50,10 +50,6 @@ async function loadBlogPosts() {
                     <p class="blog-excerpt">${post.content ? escapeHtml(post.content.substring(0, 150)) + '...' : ''}</p>
                     <a href="#" class="read-more" onclick="viewPost(${post.id}); return false;">Читать далее →</a>
                 </div>
-                <div class="blog-full-content" id="blogFullContent-${post.id}" style="display: none;">
-                    <div class="blog-full-text">${post.content ? escapeHtml(post.content).replace(/\n/g, '<br>') : ''}</div>
-                    <a href="#" class="read-less" onclick="hidePost(${post.id}); return false;">Свернуть ↑</a>
-                </div>
             </article>
         `).join('');
     } catch (error) {
@@ -62,37 +58,132 @@ async function loadBlogPosts() {
     }
 }
 
-function viewPost(id) {
-    const fullContent = document.getElementById(`blogFullContent-${id}`);
-    const card = document.querySelector(`[data-post-id="${id}"]`);
-    const readMoreLink = card.querySelector('.read-more');
-    
-    if (fullContent) {
-        fullContent.style.display = 'block';
-        readMoreLink.style.display = 'none';
+async function viewPost(id) {
+    try {
+        // Загружаем полную информацию о статье
+        const response = await api.get('/public/blog');
+        const posts = response.data || response;
+        const post = posts.find(p => p.id === id);
         
-        // Плавная прокрутка к развернутой статье
-        setTimeout(() => {
-            fullContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
+        if (!post) {
+            console.error('Статья не найдена');
+            return;
+        }
+        
+        // Заполняем модальное окно
+        const modal = document.getElementById('blogModal');
+        const modalTitle = document.getElementById('blogModalTitle');
+        const modalDate = document.getElementById('blogModalDate');
+        const modalText = document.getElementById('blogModalText');
+        const modalImage = document.getElementById('blogModalImage');
+        
+        if (!modal || !modalTitle || !modalDate || !modalText || !modalImage) {
+            console.error('Элементы модального окна не найдены');
+            return;
+        }
+        
+        modalTitle.textContent = post.title || '';
+        modalDate.textContent = post.published_at ? new Date(post.published_at).toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }) : '';
+        modalText.innerHTML = post.content ? escapeHtml(post.content).replace(/\n/g, '<br>') : '';
+        
+        // Устанавливаем изображение
+        if (post.cover_url) {
+            modalImage.innerHTML = `<img src="${escapeHtml(post.cover_url)}" alt="${escapeHtml(post.title)}">`;
+        } else {
+            modalImage.innerHTML = '';
+        }
+        
+        // Показываем модальное окно
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Блокируем прокрутку страницы
+    } catch (error) {
+        console.error('Ошибка загрузки статьи:', error);
+        alert('Ошибка загрузки статьи');
     }
 }
 
-function hidePost(id) {
-    const fullContent = document.getElementById(`blogFullContent-${id}`);
-    const card = document.querySelector(`[data-post-id="${id}"]`);
-    const readMoreLink = card.querySelector('.read-more');
-    
-    if (fullContent) {
-        fullContent.style.display = 'none';
-        readMoreLink.style.display = 'inline';
+function closeBlogModal() {
+    const modal = document.getElementById('blogModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = ''; // Восстанавливаем прокрутку страницы
     }
 }
+
+// Закрытие модального окна по клавише Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeBlogModal();
+    }
+});
 
 // Делаем функции доступными глобально
 window.viewPost = viewPost;
-window.hidePost = hidePost;
+window.closeBlogModal = closeBlogModal;
 
 if (document.getElementById('blogList')) {
     loadBlogPosts();
+}
+
+/**
+ * Загрузка тарифов клуба
+ */
+async function loadClubTariffs() {
+    const pricesGrid = document.getElementById('clubPricesGrid');
+    
+    if (!pricesGrid) return;
+    
+    pricesGrid.innerHTML = '<p class="loading">Загрузка цен...</p>';
+
+    try {
+        const response = await api.get('/public/club/tariffs');
+        const data = response.data || response;
+
+        if (!data || !data.clubPrices) {
+            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            return;
+        }
+
+        const prices = data.clubPrices;
+        const pricesArray = [
+            { period: '1 месяц', price: prices.price_1_month, months: 1, description: prices.description_1_month || '' },
+            { period: '3 месяца', price: prices.price_3_months, months: 3, description: prices.description_3_months || '' },
+            { period: '6 месяцев', price: prices.price_6_months, months: 6, description: prices.description_6_months || '' }
+        ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
+
+        if (pricesArray.length === 0) {
+            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+        } else {
+            pricesGrid.innerHTML = pricesArray.map(p => `
+                <div class="club-price-card">
+                    <h4 class="price-period">${p.period}</h4>
+                    <div class="price-amount">${p.price.toFixed(0)} ₽</div>
+                    ${p.months > 1 ? `<div class="price-per-month">${(p.price / p.months).toFixed(0)} ₽/мес</div>` : ''}
+                    ${p.description && p.description.trim() ? `<p class="price-description">${escapeHtml(p.description)}</p>` : ''}
+                    <button class="price-select-btn" onclick="selectTariff('${p.period}', ${p.price}, ${p.months})">Выбрать тариф</button>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки тарифов:', error);
+        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки цен</p>';
+    }
+}
+
+function selectTariff(period, price, months) {
+    // Можно добавить логику для обработки выбора тарифа
+    console.log('Выбран тариф:', period, price, months);
+    alert(`Выбран тариф: ${period} за ${price} ₽`);
+}
+
+// Делаем функции доступными глобально
+window.selectTariff = selectTariff;
+
+// Загружаем тарифы при загрузке страницы
+if (document.getElementById('clubPricesGrid')) {
+    loadClubTariffs();
 }

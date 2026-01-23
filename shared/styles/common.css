@@ -40,21 +40,21 @@ body {
 }
 
 .btn-primary {
-    background-color: #3498db;
+    background-color: #0A4049;
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #082e35;
 }
 
 .btn-danger {
-    background-color: #e74c3c;
+    background-color: #F788BA;
     color: white;
 }
 
 .btn-danger:hover {
-    background-color: #c0392b;
+    background-color: #e677a8;
 }
 
 .btn-secondary {
@@ -79,6 +79,20 @@ body {
 
 .btn-success:hover {
     background-color: #229954;
+}
+
+.btn-edit,
+.btn-view {
+    background-color: white;
+    color: #2c3e50;
+    border: 1px solid #e0e0e0;
+}
+
+.btn-edit:hover,
+.btn-view:hover {
+    background-color: #f8f9fa;
+    color: #148083;
+    border-color: #148083;
 }
 
 /* Формы */
