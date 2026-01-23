@@ -185,6 +185,26 @@
 
         // Загружаем видео при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadHeroVideo);
+
+        // Инверсия цветов меню при прокрутке
+        const header = document.querySelector('.header');
+        const hero = document.querySelector('.hero');
+        
+        function handleScroll() {
+            if (!hero) return;
+            
+            const heroBottom = hero.offsetTop + hero.offsetHeight;
+            const scrollPosition = window.scrollY;
+            
+            if (scrollPosition > heroBottom - 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Проверяем при загрузке страницы
     </script>
 </body>
 </html>

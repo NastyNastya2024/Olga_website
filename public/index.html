@@ -93,6 +93,110 @@
             </div>
         </section>
 
+        <section class="free-videos-section">
+            <div class="free-videos-container">
+                <div class="free-videos-header">
+                    <h2 class="free-videos-title">Попробуй самостоятельно онлайн</h2>
+                    <p class="free-videos-subtitle">Больше бесплатных видео-записей <a href="/videos.html" class="videos-link">по ссылке</a></p>
+                </div>
+                <div class="free-videos-grid" id="freeVideosGrid">
+                    <p class="loading">Загрузка видео...</p>
+                </div>
+                <p class="free-videos-note">Еще больше видео доступно в <span class="premium-text">платной версии</span></p>
+            </div>
+        </section>
+
+        <section class="club-section">
+            <div class="club-section-container">
+                <div class="club-section-content">
+                    <h2 class="club-section-title">Клуб</h2>
+                    <p class="club-section-description">Присоединяйся к нашему сообществу единомышленников. В клубе тебя ждут регулярные онлайн-занятия, медитации, консультации специалистов и поддержка на пути к гармонии.</p>
+                    <a href="/club.html" class="club-section-link">Узнать больше о клубе →</a>
+                </div>
+                <div class="club-section-image-wrapper">
+                    <img src="/img/Club.png" alt="Клуб" class="club-main-image">
+                </div>
+            </div>
+        </section>
+
+        <section class="retreats-section">
+            <div class="retreats-section-container">
+                <div class="retreats-section-header">
+                    <h2 class="retreats-section-title">Ретриты по йоге</h2>
+                    <p class="retreats-section-description">Погрузись в практику йоги в особенной атмосфере. Наши ретриты — это возможность отдохнуть, восстановиться и углубить свою практику.</p>
+                    <a href="/tours.html" class="retreats-section-link">Все ретриты →</a>
+                </div>
+                <div class="retreats-list" id="retreatsList">
+                    <p class="loading">Загрузка ретритов...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-olga-section">
+            <div class="about-olga-container">
+                <div class="about-olga-image-wrapper">
+                    <img src="/img/Olga.png" alt="Ольга" class="about-olga-image">
+                </div>
+                <div class="about-olga-content">
+                    <h2 class="about-olga-title">Ольга</h2>
+                    <div class="about-olga-text">
+                        <p class="about-olga-intro">Преподаю уже более 10 лет.</p>
+                        <p class="about-olga-main">Йога полностью изменила мою жизнь. Я переехала в теплый Сочи из Сибири и продолжаю свое дело здесь, а мои ученицы имеют возможность заниматься со мной из любой точки мира.</p>
+                        <p class="about-olga-value">Моя миссия — помочь каждой женщине обрести гармонию, силу и уверенность в себе через практику йоги.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-section">
+            <div class="pricing-container">
+                <h2 class="pricing-title">Практикуй вместе со мной</h2>
+                <p class="pricing-subtitle">С мастером практиковать эффективнее — получи персональный подход и поддержку на каждом занятии</p>
+                <div class="pricing-cards">
+                    <div class="pricing-card">
+                        <h3 class="pricing-card-title">Пробное занятие</h3>
+                        <div class="pricing-card-price">500₽</div>
+                        <ul class="pricing-features">
+                            <li>✓ Одно занятие</li>
+                            <li>✓ Знакомство с инструктором</li>
+                            <li>✓ Оценка уровня подготовки</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                    <div class="pricing-card pricing-card-popular">
+                        <span class="pricing-badge">Популярный</span>
+                        <h3 class="pricing-card-title">Базовый</h3>
+                        <div class="pricing-card-price">3500₽ / месяц</div>
+                        <ul class="pricing-features">
+                            <li>✓ 8 занятий в месяц</li>
+                            <li>✓ Доступ к утренним медитациям</li>
+                            <li>✓ Чат поддержки</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                    <div class="pricing-card">
+                        <h3 class="pricing-card-title">Премиум</h3>
+                        <div class="pricing-card-price">6000₽ / месяц</div>
+                        <ul class="pricing-features">
+                            <li>✓ Безлимитные занятия</li>
+                            <li>✓ Личная консультация</li>
+                            <li>✓ Доступ к видеотеке</li>
+                            <li>✓ Участие в мастер-классах</li>
+                        </ul>
+                        <button class="pricing-button">Выбрать тариф</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">&copy; 2024 Olga Website. Все права защищены.</p>
+        </div>
+    </footer>
+
     </main>
 
     <script src="/shared/scripts/api.js"></script>
@@ -122,6 +226,26 @@
                 navMenu.classList.remove('active');
             }
         });
+
+        // Инверсия цветов меню при прокрутке
+        const header = document.querySelector('.header');
+        const hero = document.querySelector('.hero');
+        
+        function handleScroll() {
+            if (!hero) return;
+            
+            const heroBottom = hero.offsetTop + hero.offsetHeight;
+            const scrollPosition = window.scrollY;
+            
+            if (scrollPosition > heroBottom - 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Проверяем при загрузке страницы
 
         // Загрузка hero видео main1 из S3
         async function loadHeroVideo() {
@@ -247,6 +371,167 @@
         // Загружаем видео при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadHeroVideo);
 
+        // Загрузка бесплатных видео
+        async function loadFreeVideos() {
+            const grid = document.getElementById('freeVideosGrid');
+            if (!grid) return;
+
+            try {
+                const response = await api.get('/public/videos');
+                const allVideos = response.data || response;
+
+                if (!allVideos || allVideos.length === 0) {
+                    grid.innerHTML = '<p class="empty-state">Видео пока нет</p>';
+                    return;
+                }
+
+                // Показываем первые 3 видео
+                const freeVideos = allVideos.slice(0, 3);
+                grid.innerHTML = '';
+
+                freeVideos.forEach(video => {
+                    const card = renderFreeVideoCard(video);
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки видео:', error);
+                grid.innerHTML = '<p class="empty-state">Ошибка загрузки видео</p>';
+            }
+        }
+
+        function renderFreeVideoCard(video) {
+            const card = document.createElement('div');
+            card.className = 'free-video-card';
+
+            const isVideoFile = video.video_url && (
+                video.video_url.endsWith('.mp4') || 
+                video.video_url.endsWith('.webm') || 
+                video.video_url.endsWith('.mov') ||
+                video.video_url.includes('/videos/') ||
+                video.video_url.includes('/uploads/')
+            );
+            
+            const isYouTube = video.video_url && video.video_url.includes('youtube.com');
+            const isVimeo = video.video_url && video.video_url.includes('vimeo.com');
+
+            let videoContent = '';
+            let thumbnailUrl = video.thumbnail_url || '';
+
+            if (isVideoFile) {
+                videoContent = `
+                    <video controls style="width: 100%; height: 100%; object-fit: cover;">
+                        <source src="${video.video_url}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                `;
+            } else if (isYouTube) {
+                const videoId = video.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+                if (videoId) {
+                    thumbnailUrl = thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                    videoContent = `
+                        <div class="video-placeholder" style="background-image: url('${thumbnailUrl}'); background-size: cover; background-position: center;">
+                            <div class="video-play-overlay">
+                                <button class="video-play-button" onclick="window.open('${video.video_url}', '_blank')">▶</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (isVimeo) {
+                const videoId = video.video_url.match(/vimeo\.com\/(\d+)/)?.[1];
+                if (videoId) {
+                    videoContent = `
+                        <iframe src="https://player.vimeo.com/video/${videoId}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>
+                    `;
+                }
+            } else {
+                videoContent = `
+                    <div class="video-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <p>Видео недоступно</p>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="free-video-preview">
+                    ${videoContent}
+                </div>
+                <div class="free-video-content">
+                    <h3>${escapeHtml(video.title || 'Без названия')}</h3>
+                    ${video.description ? `<p>${escapeHtml(video.description)}</p>` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Загружаем бесплатные видео при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadFreeVideos);
+
+        // Загрузка ретритов для главной страницы
+        async function loadRetreats() {
+            const list = document.getElementById('retreatsList');
+            if (!list) return;
+
+            try {
+                const response = await api.get('/public/tours');
+                const tours = response.data || response;
+
+                if (!tours || tours.length === 0) {
+                    list.innerHTML = '<p class="empty-state">Ретриты пока не добавлены</p>';
+                    return;
+                }
+
+                // Показываем первые 3 ретрита
+                const retreatsToShow = tours.slice(0, 3);
+                list.innerHTML = '';
+
+                retreatsToShow.forEach(tour => {
+                    const card = document.createElement('div');
+                    card.className = 'retreat-card';
+                    
+                    const startDate = tour.start_date ? new Date(tour.start_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+                    const endDate = tour.end_date ? new Date(tour.end_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+                    const dateRange = startDate && endDate ? `${startDate} - ${endDate}` : (startDate || 'Дата уточняется');
+                    
+                    // Получаем первое изображение из галереи
+                    const previewImage = tour.gallery && Array.isArray(tour.gallery) && tour.gallery.length > 0 
+                        ? tour.gallery[0] 
+                        : null;
+                    
+                    // Определяем статус ретрита
+                    const status = tour.status === 'upcoming' ? 'Предстоящий' : 'Прошедший';
+                    const statusClass = tour.status === 'upcoming' ? 'retreat-status-upcoming' : 'retreat-status-past';
+
+                    card.innerHTML = `
+                        <div class="retreat-card-image-wrapper">
+                            ${previewImage ? `<img src="${previewImage}" alt="${escapeHtml(tour.title || 'Ретрит')}" class="retreat-card-image">` : '<div class="retreat-card-image-placeholder"></div>'}
+                            <span class="retreat-status ${statusClass}">${status}</span>
+                        </div>
+                        <div class="retreat-card-content">
+                            <h3 class="retreat-card-title">${escapeHtml(tour.title || 'Ретрит')}</h3>
+                            ${tour.location ? `<p class="retreat-card-location">📍 ${escapeHtml(tour.location)}</p>` : ''}
+                            <p class="retreat-card-date">📅 ${dateRange}</p>
+                            ${tour.description ? `<p class="retreat-card-description">${escapeHtml(tour.description.substring(0, 120))}${tour.description.length > 120 ? '...' : ''}</p>` : ''}
+                            <a href="/tours.html" class="retreat-card-link">Подробнее →</a>
+                        </div>
+                    `;
+
+                    list.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки ретритов:', error);
+                list.innerHTML = '<p class="empty-state">Ошибка загрузки ретритов</p>';
+            }
+        }
+
+        // Загружаем ретриты при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadRetreats);
 
     </script>
 </body>
