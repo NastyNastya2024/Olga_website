@@ -14,6 +14,7 @@ const FILES = {
   blog: path.join(DATA_DIR, 'blog.json'),
   reviews: path.join(DATA_DIR, 'reviews.json'),
   clubPrices: path.join(DATA_DIR, 'club-prices.json'),
+  clubEvents: path.join(DATA_DIR, 'club-events.json'),
 };
 
 // Создаем директорию для данных, если её нет
@@ -97,6 +98,8 @@ function getDefaultData(fileKey) {
         price_3_months: null,
         price_6_months: null,
       };
+    case 'clubEvents':
+      return { items: [], nextId: 1 };
     default:
       return { items: [], nextId: 1 };
   }

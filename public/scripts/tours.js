@@ -82,10 +82,7 @@ async function loadTours() {
                 </div>
                 
                 <div class="tour-actions">
-                    <div class="tour-actions-left">
-                        ${tour.price ? `<div class="tour-price">${tour.price.toLocaleString('ru-RU')} ₽</div>` : ''}
-                    </div>
-                    ${tour.booking_url ? `<a href="${tour.booking_url}" class="btn btn-primary tour-booking-btn" target="_blank">Забронировать</a>` : ''}
+                    ${tour.booking_url ? `<a href="${tour.booking_url}" class="btn btn-primary tour-booking-btn" target="_blank">Забронировать</a>` : '<button class="btn btn-primary tour-booking-btn" disabled>Забронировать</button>'}
                 </div>
             </div>
         `;
@@ -201,22 +198,31 @@ function playGalleryVideo(event, videoUrl) {
     // Создаем модальное окно для видео
     const modal = document.createElement('div');
     modal.className = 'gallery-video-modal';
-    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; cursor: pointer;';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: auto;';
+    
+    const videoContainer = document.createElement('div');
+    videoContainer.style.cssText = 'position: relative; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 100%; width: 100%;';
     
     const video = document.createElement('video');
     video.src = videoUrl;
     video.controls = true;
     video.autoplay = true;
-    video.style.cssText = 'max-width: 90vw; max-height: 90vh; cursor: default;';
+    video.style.cssText = 'max-width: 90vw; max-height: 90vh; cursor: default; width: auto; height: auto;';
     
-    modal.appendChild(video);
+    videoContainer.appendChild(video);
+    modal.appendChild(videoContainer);
     document.body.appendChild(modal);
     
     // Закрытие при клике вне видео
     modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
+        if (e.target === modal || e.target === videoContainer) {
             document.body.removeChild(modal);
         }
+    });
+    
+    // Предотвращаем закрытие при клике на само видео
+    video.addEventListener('click', function(e) {
+        e.stopPropagation();
     });
     
     // Закрытие по Escape

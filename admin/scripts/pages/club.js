@@ -7,7 +7,7 @@ export default {
         return `
             <div id="club-page">
                 <div class="page-header">
-                    <h1>Тарифы</h1>
+                    <h1>Клуб</h1>
                 </div>
 
                 <!-- Секция цен -->
@@ -91,17 +91,46 @@ export default {
                         </table>
                     </div>
                 </div>
+
+                <!-- Секция мероприятий -->
+                <div class="club-events-section">
+                    <div class="club-events-header">
+                        <h2>Мероприятия</h2>
+                        <button class="btn btn-primary" onclick="showAddEventModal()">Добавить мероприятие</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Галерея</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             
             ${getReviewModal()}
             ${getTariffModal()}
+            ${getEventModal()}
         `;
     },
     
     init: async () => {
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {
-            pageTitle.textContent = 'Тарифы';
+            pageTitle.textContent = 'Клуб';
         }
         
         // Инициализация функций для отзывов
@@ -118,16 +147,25 @@ export default {
         window.editTariff = editTariff;
         window.deleteTariff = deleteTariff;
         
+        // Инициализация функций для мероприятий
+        window.loadEvents = loadEvents;
+        window.showAddEventModal = showAddEventModal;
+        window.closeEventModal = closeEventModal;
+        window.editEvent = editEvent;
+        window.deleteEvent = deleteEvent;
+        
         // Загружаем данные
         await loadPrices();
         await loadReviews();
         await loadTariffs();
+        await loadEvents();
         
         // Настраиваем формы
         setupPricesForm();
         setTimeout(() => {
             setupReviewForm();
             setupTariffForm();
+            setupEventForm();
         }, 100);
     }
 };
@@ -551,6 +589,249 @@ function setupTariffForm() {
             localStorage.setItem('lessonTariffs', JSON.stringify(tariffsData));
             closeTariffModal();
             loadTariffs();
+        } catch (error) {
+            alert('Ошибка сохранения: ' + error.message);
+        }
+    });
+}
+
+// ========== Функции для мероприятий ==========
+
+function getEventModal() {
+    return `
+        <div id="eventModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 800px;">
+                <span class="close" onclick="closeEventModal()">&times;</span>
+                <h2 id="eventModalTitle">Добавить мероприятие</h2>
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label>Название мероприятия</label>
+                        <input type="text" id="eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea id="eventDescription" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Дата мероприятия</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Статус</label>
+                        <select id="eventStatus">
+                            <option value="upcoming">Предстоящее</option>
+                            <option value="past">Прошедшее</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Обложка (загрузить изображение)</label>
+                        <input type="file" id="eventCover" accept="image/*">
+                        <div id="eventCoverPreview" style="margin-top: 1rem;"></div>
+                        <div id="eventCoverUploadProgress" style="margin-top: 1rem; display: none;">
+                            <div style="background: #f0f0f0; border-radius: 4px; height: 20px; position: relative;">
+                                <div id="eventCoverProgressFill" style="background: #48BDCC; height: 100%; width: 0%; border-radius: 4px; transition: width 0.3s;"></div>
+                            </div>
+                            <p id="eventCoverUploadStatus" style="margin-top: 5px; font-size: 0.9rem; color: #666;"></p>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
+let currentEventId = null;
+let eventCover = null;
+
+async function loadEvents() {
+    const tbody = document.getElementById('eventsTableBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...</td></tr>';
+
+    try {
+        const response = await api.get('/admin/club/events');
+        const events = response.data || response;
+
+        if (events.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет мероприятий</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = events.map(event => `
+            <tr>
+                <td>${event.id}</td>
+                <td>${event.title || ''}</td>
+                <td>${event.date ? new Date(event.date).toLocaleDateString('ru-RU') : '-'}</td>
+                <td><span class="status-badge ${event.status}">${event.status === 'upcoming' ? 'Предстоящее' : 'Прошедшее'}</span></td>
+                <td>${event.cover ? 'Есть' : 'Нет'}</td>
+                <td>
+                    <button class="btn btn-primary" onclick="editEvent(${event.id})">Редактировать</button>
+                    <button class="btn btn-danger" onclick="deleteEvent(${event.id})">Удалить</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Ошибка загрузки мероприятий:', error);
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Ошибка загрузки данных</td></tr>';
+    }
+}
+
+function showAddEventModal() {
+    currentEventId = null;
+    eventCover = null;
+    document.getElementById('eventModalTitle').textContent = 'Добавить мероприятие';
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventCoverPreview').innerHTML = '';
+    document.getElementById('eventCover').value = '';
+    
+    const eventModal = document.getElementById('eventModal');
+    if (eventModal) {
+        eventModal.style.display = 'block';
+    }
+}
+
+function closeEventModal() {
+    const eventModal = document.getElementById('eventModal');
+    if (!eventModal) return;
+    eventModal.style.display = 'none';
+    currentEventId = null;
+    eventCover = null;
+    
+    const form = document.getElementById('eventForm');
+    if (form) form.reset();
+    
+    document.getElementById('eventCoverPreview').innerHTML = '';
+}
+
+async function editEvent(id) {
+    try {
+        const event = await api.get(`/admin/club/events/${id}`);
+        currentEventId = id;
+        eventCover = event.cover || null;
+        
+        document.getElementById('eventModalTitle').textContent = 'Редактировать мероприятие';
+        document.getElementById('eventTitle').value = event.title || '';
+        document.getElementById('eventDescription').value = event.description || '';
+        document.getElementById('eventDate').value = event.date || '';
+        document.getElementById('eventStatus').value = event.status || 'upcoming';
+        
+        // Отображаем существующую обложку
+        renderEventCoverPreview();
+        
+        const eventModal = document.getElementById('eventModal');
+        if (eventModal) {
+            eventModal.style.display = 'block';
+        }
+    } catch (error) {
+        alert('Ошибка загрузки мероприятия: ' + error.message);
+    }
+}
+
+async function deleteEvent(id) {
+    if (!confirm('Вы уверены, что хотите удалить это мероприятие?')) {
+        return;
+    }
+
+    try {
+        await api.delete(`/admin/club/events/${id}`);
+        loadEvents();
+    } catch (error) {
+        alert('Ошибка удаления: ' + error.message);
+    }
+}
+
+function renderEventCoverPreview() {
+    const preview = document.getElementById('eventCoverPreview');
+    if (!preview) return;
+    
+    if (eventCover) {
+        preview.innerHTML = `
+            <div style="position: relative; width: 200px; height: 200px; border-radius: 8px; overflow: hidden; background: #f0f0f0;">
+                <img src="${eventCover}" style="width: 100%; height: 100%; object-fit: cover;" alt="Preview">
+                <button type="button" onclick="removeEventCover()" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px;">×</button>
+            </div>
+        `;
+    } else {
+        preview.innerHTML = '';
+    }
+}
+
+window.removeEventCover = function() {
+    eventCover = null;
+    renderEventCoverPreview();
+};
+
+function setupEventForm() {
+    const form = document.getElementById('eventForm');
+    if (!form) {
+        setTimeout(setupEventForm, 200);
+        return;
+    }
+    
+    // Превью и загрузка обложки
+    const coverInput = document.getElementById('eventCover');
+    if (coverInput) {
+        coverInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const preview = document.getElementById('eventCoverPreview');
+            const progressContainer = document.getElementById('eventCoverUploadProgress');
+            const progressFill = document.getElementById('eventCoverProgressFill');
+            const uploadStatus = document.getElementById('eventCoverUploadStatus');
+            
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            uploadStatus.textContent = 'Подготовка к загрузке...';
+            
+            try {
+                // Создаем FormData для загрузки
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Загружаем файл
+                const response = await api.uploadFile('/upload', formData, (percent) => {
+                    progressFill.style.width = percent + '%';
+                    uploadStatus.textContent = `Загрузка ${file.name}... ${Math.round(percent)}%`;
+                });
+                
+                if (response.success && response.data) {
+                    eventCover = response.data.publicUrl || response.data.url;
+                    renderEventCoverPreview();
+                }
+                
+                progressContainer.style.display = 'none';
+                coverInput.value = '';
+            } catch (error) {
+                console.error('Ошибка загрузки файла:', error);
+                alert('Ошибка загрузки файла: ' + error.message);
+                progressContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            title: document.getElementById('eventTitle').value,
+            description: document.getElementById('eventDescription').value || '',
+            date: document.getElementById('eventDate').value || null,
+            status: document.getElementById('eventStatus').value || 'upcoming',
+            cover: eventCover || null,
+        };
+
+        try {
+            if (currentEventId) {
+                await api.put(`/admin/club/events/${currentEventId}`, data);
+            } else {
+                await api.post('/admin/club/events', data);
+            }
+            
+            closeEventModal();
+            loadEvents();
         } catch (error) {
             alert('Ошибка сохранения: ' + error.message);
         }

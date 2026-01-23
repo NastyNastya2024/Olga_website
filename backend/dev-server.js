@@ -20,6 +20,8 @@ const publicBlogRoutes = require('./routes/public-blog');
 const { router: reviewsRoutes, getReviews } = require('./routes/reviews');
 const publicReviewsRoutes = require('./routes/public-reviews');
 const clubPricesRoutes = require('./routes/club-prices');
+const { router: clubEventsRoutes, getEvents } = require('./routes/club-events');
+const publicClubEventsRoutes = require('./routes/public-club-events');
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 
@@ -36,6 +38,9 @@ publicVideosRoutes.setVideosGetter(getVideos);
 publicToursRoutes.setToursGetter(getTours);
 publicBlogRoutes.setPostsGetter(getPosts);
 publicReviewsRoutes.setReviewsGetter(getReviews);
+if (publicClubEventsRoutes.setEventsGetter) {
+    publicClubEventsRoutes.setEventsGetter(getEvents);
+}
 
 // API роуты (должны быть ДО статических файлов)
 app.use('/api/upload', uploadRoutes);
@@ -50,6 +55,8 @@ app.use('/api/public/blog', publicBlogRoutes);
 app.use('/api/admin/reviews', reviewsRoutes);
 app.use('/api/public/reviews', publicReviewsRoutes);
 app.use('/api/admin/club/prices', clubPricesRoutes);
+app.use('/api/admin/club/events', clubEventsRoutes);
+app.use('/api/public/club/events', publicClubEventsRoutes);
 app.use('/api/admin/users', usersRoutes);
 
 // Статические файлы для видео (должно быть ДО других маршрутов)

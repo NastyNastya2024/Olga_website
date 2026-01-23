@@ -539,6 +539,19 @@ body:has(.videos-page) .hero video,
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s, box-shadow 0.3s;
     overflow: hidden;
+    position: relative;
+}
+
+.tour-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(72, 189, 204, 0.3), transparent);
+    pointer-events: none;
+    border-radius: 30px 30px 0 0;
 }
 
 .tour-card:hover {
@@ -697,24 +710,8 @@ body:has(.videos-page) .hero video,
     padding-top: 2rem;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
-    gap: 1rem;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-}
-
-.tour-actions-left {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.tour-actions .tour-price {
-    margin: 0;
-    font-size: 1.95rem;
-    font-weight: bold;
-    color: #48BDCC;
 }
 
 .tour-gallery-container {
@@ -746,13 +743,36 @@ body:has(.videos-page) .hero video,
 }
 
 .tour-gallery-thumbnails {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    display: flex;
     gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 189, 204, 0.5) transparent;
+}
+
+.tour-gallery-thumbnails::-webkit-scrollbar {
+    height: 8px;
+}
+
+.tour-gallery-thumbnails::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.tour-gallery-thumbnails::-webkit-scrollbar-thumb {
+    background: rgba(72, 189, 204, 0.5);
+    border-radius: 10px;
+}
+
+.tour-gallery-thumbnails::-webkit-scrollbar-thumb:hover {
+    background: rgba(72, 189, 204, 0.7);
 }
 
 .gallery-thumbnail {
-    width: 100%;
+    flex: 0 0 80px;
+    width: 80px;
     aspect-ratio: 1;
     border-radius: 10px;
     overflow: hidden;
@@ -876,25 +896,32 @@ body:has(.videos-page) .hero video,
 .tour-program-btn,
 .tour-booking-btn {
     margin: 0;
-    padding: 0.75rem 1.5rem;
-    background: #48BDCC;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #008B9D 0%, #007A8A 50%, #006B7A 100%);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
+    box-shadow: 0 4px 20px rgba(0, 139, 157, 0.5);
 }
 
 .tour-program-btn:hover,
-.tour-booking-btn:hover {
-    background: #3aa8b8;
+.tour-booking-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0099AA 0%, #008B9D 50%, #007A8A 100%);
     color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(72, 189, 204, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 139, 157, 0.7);
+}
+
+.tour-booking-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #48BDCC 0%, #00A8C5 100%);
 }
 
 .tour-program-modal-close:hover {
@@ -1107,6 +1134,237 @@ body:has(.videos-page) .hero video,
     display: block;
     margin: 0 auto;
     transition: transform 0.5s ease;
+}
+
+/* Service Info Cards */
+.services-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+    padding: 2rem 0;
+}
+
+.service-info-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.service-info-title {
+    color: #008B9D;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    font-family: 'Great Vibes', cursive;
+}
+
+.service-info-text {
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Club Events Section */
+.club-events-section {
+    max-width: 1400px;
+    margin: 4rem auto;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(72, 189, 204, 0.08) 0%, rgba(255, 182, 193, 0.1) 100%);
+    border-radius: 30px;
+    position: relative;
+}
+
+.events-section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.events-section-title {
+    color: #008B9D;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    font-family: 'Great Vibes', cursive;
+}
+
+.events-section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0 0 2rem 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.events-container-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 4rem;
+}
+
+.events-scroll-btn {
+    background: rgba(72, 189, 204, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.events-scroll-btn:hover {
+    background: rgba(72, 189, 204, 1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.events-scroll-btn:active {
+    transform: scale(0.95);
+}
+
+.events-scroll-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.events-list {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    flex: 1;
+    padding: 1rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 189, 204, 0.5) transparent;
+}
+
+.events-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.events-list::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.events-list::-webkit-scrollbar-thumb {
+    background: rgba(72, 189, 204, 0.5);
+    border-radius: 10px;
+}
+
+.events-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(72, 189, 204, 0.7);
+}
+
+.event-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 0 0 350px;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.event-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #f0f0f0;
+    position: relative;
+}
+
+.event-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.event-status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.event-status-upcoming {
+    background: rgba(72, 189, 204, 0.9);
+}
+
+.event-status-past {
+    background: rgba(127, 140, 141, 0.9);
+}
+
+.event-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.event-header {
+    margin-bottom: 1rem;
+}
+
+.event-title {
+    color: #008B9D;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Great Vibes', cursive;
+}
+
+.event-date {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.event-description {
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 1rem 0 0 0;
+    flex-grow: 1;
 }
 
 .reviews-section {
@@ -2181,6 +2439,159 @@ body:has(.videos-page) .hero video,
     color: #006b7a;
 }
 
+/* Club Events Section on Home Page */
+.club-events-section {
+    padding: 5rem 2rem;
+    background-color: #ffffff;
+    position: relative;
+    z-index: 10;
+}
+
+.club-events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.club-events-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.club-events-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+    color: #008B9D;
+    margin: 0 0 1rem 0;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.club-events-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.8;
+    font-weight: 400;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.club-events-upcoming {
+    margin-top: 2rem;
+}
+
+.club-events-subtitle {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: #008B9D;
+    text-align: center;
+    margin: 0 0 2rem 0;
+    font-weight: 400;
+}
+
+.club-events-list {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 189, 204, 0.5) transparent;
+}
+
+.club-events-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.club-events-list::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.club-events-list::-webkit-scrollbar-thumb {
+    background: rgba(72, 189, 204, 0.5);
+    border-radius: 10px;
+}
+
+.club-events-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(72, 189, 204, 0.7);
+}
+
+.club-event-card {
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 350px;
+    min-width: 350px;
+    height: 100%;
+}
+
+.club-event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.club-event-cover {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
+}
+
+.club-event-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.club-event-card:hover .club-event-cover img {
+    transform: scale(1.05);
+}
+
+.club-event-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.club-event-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.club-event-date {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.club-event-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1;
+}
+
 @media (max-width: 968px) {
     .club-section-container {
         flex-direction: column;
@@ -2399,6 +2810,61 @@ body:has(.videos-page) .hero video,
     
     .pricing-title {
         font-size: 3rem;
+    }
+}
+
+/* Адаптивность для секции мероприятий */
+@media (max-width: 968px) {
+    .club-events-section {
+        padding: 2rem 1.5rem;
+        margin: 3rem auto;
+    }
+    
+    .events-section-title {
+        font-size: 2rem;
+    }
+    
+    .events-section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .events-scroll-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .events-scroll-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .club-events-section {
+        padding: 1.5rem 1rem;
+        border-radius: 20px;
+    }
+    
+    .events-section-title {
+        font-size: 1.75rem;
+    }
+    
+    .events-section-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .events-container-wrapper {
+        gap: 0.5rem;
+    }
+    
+    .events-scroll-btn {
+        width: 36px;
+        height: 36px;
+        display: none; /* Скрываем стрелки на мобильных, используем свайп */
+    }
+    
+    .events-list {
+        gap: 1.5rem;
     }
 }
 

@@ -37,122 +37,68 @@
 
         <section class="content-section">
             <div class="club-services">
-                <div class="services-carousel">
-                    <button class="carousel-arrow carousel-arrow-left" id="carouselLeft" aria-label="Предыдущая иконка">
-                        <span>‹</span>
-                    </button>
-                    <div class="services-row" id="servicesRow">
-                        <div class="service-card" data-index="0">
-                            <img src="/img/Ароматерапевт.png" alt="Ароматерапевт">
-                        </div>
-                        <div class="service-card service-card-center" data-index="1">
-                            <img src="/img/Медитации.png" alt="Медитации">
-                        </div>
-                        <div class="service-card" data-index="2">
-                            <img src="/img/Нутрицитолог.png" alt="Нутрицитолог">
-                        </div>
-                        <div class="service-card" data-index="3">
-                            <img src="/img/Общение (1).png" alt="Общение">
-                        </div>
-                        <div class="service-card" data-index="4">
-                            <img src="/img/Психолог.png" alt="Психолог">
-                        </div>
+                <div class="services-section">
+                    <div class="services-section-header">
+                        <h2 class="services-section-title">Услуги клуба</h2>
+                        <p class="services-section-subtitle">Комплексный подход к вашему здоровью и благополучию</p>
                     </div>
-                    <button class="carousel-arrow carousel-arrow-right" id="carouselRight" aria-label="Следующая иконка">
-                        <span>›</span>
-                    </button>
-                </div>
-                
-                <div class="benefits-section">
-                    <div class="benefits-row">
-                        <div class="benefit-card">
-                            <img src="/img/benefit_1.png" alt="Benefit 1">
+                    <div class="services-cards">
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Психолог</h3>
+                            <p class="service-info-text">Практики, которые помогают справляться со стрессом.</p>
                         </div>
-                        <div class="benefit-card">
-                            <img src="/img/benefit_2.png" alt="Benefit 2">
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Ароматерапевт</h3>
+                            <p class="service-info-text">Как ароматы помогают управлять эмоциями и состоянием.</p>
                         </div>
-                    </div>
-                    <div class="benefits-row">
-                        <div class="benefit-card">
-                            <img src="/img/benefit_3.png" alt="Benefit 3">
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Нутрицитолог</h3>
+                            <p class="service-info-text">Советы по питанию, чтобы поддерживать энергию и здоровье.</p>
                         </div>
-                        <div class="benefit-card">
-                            <img src="/img/benefit_4.png" alt="Benefit 4">
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Общение</h3>
+                            <p class="service-info-text">Ежедневно буду делиться полезной информацией и дополнительными материалами</p>
+                        </div>
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Медитации</h3>
+                            <p class="service-info-text">Ежедневные короткие медитации для расслабления и концентрации.</p>
+                        </div>
+                        <div class="service-info-card">
+                            <h3 class="service-info-title">Баня</h3>
+                            <p class="service-info-text">Оздоровительные банные практики для очищения тела и души.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="reviews-section">
-                <h2>Отзывы участников</h2>
-                <div class="reviews-list" id="reviewsList">
-                    <p class="loading">Загрузка отзывов...</p>
+            <!-- Секция мероприятий -->
+            <div class="club-events-section">
+                <div class="events-section-header">
+                    <h2 class="events-section-title">Мероприятия</h2>
+                    <p class="events-section-subtitle">Присоединяйтесь к нашим событиям и практикам</p>
+                </div>
+                <div class="events-container-wrapper">
+                    <button class="events-scroll-btn events-scroll-left" id="eventsScrollLeft" aria-label="Прокрутить влево">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="events-list" id="eventsList">
+                        <p class="loading">Загрузка мероприятий...</p>
+                    </div>
+                    <button class="events-scroll-btn events-scroll-right" id="eventsScrollRight" aria-label="Прокрутить вправо">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            
-            <div class="reviews-images-container">
-                <img src="/img/Отзыв3.png" alt="Отзыв 3" class="review-image review-image-1">
-                <img src="/img/Отзыв1.png" alt="Отзыв 1" class="review-image review-image-2">
-                <img src="/img/Отзыв5.png" alt="Отзыв 5" class="review-image review-image-3">
-                <img src="/img/Отзыв2.png" alt="Отзыв 2" class="review-image review-image-4">
-                <img src="/img/Отзыв4.png" alt="Отзыв 4" class="review-image review-image-5">
-            </div>
-            
-            <div class="telegram-section">
-                <div class="telegram-container">
-                    <img src="/img/Telegram.png" alt="Телеграм канал" class="telegram-image">
-                </div>
-            </div>
+
         </section>
     </main>
 
     <script src="/shared/scripts/api.js"></script>
     <script src="/scripts/club.js"></script>
-    <script>
-        // Карусель иконок сервисов
-        (function() {
-            const servicesRow = document.getElementById('servicesRow');
-            const cards = Array.from(servicesRow.querySelectorAll('.service-card'));
-            const leftArrow = document.getElementById('carouselLeft');
-            const rightArrow = document.getElementById('carouselRight');
-            let currentCenterIndex = 1; // Индекс центральной карточки (Медитации)
-
-            function updateCarousel() {
-                cards.forEach((card, index) => {
-                    const cardIndex = parseInt(card.dataset.index);
-                    card.classList.remove('service-card-center');
-                    
-                    // Вычисляем относительную позицию от центра
-                    let relativePos = cardIndex - currentCenterIndex;
-                    
-                    // Обрабатываем циклический переход
-                    if (relativePos > 2) relativePos -= 5;
-                    if (relativePos < -2) relativePos += 5;
-                    
-                    if (relativePos === 0) {
-                        // Центральная карточка
-                        card.classList.add('service-card-center');
-                    }
-                });
-            }
-
-            function moveLeft() {
-                currentCenterIndex = (currentCenterIndex - 1 + 5) % 5;
-                updateCarousel();
-            }
-
-            function moveRight() {
-                currentCenterIndex = (currentCenterIndex + 1) % 5;
-                updateCarousel();
-            }
-
-            if (leftArrow && rightArrow && servicesRow) {
-                leftArrow.addEventListener('click', moveLeft);
-                rightArrow.addEventListener('click', moveRight);
-                updateCarousel();
-            }
-        })();
-    </script>
     <script>
         // Загрузка hero видео из S3 для страницы клуба
         async function loadHeroVideo() {
