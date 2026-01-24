@@ -567,7 +567,8 @@
                 const scrollRight = scrollWidth - scrollLeft - clientWidth;
                 
                 leftBtn.disabled = scrollLeft <= 5;
-                rightBtn.disabled = scrollRight <= 5;
+                // Увеличиваем порог для правой кнопки, чтобы учесть дополнительный отступ
+                rightBtn.disabled = scrollRight <= 50;
             }
             
             // Прокрутка влево
@@ -580,8 +581,12 @@
             
             // Прокрутка вправо
             rightBtn.addEventListener('click', () => {
-                container.scrollBy({
-                    left: 300,
+                const cardWidth = 280 + 24; // ширина карточки (280px) + margin-right (24px = 1.5rem)
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                const nextScroll = Math.min(container.scrollLeft + cardWidth, maxScroll);
+                
+                container.scrollTo({
+                    left: nextScroll,
                     behavior: 'smooth'
                 });
             });

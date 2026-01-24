@@ -138,6 +138,10 @@ function getVideoModal() {
 }
 
 let currentVideoId = null;
+let currentVideoUrl = '';
+let currentVideoTitle = '';
+let currentShareVideoUrl = '';
+let currentShareVideoTitle = '';
 
 async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
@@ -266,6 +270,53 @@ function closeVideoModal() {
         uploadStatus.textContent = 'Загрузка...';
         uploadStatus.style.color = '#7f8c8d';
     }
+}
+
+async function shareVideo() {
+    if (!currentShareVideoUrl) {
+        alert('Ссылка на видео недоступна');
+        return;
+    }
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: currentShareVideoTitle || 'Видео',
+                url: currentShareVideoUrl,
+            });
+        } catch (error) {
+            console.error('Ошибка при попытке поделиться видео:', error);
+        }
+    } else {
+        fallbackCopyToClipboard(currentShareVideoUrl, 'Ссылка на видео скопирована!');
+    }
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+    }
+    return Promise.reject('API Clipboard не поддерживается');
+}
+
+function fallbackCopyToClipboard(text, message) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+        document.execCommand('copy');
+        alert(message);
+    } catch (err) {
+        console.error('Не удалось скопировать текст: ', err);
+        alert('Не удалось скопировать ссылку. Пожалуйста, скопируйте вручную: ' + text);
+    }
+
+    document.body.removeChild(textarea);
 }
 
 async function editVideo(id) {
@@ -446,6 +497,8 @@ function showVideoPlayer(videoId, videoUrl, videoTitle) {
     
     currentVideoUrl = videoUrl;
     currentVideoTitle = videoTitle || 'Видео';
+    currentShareVideoUrl = `${window.location.origin}/videos.html?id=${videoId}`;
+    currentShareVideoTitle = currentVideoTitle;
     
     titleElement.textContent = currentVideoTitle;
     videoElement.src = videoUrl;

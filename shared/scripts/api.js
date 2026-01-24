@@ -2,15 +2,19 @@
  * Общий API клиент для всего проекта
  */
 
-// Автоматически определяем порт API на основе текущего порта страницы
+// Автоматически определяем API URL на основе текущего хоста
 const getApiBaseUrl = () => {
+    const { protocol, hostname, port } = window.location;
+    const currentPort = port || (protocol === 'https:' ? '443' : '80');
+    const baseHost = `${protocol}//${hostname}`;
+
     // Если мы на порту 3000 (dev-server), используем тот же порт
-    // Если на порту 5000 или другом, используем порт 5000
-    const currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
     if (currentPort === '3000') {
-        return `http://localhost:3000/api`;
+        return `${baseHost}:${currentPort}/api`;
     }
-    return 'http://localhost:5000/api';
+
+    // В остальных случаях по умолчанию используем backend на 5000
+    return `${baseHost}:5000/api`;
 };
 
 const API_BASE_URL = getApiBaseUrl();

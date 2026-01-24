@@ -2042,14 +2042,14 @@ body:has(.videos-page) .hero video,
         overflow-x: auto;
         overflow-y: visible;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 3rem;
+        padding-bottom: 0.5rem; /* Уменьшили отступ снизу, чтобы стрелки были ближе */
         display: flex;
         flex-direction: row;
         align-items: flex-start;
         justify-content: flex-start;
         gap: 0;
         padding-left: 1.5rem;
-        padding-right: 0; /* Убираем padding-right, так как используем ::after */
+        padding-right: 0; /* Убираем padding-right, так как используем ::after для дополнительного пространства */
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE и Edge */
     }
@@ -2087,7 +2087,10 @@ body:has(.videos-page) .hero video,
     .benefits-container::after {
         content: '';
         flex-shrink: 0;
-        width: 1.5rem;
+        width: 3rem; /* Увеличили отступ для полной видимости последней карточки */
+        min-width: 3rem;
+        height: 1px;
+        display: block;
     }
     
     /* Стрелки для прокрутки */
@@ -2096,7 +2099,8 @@ body:has(.videos-page) .hero video,
         justify-content: center;
         align-items: center;
         gap: 1rem;
-        margin-top: 1rem;
+        margin-top: 0.5rem; /* Уменьшили отступ сверху, чтобы стрелки были ближе к карточкам */
+        margin-bottom: 4rem; /* Увеличили отступ снизу до следующего раздела */
         padding: 0 1.5rem;
     }
     
@@ -2586,6 +2590,35 @@ body:has(.videos-page) .hero video,
         justify-content: center;
         color: white;
     }
+    
+    /* Секция клуба на мобильных */
+    .club-section {
+        padding: 3rem 1rem;
+    }
+    
+    .club-section-container {
+        padding: 0 !important; /* Убираем отступы от картинки до внешних краев карточки */
+        border-radius: 0;
+    }
+    
+    .club-section-content {
+        padding: 2rem 1.5rem 1rem 1.5rem; /* Отступы для контента внутри */
+    }
+    
+    .club-section-image-wrapper {
+        margin-top: 1rem; /* Отступ от кнопки до картинки */
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .club-main-image {
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+    }
 }
 
 /* Club Section */
@@ -3022,6 +3055,7 @@ body:has(.videos-page) .hero video,
     .club-section-container {
         flex-direction: column;
         gap: 2rem;
+        padding: 0;
     }
     
     .club-section-title,
@@ -3032,6 +3066,19 @@ body:has(.videos-page) .hero video,
     
     .club-section-content {
         text-align: center;
+        padding: 2rem 1.5rem 1rem 1.5rem;
+    }
+
+    .club-section-image-wrapper {
+        margin: 0;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .club-main-image {
+        width: 100%;
+        height: auto;
+        border-radius: 0;
     }
     
     .retreats-list {
