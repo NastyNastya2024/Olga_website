@@ -82,13 +82,13 @@ const Header = {
                         <a href="/" class="admin-logo-link">
                             <img src="/img/logo.png" alt="Olga Website" class="admin-logo">
                         </a>
-                        <h1 id="page-title">Admin Panel</h1>
+                        <button class="admin-burger" aria-label="Меню">Меню</button>
                     </div>
                     <div class="admin-header-actions">
                         ${user ? `
                             <span class="admin-user-name">${user.name || user.email}</span>
                         ` : ''}
-                        <a href="/" class="btn btn-return-site">Вернуться на сайт</a>
+                        <a href="/" class="btn btn-return-site">На сайт</a>
                         ${user ? `
                             <button onclick="handleLogout()" class="btn btn-logout">Выйти</button>
                         ` : ''}
@@ -219,9 +219,50 @@ window.toggleClubSubmenu = function(event) {
     }
 };
 
+function setupAdminBurgerMenu() {
+    document.addEventListener('click', (event) => {
+        const burger = document.querySelector('.admin-burger');
+        const nav = document.querySelector('.admin-top-nav');
+
+        if (!burger || !nav) return;
+
+        const burgerClicked = event.target.closest('.admin-burger');
+        const logoClicked = event.target.closest('.admin-logo-link');
+        const navItemClicked = event.target.closest('.admin-top-nav .nav-item');
+
+        if (burgerClicked) {
+            burger.classList.toggle('active');
+            nav.classList.toggle('active');
+            return;
+        }
+
+        if (logoClicked) {
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                event.preventDefault();
+                burger.classList.toggle('active');
+                nav.classList.toggle('active');
+            }
+            return;
+        }
+
+        if (navItemClicked) {
+            burger.classList.remove('active');
+            nav.classList.remove('active');
+            return;
+        }
+
+        if (!nav.contains(event.target)) {
+            burger.classList.remove('active');
+            nav.classList.remove('active');
+        }
+    });
+}
+
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Инициализация приложения...');
+
+    setupAdminBurgerMenu();
     
     // Регистрируем маршруты
     router.route('/', LoginPage.render, [guestGuard]);

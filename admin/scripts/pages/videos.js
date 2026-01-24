@@ -47,7 +47,7 @@ export default {
         const isStudent = userRole === 'student';
         
         if (pageTitle) {
-            pageTitle.textContent = isStudent ? 'Мои видео' : 'Управление видео';
+            pageTitle.textContent = isStudent ? 'Мои видео' : 'Видео';
         }
         
         // Делаем функции доступными глобально (до загрузки данных)

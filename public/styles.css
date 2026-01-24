@@ -45,6 +45,7 @@ body, html {
     justify-content: space-between;
     align-items: center;
     background: transparent;
+    position: relative;
 }
 
 .logo {
@@ -172,6 +173,68 @@ body, html {
 
 .burger-menu.active span:nth-child(3) {
     transform: rotate(-45deg) translate(8px, -8px);
+}
+
+@media (max-width: 768px) {
+    .nav {
+        padding: 0.75rem 1.25rem;
+    }
+
+    .burger-menu {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        display: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-menu a {
+        color: #2c3e50;
+    }
+
+    .nav-menu a:hover {
+        color: #008B9D;
+    }
+
+    .nav-menu a.active {
+        color: #008B9D;
+        border-bottom: none;
+    }
+
+    .nav-menu .btn-login {
+        background-color: #008B9D;
+        color: #ffffff !important;
+        padding: 0.65rem 1.6rem;
+        border-radius: 999px;
+        display: inline-block;
+    }
+
+    .nav-menu .btn-login:hover {
+        background-color: #006b7a;
+        color: #ffffff !important;
+    }
+
+    .btn-login-desktop {
+        display: none;
+    }
+
+    .nav-login-mobile {
+        display: block;
+    }
 }
 
 /* Main Content */
@@ -355,6 +418,14 @@ body:has(.videos-page) .hero video,
     width: 100% !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+    .videos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
 }
 
 .video-card {
@@ -2328,7 +2399,7 @@ body:has(.videos-page) .hero video,
     
     .about-olga-title {
         font-size: 3rem;
-        text-align: center;
+    text-align: center;
     }
     
     .about-olga-content {
@@ -2635,7 +2706,7 @@ body:has(.videos-page) .hero video,
     display: flex;
     align-items: flex-start;
     gap: 0;
-    flex-wrap: wrap;
+        flex-wrap: wrap;
     background: #ffffff;
     padding: 2rem 2rem 0 2rem;
     border-radius: 24px;
@@ -2798,7 +2869,7 @@ body:has(.videos-page) .hero video,
     background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
     display: flex;
     align-items: center;
-    justify-content: center;
+        justify-content: center;
     color: white;
     font-size: 3rem;
 }
@@ -3017,7 +3088,7 @@ body:has(.videos-page) .hero video,
 }
 
 .club-event-content {
-    padding: 1.5rem;
+        padding: 1.5rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -3044,7 +3115,7 @@ body:has(.videos-page) .hero video,
 
 .club-event-description {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
+        font-size: 1rem;
     color: #555;
     line-height: 1.6;
     margin: 0;
@@ -3134,7 +3205,7 @@ body:has(.videos-page) .hero video,
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-    flex-direction: column;
+        flex-direction: column;
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.05);
     min-height: auto;
@@ -3253,7 +3324,7 @@ body:has(.videos-page) .hero video,
 }
 
 .pricing-button {
-    width: 100%;
+        width: 100%;
     padding: 0.75rem 1.25rem;
     background: #48BDCC;
     color: white;
@@ -3588,31 +3659,31 @@ body:has(.videos-page) .hero video,
 }
 
 /* Позиционирование элементов в один горизонтальный ряд */
-.benefit-1 {
+    .benefit-1 {
     top: 0;
     left: calc(50% - 600px);
     transform: translate(-50%, 0);
-}
+    }
 
-.benefit-2 {
+    .benefit-2 {
     top: 0;
     left: calc(50% - 300px);
     transform: translate(-50%, 0);
-}
+    }
 
-.benefit-3 {
+    .benefit-3 {
     top: 0;
     left: 50%;
     transform: translate(-50%, 0);
-}
+    }
 
-.benefit-4 {
+    .benefit-4 {
     top: 0;
     left: calc(50% + 300px);
     transform: translate(-50%, 0);
-}
+    }
 
-.benefit-5 {
+    .benefit-5 {
     top: 0;
     left: calc(50% + 600px);
     transform: translate(-50%, 0);

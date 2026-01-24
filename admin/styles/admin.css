@@ -284,6 +284,25 @@ html, body {
     gap: 1rem;
 }
 
+.admin-burger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.admin-burger.active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .admin-logo-link {
     display: flex;
     align-items: center;
@@ -517,7 +536,7 @@ html, body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #5CD6DA 0%, #148083 100%);
     padding: 2rem;
 }
 
@@ -575,13 +594,23 @@ html, body {
     }
     
     .admin-top-nav {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .admin-top-nav.active {
+        display: flex;
+    }
+
+    .admin-burger {
+        display: flex;
     }
     
     .admin-top-nav .nav-item {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
+        border-bottom: 1px solid #e8e8e8;
     }
 }
 
