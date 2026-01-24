@@ -184,6 +184,9 @@ function goToPage(page) {
     }
 }
 
+let currentVideoUrl = null;
+let currentVideoTitle = null;
+
 function showVideoPlayer(videoUrl, videoTitle) {
     const modal = document.getElementById('videoPlayerModal');
     const videoElement = document.getElementById('videoPlayer');
@@ -194,7 +197,10 @@ function showVideoPlayer(videoUrl, videoTitle) {
         return;
     }
     
-    titleElement.textContent = videoTitle || 'Видео';
+    currentVideoUrl = videoUrl;
+    currentVideoTitle = videoTitle || 'Видео';
+    
+    titleElement.textContent = currentVideoTitle;
     videoElement.src = videoUrl;
     modal.style.display = 'block';
     
@@ -202,6 +208,57 @@ function showVideoPlayer(videoUrl, videoTitle) {
     videoElement.play().catch(error => {
         console.log('Автозапуск видео заблокирован браузером:', error);
     });
+}
+
+function shareVideo() {
+    if (!currentVideoUrl) return;
+    
+    const shareText = currentVideoTitle ? `${currentVideoTitle}\n${currentVideoUrl}` : currentVideoUrl;
+    
+    // Проверяем поддержку Web Share API
+    if (navigator.share) {
+        navigator.share({
+            title: currentVideoTitle || 'Видео',
+            text: currentVideoTitle || '',
+            url: currentVideoUrl
+        }).catch(err => {
+            console.log('Ошибка при использовании Web Share API:', err);
+            copyToClipboard(currentVideoUrl);
+        });
+    } else {
+        // Копируем ссылку в буфер обмена
+        copyToClipboard(currentVideoUrl);
+    }
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Ссылка скопирована в буфер обмена!');
+        }).catch(err => {
+            console.error('Ошибка копирования:', err);
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert('Ссылка скопирована в буфер обмена!');
+    } catch (err) {
+        console.error('Ошибка копирования:', err);
+        alert('Не удалось скопировать ссылку. Ссылка: ' + text);
+    }
+    document.body.removeChild(textArea);
 }
 
 function closeVideoPlayer() {
