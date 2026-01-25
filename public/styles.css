@@ -257,6 +257,7 @@ body, html {
     font-size: 2.5rem;
     color: #2c3e50;
     margin-bottom: 0.5rem;
+    font-family: 'Great Vibes', cursive;
 }
 
 .page-header p {
@@ -3506,6 +3507,7 @@ body:has(.videos-page) .hero video,
     line-height: 1.6;
     text-align: left;
     flex-grow: 1;
+    white-space: pre-wrap;
 }
 
 .price-select-btn {
