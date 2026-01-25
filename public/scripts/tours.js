@@ -82,7 +82,7 @@ async function loadTours() {
                 </div>
                 
                 <div class="tour-actions">
-                    ${tour.booking_url ? `<a href="${tour.booking_url}" class="btn btn-primary tour-booking-btn" target="_blank">Забронировать</a>` : '<button class="btn btn-primary tour-booking-btn" disabled>Забронировать</button>'}
+                    <a href="https://web.telegram.org/a/#295895912" class="btn btn-primary tour-booking-btn" target="_blank">Забронировать</a>
                 </div>
             </div>
         `;

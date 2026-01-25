@@ -187,10 +187,11 @@ function goToPage(page) {
 let currentVideoUrl = null;
 let currentVideoTitle = null;
 
-function showVideoPlayer(videoUrl, videoTitle) {
+function showVideoPlayer(videoUrl, videoTitle, videoStatus) {
     const modal = document.getElementById('videoPlayerModal');
     const videoElement = document.getElementById('videoPlayer');
     const titleElement = document.getElementById('videoPlayerTitle');
+    const shareButton = document.getElementById('btnShareVideo');
     
     if (!modal || !videoElement) {
         console.error('Элементы видеоплеера не найдены');
@@ -203,6 +204,13 @@ function showVideoPlayer(videoUrl, videoTitle) {
     titleElement.textContent = currentVideoTitle;
     videoElement.src = videoUrl;
     modal.style.display = 'block';
+    
+    // Скрываем кнопку поделиться для скрытых и неопубликованных видео
+    // Если статус не передан, считаем видео опубликованным (для публичной части)
+    if (shareButton) {
+        const isPublished = !videoStatus || videoStatus === 'published';
+        shareButton.style.display = isPublished ? 'flex' : 'none';
+    }
     
     // Автоматически запускаем воспроизведение
     videoElement.play().catch(error => {

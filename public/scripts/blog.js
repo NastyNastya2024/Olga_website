@@ -48,7 +48,7 @@ async function loadBlogPosts() {
                     <h3>${escapeHtml(post.title)}</h3>
                     <p class="blog-date">${post.published_at ? new Date(post.published_at).toLocaleDateString('ru-RU') : ''}</p>
                     <p class="blog-excerpt">${post.content ? escapeHtml(post.content.substring(0, 150)) + '...' : ''}</p>
-                    <a href="#" class="read-more" onclick="viewPost(${post.id}); return false;">Читать далее →</a>
+                    <a href="#" class="read-more" onclick="viewPost(${post.id}); return false;">Читать далее</a>
                 </div>
             </article>
         `).join('');
@@ -99,7 +99,7 @@ async function viewPost(id) {
         
         // Показываем модальное окно
         modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Блокируем прокрутку страницы
+        // Не блокируем прокрутку страницы, так как модальное окно само скроллится
     } catch (error) {
         console.error('Ошибка загрузки статьи:', error);
         alert('Ошибка загрузки статьи');
@@ -110,7 +110,6 @@ function closeBlogModal() {
     const modal = document.getElementById('blogModal');
     if (modal) {
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Восстанавливаем прокрутку страницы
     }
 }
 
@@ -175,9 +174,8 @@ async function loadClubTariffs() {
 }
 
 function selectTariff(period, price, months) {
-    // Можно добавить логику для обработки выбора тарифа
-    console.log('Выбран тариф:', period, price, months);
-    alert(`Выбран тариф: ${period} за ${price} ₽`);
+    // Открываем Telegram для связи
+    window.open('https://web.telegram.org/a/#295895912', '_blank');
 }
 
 // Делаем функции доступными глобально

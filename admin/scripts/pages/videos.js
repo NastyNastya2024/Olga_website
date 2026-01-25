@@ -215,7 +215,7 @@ async function loadVideos() {
                         <button class="btn btn-edit" onclick="editVideo(${video.id})">Редактировать</button>
                         <button class="btn btn-danger" onclick="deleteVideo(${video.id})">Удалить</button>
                     ` : ''}
-                    ${video.video_url ? `<button class="btn btn-view" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}')">Смотреть</button>` : ''}
+                    ${video.video_url ? `<button class="btn btn-view" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
                 </td>
             </tr>
         `).join('');
@@ -464,7 +464,7 @@ function getVideoPlayerModal() {
                 <span class="close" onclick="closeVideoPlayer()">&times;</span>
                 <div class="video-modal-header">
                     <h2 id="videoPlayerTitle"></h2>
-                    <button onclick="shareVideo()" class="btn-share-video" title="Поделиться видео">
+                    <button id="btnShareVideo" onclick="shareVideo()" class="btn-share-video" title="Поделиться видео">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="18" cy="5" r="3"></circle>
                             <circle cx="6" cy="12" r="3"></circle>
@@ -485,10 +485,11 @@ function getVideoPlayerModal() {
     `;
 }
 
-function showVideoPlayer(videoId, videoUrl, videoTitle) {
+function showVideoPlayer(videoId, videoUrl, videoTitle, videoStatus) {
     const modal = document.getElementById('videoPlayerModal');
     const videoElement = document.getElementById('videoPlayer');
     const titleElement = document.getElementById('videoPlayerTitle');
+    const shareButton = document.getElementById('btnShareVideo');
     
     if (!modal || !videoElement) {
         console.error('Элементы видеоплеера не найдены');
@@ -503,6 +504,12 @@ function showVideoPlayer(videoId, videoUrl, videoTitle) {
     titleElement.textContent = currentVideoTitle;
     videoElement.src = videoUrl;
     modal.style.display = 'block';
+    
+    // Скрываем кнопку поделиться для скрытых и неопубликованных видео
+    if (shareButton) {
+        const isPublished = videoStatus === 'published';
+        shareButton.style.display = isPublished ? 'flex' : 'none';
+    }
     
     // Автоматически запускаем воспроизведение
     videoElement.play().catch(error => {

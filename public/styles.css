@@ -255,7 +255,7 @@ body, html {
 
 .page-header h1 {
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: #6b8a9a;
     margin-bottom: 0.5rem;
     font-family: 'Great Vibes', cursive;
 }
@@ -263,6 +263,9 @@ body, html {
 .page-header p {
     font-size: 1.1rem;
     color: #7f8c8d;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
 }
 
 .hero {
@@ -1818,10 +1821,13 @@ body:has(.videos-page) .hero video,
     margin: 2rem auto;
     max-width: 900px;
     width: 90%;
+    max-height: 90vh;
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     animation: slideUp 0.3s ease;
+    -webkit-overflow-scrolling: touch;
 }
 
 .blog-modal-close {
@@ -1961,10 +1967,11 @@ body:has(.videos-page) .hero video,
     max-width: 90vw;
     width: 90vw;
     max-height: 90vh;
-    padding: 1rem;
+    padding: 3rem 1rem 1rem 1rem;
     background: #000;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
 }
 
 .video-modal-header {
@@ -1974,6 +1981,7 @@ body:has(.videos-page) .hero video,
     margin-bottom: 1rem;
     flex-wrap: wrap;
     gap: 1rem;
+    padding-right: 2.5rem;
 }
 
 .video-modal-header h2 {
@@ -2023,8 +2031,20 @@ body:has(.videos-page) .hero video,
     cursor: pointer;
     position: absolute;
     right: 20px;
-    top: 10px;
+    top: 15px;
     z-index: 1001;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.modal .close:hover {
+    background: rgba(0, 0, 0, 0.7);
 }
 
 .modal .close:hover,

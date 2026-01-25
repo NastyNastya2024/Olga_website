@@ -277,10 +277,8 @@ function setupEventsScroll() {
  * Обработчик выбора тарифа
  */
 function selectTariff(period, price, months) {
-    console.log('Выбран тариф:', { period, price, months });
-    // Здесь можно добавить логику обработки выбора тарифа
-    // Например, переход на страницу оплаты или открытие модального окна
-    alert(`Выбран тариф: ${period}\nЦена: ${price.toFixed(0)} ₽${months > 1 ? `\nВ месяц: ${(price / months).toFixed(0)} ₽` : ''}`);
+    // Открываем Telegram для связи
+    window.open('https://web.telegram.org/a/#295895912', '_blank');
 }
 
 // Делаем функцию доступной глобально
