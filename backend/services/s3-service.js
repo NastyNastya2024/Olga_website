@@ -4,7 +4,7 @@
  * Использует AWS SDK v3
  */
 
-const { s3, BUCKET_NAME } = require('../config/s3-config');
+const { s3, BUCKET_NAME, isYandexStorage } = require('../config/s3-config');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const path = require('path');
@@ -36,9 +36,7 @@ class S3Service {
       await s3.send(command);
 
       // Генерируем публичный URL
-      const endpoint = process.env.S3_ENDPOINT || 'http://localhost:9000';
-      const baseUrl = endpoint.replace(/\/$/, '');
-      const url = `${baseUrl}/${BUCKET_NAME}/${key}`;
+      const url = this.getPublicUrl(key);
 
       return {
         success: true,
@@ -140,8 +138,14 @@ class S3Service {
    * @returns {string} Публичный URL
    */
   getPublicUrl(key) {
+    // Для Yandex Object Storage формат URL: https://storage.yandexcloud.net/bucket/key
+    if (isYandexStorage) {
+      const bucket = process.env.S3_BUCKET || BUCKET_NAME;
+      return `https://storage.yandexcloud.net/${bucket}/${key}`;
+    }
+    
+    // Для MinIO (старый формат)
     const endpoint = process.env.S3_ENDPOINT || 'http://localhost:9000';
-    // Убираем протокол и хост из endpoint если они есть
     const baseUrl = endpoint.replace(/\/$/, '');
     return `${baseUrl}/${BUCKET_NAME}/${key}`;
   }
