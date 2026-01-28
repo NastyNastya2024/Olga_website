@@ -3677,13 +3677,13 @@ body:has(.videos-page) .hero video,
 /* Позиционирование элементов в один горизонтальный ряд */
     .benefit-1 {
     top: 0;
-    left: calc(50% - 420px);
+    left: calc(50% - 294px);
     transform: translate(-50%, 0);
     }
 
     .benefit-2 {
     top: 0;
-    left: calc(50% - 210px);
+    left: calc(50% - 147px);
     transform: translate(-50%, 0);
     }
 
@@ -3695,13 +3695,13 @@ body:has(.videos-page) .hero video,
 
     .benefit-4 {
     top: 0;
-    left: calc(50% + 210px);
+    left: calc(50% + 147px);
     transform: translate(-50%, 0);
     }
 
     .benefit-5 {
     top: 0;
-    left: calc(50% + 420px);
+    left: calc(50% + 294px);
     transform: translate(-50%, 0);
 }
 
