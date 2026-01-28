@@ -13,6 +13,12 @@ const getApiBaseUrl = () => {
         return `${baseHost}:${currentPort}/api`;
     }
 
+    // Для production (порты 80/443) используем относительный путь через Nginx
+    // Nginx проксирует /api на localhost:5000
+    if (currentPort === '80' || currentPort === '443' || !port) {
+        return '/api';
+    }
+
     // В остальных случаях по умолчанию используем backend на 5000
     return `${baseHost}:5000/api`;
 };

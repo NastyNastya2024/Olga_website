@@ -47,10 +47,6 @@
                 <p class="benefits-subtitle">Что ты получишь уже через месяц регулярных занятий?</p>
             </div>
             <div class="benefits-container" id="benefitsContainer">
-                <div class="benefits-center">
-                    <img src="/img/summary.png" alt="Что ты получишь уже через месяц регулярных занятий?" class="summary-image">
-                </div>
-                
                 <div class="benefit-item benefit-1">
                     <div class="benefit-card">
                         <img src="/img/Assana1.png" alt="Assana 1" class="benefit-assana">
@@ -581,7 +577,7 @@
             
             // Прокрутка вправо
             rightBtn.addEventListener('click', () => {
-                const cardWidth = 280 + 24; // ширина карточки (280px) + margin-right (24px = 1.5rem)
+                const cardWidth = 196 + 24; // ширина карточки (196px) + margin-right (24px = 1.5rem)
                 const maxScroll = container.scrollWidth - container.clientWidth;
                 const nextScroll = Math.min(container.scrollLeft + cardWidth, maxScroll);
                 
