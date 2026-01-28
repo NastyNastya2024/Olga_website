@@ -636,7 +636,7 @@ body:has(.videos-page) .hero video,
 .video-card-content p {
     margin: 0;
     color: #555;
-    font-size: 1rem;
+    font-size: 0.7rem; /* Уменьшено на 30%: было 1rem, стало 0.7rem */
     line-height: 1.5;
     overflow: hidden;
     font-family: 'Montserrat', sans-serif;
@@ -2138,7 +2138,7 @@ body:has(.videos-page) .hero video,
     position: relative;
     z-index: 50; /* Над hero и blur эффектом */
     overflow: hidden; /* Предотвращаем горизонтальную прокрутку всей секции */
-    margin-bottom: 0; /* Убираем отступ снизу */
+    margin-bottom: 4rem; /* Отступ до следующего раздела */
 }
 
 /* Стили для скроллбара в адаптиве */
@@ -2164,12 +2164,12 @@ body:has(.videos-page) .hero video,
     position: relative;
     max-width: 1200px;
     margin: 0 auto;
-    min-height: 200px; /* Уменьшили в 4 раза с 800px */
+    min-height: 500px; /* Достаточная высота для карточек */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 0;
-    margin-bottom: 0; /* Убираем лишний отступ снизу */
+    padding-bottom: 2rem;
+    margin-bottom: 4rem; /* Отступ до следующего раздела */
 }
 
 /* Горизонтальная прокрутка для карточек на мобильных */
@@ -2675,7 +2675,7 @@ body:has(.videos-page) .hero video,
 
 .free-video-content p {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.595rem; /* Уменьшено на 30%: было 0.85rem, стало 0.595rem */
     color: #777;
     margin: 0;
     line-height: 1.5;
@@ -3765,13 +3765,13 @@ body:has(.videos-page) .hero video,
 /* Позиционирование элементов в один горизонтальный ряд */
     .benefit-1 {
     top: 0;
-    left: calc(50% - 294px);
+    left: calc(50% - 440px); /* Увеличено расстояние: было -392px, теперь -440px (196px + 24px отступ * 2) */
     transform: translate(-50%, 0);
     }
 
     .benefit-2 {
     top: 0;
-    left: calc(50% - 147px);
+    left: calc(50% - 220px); /* Увеличено расстояние: было -196px, теперь -220px (196px + 24px отступ) */
     transform: translate(-50%, 0);
     }
 
@@ -3783,13 +3783,13 @@ body:has(.videos-page) .hero video,
 
     .benefit-4 {
     top: 0;
-    left: calc(50% + 147px);
+    left: calc(50% + 220px); /* Увеличено расстояние: было +196px, теперь +220px (196px + 24px отступ) */
     transform: translate(-50%, 0);
     }
 
     .benefit-5 {
     top: 0;
-    left: calc(50% + 294px);
+    left: calc(50% + 440px); /* Увеличено расстояние: было +392px, теперь +440px (196px + 24px отступ * 2) */
     transform: translate(-50%, 0);
 }
 
