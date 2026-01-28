@@ -40,7 +40,7 @@ body, html {
 .nav {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem 2rem;
+    padding: 0.9rem 1.8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -54,9 +54,9 @@ body, html {
 }
 
 .logo-img {
-    height: 40px;
+    height: 36px;
     width: auto;
-    max-width: 200px;
+    max-width: 180px;
     object-fit: contain;
     transition: filter 0.3s ease;
 }
@@ -64,16 +64,16 @@ body, html {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 1.8rem;
 }
 
 .nav-menu a {
     text-decoration: none;
     color: white;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 0.99rem;
     transition: all 0.3s;
-    padding: 0.5rem 0;
+    padding: 0.45rem 0;
 }
 
 .header.scrolled .nav-menu a {
@@ -93,22 +93,23 @@ body, html {
 
 .nav-menu a.active {
     color: white;
-    border-bottom: 2px solid white;
+    border-bottom: 1.8px solid white;
     font-weight: 600;
 }
 
 .header.scrolled .nav-menu a.active {
     color: #008B9D;
-    border-bottom: 2px solid #008B9D;
+    border-bottom: 1.8px solid #008B9D;
 }
 
 .btn-login {
     background-color: white;
     color: #48BDCC;
     text-decoration: none;
-    padding: 0.5rem 1.5rem;
+    padding: 0.45rem 1.35rem;
     border-radius: 50px;
     font-weight: 500;
+    font-size: 0.9rem;
     transition: all 0.3s;
 }
 
@@ -478,7 +479,7 @@ body:has(.videos-page) .hero video,
 
 @media (max-width: 768px) {
     .videos-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         gap: 1rem;
         padding: 0 1rem;
     }
@@ -628,7 +629,8 @@ body:has(.videos-page) .hero video,
     margin: 0 0 0.9rem 0;
     color: #2c3e50;
     font-size: 1.15rem;
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
 }
 
 .video-card-content p {
@@ -637,7 +639,8 @@ body:has(.videos-page) .hero video,
     font-size: 1rem;
     line-height: 1.5;
     overflow: hidden;
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 5;
@@ -2559,6 +2562,14 @@ body:has(.videos-page) .hero video,
 .premium-text {
     color: #008B9D;
     font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.premium-text:hover {
+    color: #006B7D;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .free-videos-grid {
