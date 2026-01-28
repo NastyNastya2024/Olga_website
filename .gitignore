@@ -5,6 +5,8 @@ package-lock.json
 # Переменные окружения
 .env
 .env.local
+.env.save
+*.env.save
 
 # Логи
 *.log
