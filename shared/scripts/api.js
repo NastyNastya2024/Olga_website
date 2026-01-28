@@ -13,6 +13,11 @@ const getApiBaseUrl = () => {
         return `${baseHost}:${currentPort}/api`;
     }
 
+    // Для localhost (разработка) всегда используем порт 5000
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5000/api';
+    }
+
     // Для production (порты 80/443) используем относительный путь через Nginx
     // Nginx проксирует /api на localhost:5000
     if (currentPort === '80' || currentPort === '443' || !port) {
