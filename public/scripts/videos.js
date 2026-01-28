@@ -23,8 +23,10 @@ function renderVideoCard(video) {
     
     if (isVideoFile) {
         // Прямая ссылка на видео файл - используем HTML5 video player
+        // Используем loading="lazy" и preload="metadata" для экономии трафика
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
         videoContent = `
-            <video controls style="width: 100%; height: 100%; object-fit: cover;">
+            <video controls ${isMobile ? 'preload="metadata"' : 'preload="none"'} style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                 <source src="${video.video_url}" type="video/mp4">
                 Ваш браузер не поддерживает видео.
             </video>
@@ -78,6 +80,9 @@ async function loadVideos() {
 
         if (!allVideos || allVideos.length === 0) {
             grid.innerHTML = '<p class="empty-state">Видео пока нет</p>';
+            if (window.videoPreloader) {
+                window.videoPreloader.hide();
+            }
             return;
         }
 
@@ -88,12 +93,46 @@ async function loadVideos() {
             return dateB - dateA; // Сортировка по убыванию (новые первыми)
         });
 
+        // На мобильных не предзагружаем видео на странице списка (они загрузятся по требованию)
+        // Добавляем только YouTube/Vimeo (они легкие)
+        if (window.videoPreloader && !window.videoPreloader.isMobile) {
+            const videosToPreload = allVideos.slice(0, videosPerPage);
+            videosToPreload.forEach(video => {
+                if (video.video_url) {
+                    const isVideoFile = video.video_url && (
+                        video.video_url.endsWith('.mp4') || 
+                        video.video_url.endsWith('.webm') || 
+                        video.video_url.endsWith('.mov') ||
+                        video.video_url.includes('/videos/') ||
+                        video.video_url.includes('/uploads/')
+                    );
+                    const isYouTube = video.video_url && video.video_url.includes('youtube.com');
+                    const isVimeo = video.video_url && video.video_url.includes('vimeo.com');
+                    
+                    let type = 'file';
+                    if (isYouTube) type = 'youtube';
+                    else if (isVimeo) type = 'vimeo';
+                    
+                    // На странице списка видео не приоритетные
+                    window.videoPreloader.addVideo(video.video_url, type, false);
+                }
+            });
+        }
+
         currentPage = 1;
         displayVideos();
         renderPagination();
+        
+        // Запускаем предзагрузку видео
+        if (window.videoPreloader) {
+            await window.videoPreloader.startPreloading();
+        }
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
         grid.innerHTML = '<p class="empty-state">Ошибка загрузки видео</p>';
+        if (window.videoPreloader) {
+            window.videoPreloader.hide();
+        }
     }
 }
 
@@ -291,7 +330,13 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Загружаем видео при загрузке страницы
+// Загружаем видео при загрузке страницы с прелоадером
 if (document.getElementById('videosGrid')) {
+    // Показываем прелоадер
+    if (window.videoPreloader) {
+        window.videoPreloader.show();
+    }
+    
+    // Загружаем видео
     loadVideos();
 }

@@ -40,6 +40,9 @@
 
     <main class="main-content">
         <section class="hero">
+            <div class="hero-background">
+                <div class="hero-logo-text">Yoga</div>
+            </div>
             <video id="heroVideo" autoplay muted loop playsinline preload="auto">
                 <!-- Видео загружается динамически из S3 -->
                 Ваш браузер не поддерживает видео.
@@ -132,6 +135,8 @@
                     // Обработчики событий для отладки
                     video.addEventListener('loadeddata', () => {
                         console.log('✅ Видео загружено успешно');
+                        // Добавляем класс для показа видео и скрытия фона
+                        video.classList.add('loaded');
                         // Убираем сообщение об ошибке если оно было
                         const errorMsg = document.querySelector('.hero .error-msg');
                         if (errorMsg) errorMsg.remove();
