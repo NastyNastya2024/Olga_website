@@ -7,7 +7,9 @@ const { S3Client } = require('@aws-sdk/client-s3');
 require('dotenv').config();
 
 // Определяем тип хранилища по endpoint
-const endpoint = process.env.S3_ENDPOINT || 'http://localhost:9000';
+// Если S3_ENDPOINT не указан, используем Yandex Object Storage по умолчанию
+// Для localhost можно использовать Yandex Object Storage или MinIO (если запущен)
+const endpoint = process.env.S3_ENDPOINT || 'https://storage.yandexcloud.net';
 const isYandexStorage = endpoint.includes('storage.yandexcloud.net');
 const isMinIO = endpoint.includes('localhost:9000') || endpoint.includes('127.0.0.1:9000');
 
