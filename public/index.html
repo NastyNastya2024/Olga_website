@@ -258,17 +258,30 @@
                     
                     // Определяем оптимальный preload для устройства
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+                    console.log('📱 Мобильное устройство:', isMobile);
+                    
                     // Для hero видео всегда используем auto, чтобы видео загружалось на всех устройствах
                     video.preload = 'auto';
+                    console.log('📥 Установлен preload:', video.preload);
                     
                     // Создаем source элемент с URL из S3
                     const source = document.createElement('source');
                     source.src = videoUrl;
                     source.type = 'video/mp4';
+                    console.log('🎬 Создан source с URL:', videoUrl);
                     
                     // Очищаем старые source элементы
                     video.innerHTML = '';
                     video.appendChild(source);
+                    
+                    // На мобильных принудительно устанавливаем атрибуты для загрузки
+                    if (isMobile) {
+                        video.setAttribute('playsinline', '');
+                        video.setAttribute('muted', '');
+                        video.setAttribute('autoplay', '');
+                        video.setAttribute('loop', '');
+                        console.log('📱 Установлены мобильные атрибуты для видео');
+                    }
                     
                     // Обработчики событий для отладки
                     video.addEventListener('loadeddata', () => {
@@ -282,6 +295,15 @@
                         if (errorMsg) errorMsg.remove();
                     });
                     
+                    // Обработчик для мобильных - показываем видео как только начинается загрузка
+                    video.addEventListener('loadstart', () => {
+                        console.log('🔄 Начало загрузки видео');
+                        // На мобильных показываем видео сразу, не ждем полной загрузки
+                        if (isMobile) {
+                            video.classList.add('loaded');
+                        }
+                    });
+                    
                     video.addEventListener('error', (e) => {
                         console.error('❌ Ошибка воспроизведения видео:', e);
                         console.error('   URL:', videoUrl);
@@ -292,6 +314,16 @@
                     
                     // Загружаем видео
                     video.load();
+                    
+                    // На мобильных принудительно запускаем загрузку
+                    if (isMobile) {
+                        // Принудительно загружаем видео на мобильных
+                        video.load();
+                        // Показываем видео сразу на мобильных
+                        setTimeout(() => {
+                            video.classList.add('loaded');
+                        }, 100);
+                    }
                     
                     // Пытаемся запустить воспроизведение
                     video.play().catch(err => {
