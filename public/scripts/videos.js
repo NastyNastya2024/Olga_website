@@ -2,6 +2,17 @@
  * Скрипт загрузки видео на публичной странице
  */
 
+// Функция для экранирования HTML
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 let allVideos = [];
 let currentPage = 1;
 const videosPerPage = 12;
@@ -25,10 +36,11 @@ function renderVideoCard(video) {
         // Прямая ссылка на видео файл - используем HTML5 video player
         // Используем preload="metadata" чтобы показать превью (первый кадр)
         const thumbnailUrl = video.thumbnail_url || '';
-        const posterAttr = thumbnailUrl ? `poster="${thumbnailUrl}"` : '';
+        const posterAttr = thumbnailUrl ? `poster="${escapeHtml(thumbnailUrl)}"` : '';
+        const escapedVideoUrl = escapeHtml(video.video_url);
         videoContent = `
-            <video controls ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover;">
-                <source src="${video.video_url}" type="video/mp4">
+            <video ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                <source src="${escapedVideoUrl}" type="video/mp4">
                 Ваш браузер не поддерживает видео.
             </video>
         `;

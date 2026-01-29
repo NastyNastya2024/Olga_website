@@ -532,11 +532,16 @@ body:has(.videos-page) .hero video,
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
+    object-fit: cover;
 }
 
 /* Стили для превью видео - показываем первый кадр */
 .video-placeholder video {
     pointer-events: none; /* Отключаем клики на видео до открытия плеера */
+    position: relative;
+    z-index: 1;
+    background: transparent;
 }
 
 .video-placeholder video::-webkit-media-controls {
@@ -2633,11 +2638,18 @@ body:has(.videos-page) .hero video,
     background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
 }
 
+.free-video-preview video {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
 .free-video-preview video,
 .free-video-preview iframe {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 /* Стили для превью видео в бесплатных видео - показываем первый кадр */

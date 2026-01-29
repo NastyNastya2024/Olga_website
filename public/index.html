@@ -371,10 +371,11 @@
 
             if (isVideoFile) {
                 // Используем preload="metadata" чтобы показать превью (первый кадр)
-                const posterAttr = thumbnailUrl ? `poster="${thumbnailUrl}"` : '';
+                const posterAttr = thumbnailUrl ? `poster="${escapeHtml(thumbnailUrl)}"` : '';
+                const escapedVideoUrl = escapeHtml(video.video_url);
                 videoContent = `
-                    <video controls ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover;">
-                        <source src="${video.video_url}" type="video/mp4">
+                    <video ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <source src="${escapedVideoUrl}" type="video/mp4">
                         Ваш браузер не поддерживает видео.
                     </video>
                 `;
@@ -538,8 +539,8 @@
                         </div>
                         <div class="retreat-card-content">
                             <h3 class="retreat-card-title">${escapeHtml(tour.title || 'Ретрит')}</h3>
-                            ${tour.location ? `<p class="retreat-card-location">📍 ${escapeHtml(tour.location)}</p>` : ''}
-                            <p class="retreat-card-date">📅 ${dateRange}</p>
+                            ${tour.location ? `<p class="retreat-card-location">${escapeHtml(tour.location)}</p>` : ''}
+                            <p class="retreat-card-date">${dateRange}</p>
                             ${tour.description ? `<p class="retreat-card-description">${escapeHtml(tour.description.substring(0, 120))}${tour.description.length > 120 ? '...' : ''}</p>` : ''}
                             <a href="/tours.html" class="retreat-card-link">Подробнее →</a>
                         </div>
