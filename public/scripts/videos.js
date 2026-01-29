@@ -33,17 +33,26 @@ function renderVideoCard(video) {
     let videoContent = '';
     
     if (isVideoFile) {
-        // Прямая ссылка на видео файл - используем HTML5 video player
-        // Используем preload="metadata" чтобы показать превью (первый кадр)
+        // Определяем мобильное устройство
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
         const thumbnailUrl = video.thumbnail_url || '';
-        const posterAttr = thumbnailUrl ? `poster="${escapeHtml(thumbnailUrl)}"` : '';
         const escapedVideoUrl = escapeHtml(video.video_url);
-        videoContent = `
-            <video ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                <source src="${escapedVideoUrl}" type="video/mp4">
-                Ваш браузер не поддерживает видео.
-            </video>
-        `;
+        
+        if (isMobile && thumbnailUrl) {
+            // На мобильных используем изображение thumbnail вместо video для быстрой загрузки
+            videoContent = `
+                <img src="${escapeHtml(thumbnailUrl)}" alt="${escapeHtml(video.title || 'Видео')}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            `;
+        } else {
+            // На десктопе используем video с poster
+            const posterAttr = thumbnailUrl ? `poster="${escapeHtml(thumbnailUrl)}"` : '';
+            videoContent = `
+                <video ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    <source src="${escapedVideoUrl}" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            `;
+        }
     } else if (isYouTube) {
         // YouTube видео - извлекаем ID и используем embed
         const videoId = video.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
