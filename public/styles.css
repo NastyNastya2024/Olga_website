@@ -1475,9 +1475,17 @@ body:has(.videos-page) .hero video,
 .events-container-wrapper {
     position: relative;
     display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 4rem;
+}
+
+.events-scroll-controls {
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 1rem;
-    margin-top: 4rem;
+    margin-top: 1rem;
 }
 
 .events-scroll-btn {
@@ -3730,25 +3738,31 @@ body:has(.videos-page) .hero video,
     }
     
     .events-container-wrapper {
-        gap: 1.5rem; /* Увеличили отступ между стрелками и карточкой, чтобы карточка была полностью видна */
-        padding: 0 0.25rem; /* Уменьшили боковые отступы контейнера */
+        gap: 1rem; /* Отступ между списком и стрелками */
+        padding: 0;
         margin: 0;
     }
     
+    .events-scroll-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        padding: 0;
+    }
+    
     .events-scroll-btn {
-        width: 32px; /* Немного уменьшили размер стрелок */
-        height: 32px;
+        width: 40px; /* Размер стрелок */
+        height: 40px;
         display: flex; /* Показываем стрелки на мобильных */
         flex-shrink: 0; /* Стрелки не сжимаются */
-        position: relative; /* Убеждаемся, что стрелки не перекрывают карточку */
-        z-index: 5; /* Стрелки поверх, но не перекрывают контент */
     }
     
     .events-list {
         gap: 1.5rem;
-        padding: 1rem 0; /* Убрали боковые отступы, так как gap уже есть в wrapper */
-        flex: 1; /* Список занимает доступное пространство */
-        min-width: 0; /* Позволяет списку сжиматься */
+        padding: 1rem 0; /* Отступы сверху и снизу */
+        width: 100%; /* Список на всю ширину */
     }
     
     /* Уменьшаем размер карточки на мобильных, чтобы она полностью помещалась */
