@@ -612,6 +612,40 @@ html, body {
         font-size: 0.9rem;
         border-bottom: 1px solid #e8e8e8;
     }
+    
+    /* Уменьшаем кнопки на 20% для мобильной версии */
+    .btn {
+        padding: 0.6rem 1.2rem !important; /* было 0.75rem 1.5rem */
+        font-size: 0.8rem !important; /* было 1rem */
+    }
+    
+    .admin-header-actions .btn-return-site,
+    .admin-header-actions .btn-logout {
+        padding: 0.6rem 1.2rem !important; /* было 0.75rem 1.5rem */
+        height: 34px !important; /* было 42px */
+        font-size: 0.8rem !important; /* уменьшаем на 20% */
+    }
+    
+    .btn-secondary {
+        padding: 0.4rem 0.8rem !important; /* было 0.5rem 1rem */
+        font-size: 0.72rem !important; /* было 0.9rem */
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.72rem !important;
+    }
+    
+    .page-header .btn {
+        white-space: nowrap;
+    }
+    
+    /* Кнопки в таблицах */
+    .data-table .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap;
+    }
 }
 
 @media (max-width: 600px) {
@@ -637,6 +671,8 @@ html, body {
     .admin-header-actions {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
     
     .admin-top-nav .nav-item {
@@ -646,6 +682,45 @@ html, body {
     
     .admin-top-nav .nav-icon {
         margin-right: 0.25rem;
+    }
+    
+    /* Дополнительное уменьшение кнопок на очень маленьких экранах */
+    .btn {
+        padding: 0.5rem 1rem !important; /* еще меньше для очень маленьких экранов */
+        font-size: 0.75rem !important;
+    }
+    
+    .admin-header-actions .btn-return-site,
+    .admin-header-actions .btn-logout {
+        padding: 0.5rem 1rem !important;
+        height: 32px !important;
+        font-size: 0.75rem !important;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Уменьшаем размер кнопок в таблицах */
+    .data-table .btn {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap;
+    }
+    
+    .btn-sm {
+        padding: 0.32rem 0.64rem !important;
+        font-size: 0.64rem !important;
+    }
+    
+    /* Уменьшаем кнопку "Добавить видео" */
+    .page-header .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Кнопки в модальных окнах */
+    .modal-content .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.75rem !important;
     }
 }
 

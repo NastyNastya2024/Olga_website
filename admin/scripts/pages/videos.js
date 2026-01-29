@@ -20,7 +20,6 @@ export default {
                             <tr>
                                 <th>ID</th>
                                 <th>Название</th>
-                                <th>Категория</th>
                                 <th>Статус</th>
                                 <th>Доступ</th>
                                 <th>Действия</th>
@@ -28,7 +27,7 @@ export default {
                         </thead>
                         <tbody id="videosTableBody">
                             <tr>
-                                <td colspan="6" class="loading">Загрузка...</td>
+                                <td colspan="5" class="loading">Загрузка...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -147,7 +146,7 @@ async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
 
     try {
         const userRole = getUserRole();
@@ -166,7 +165,7 @@ async function loadVideos() {
                 console.log('Назначенные видео (ID):', assignedVideoIds);
                 
                 if (assignedVideoIds.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Вам не назначено ни одного видео</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Вам не назначено ни одного видео</td></tr>';
                     return;
                 }
                 
@@ -188,7 +187,7 @@ async function loadVideos() {
                 console.log('Отфильтрованные видео для студента:', videos.length);
             } catch (error) {
                 console.error('Ошибка загрузки данных пользователя:', error);
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
                 return;
             }
         } else {
@@ -199,7 +198,7 @@ async function loadVideos() {
         }
 
         if (videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет видео</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет видео</td></tr>';
             return;
         }
 
@@ -207,7 +206,6 @@ async function loadVideos() {
             <tr>
                 <td>${video.id}</td>
                 <td>${video.title}</td>
-                <td>${video.category || '-'}</td>
                 <td><span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span></td>
                 <td>${video.access_type === 'open' ? 'Открыто' : 'По подписке'}</td>
                 <td>
@@ -221,7 +219,7 @@ async function loadVideos() {
         `).join('');
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Ошибка загрузки данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
 }
 
