@@ -194,6 +194,9 @@
                 if (isSuccess && videoUrl) {
                     console.log('✅ Получен URL видео:', videoUrl);
                     
+                    // Для hero видео всегда используем auto, чтобы видео загружалось на всех устройствах
+                    video.preload = 'auto';
+                    
                     // Создаем source элемент с URL из S3
                     const source = document.createElement('source');
                     source.src = videoUrl;

@@ -294,7 +294,7 @@ body.preloading .footer {
     width: 100%;
     height: 100%;
     border: 4px solid transparent;
-    border-top-color: #0A4049;
+    border-top-color: #008B9D; /* Лазоревый цвет */
     border-radius: 50%;
     animation: spin 1.2s linear infinite;
 }
@@ -308,7 +308,7 @@ body.preloading .footer {
     height: 70%;
     top: 15%;
     left: 15%;
-    border-top-color: #008B9D;
+    border-top-color: #008B9D; /* Лазоревый цвет */
     animation-delay: 0.2s;
 }
 
@@ -317,7 +317,7 @@ body.preloading .footer {
     height: 50%;
     top: 25%;
     left: 25%;
-    border-top-color: #0A4049;
+    border-top-color: #008B9D; /* Лазоревый цвет */
     animation-delay: 0.4s;
 }
 
@@ -339,13 +339,15 @@ body.preloading .footer {
 .preloader-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: #008B9D; /* Лазоревый цвет как заголовки */
     margin: 0;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .preloader-progress {
     font-size: 1rem;
-    color: #0A4049;
+    color: #008B9D; /* Лазоревый цвет как заголовки */
     font-weight: 500;
     margin: 0;
+    font-family: 'Montserrat', sans-serif;
 }

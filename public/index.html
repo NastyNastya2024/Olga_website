@@ -258,8 +258,8 @@
                     
                     // Определяем оптимальный preload для устройства
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-                    // На мобильных используем metadata для экономии трафика
-                    video.preload = isMobile ? 'metadata' : 'auto';
+                    // Для hero видео всегда используем auto, чтобы видео загружалось на всех устройствах
+                    video.preload = 'auto';
                     
                     // Создаем source элемент с URL из S3
                     const source = document.createElement('source');

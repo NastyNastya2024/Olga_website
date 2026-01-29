@@ -1783,6 +1783,44 @@ body:has(.videos-page) .hero video,
     margin-right: auto;
 }
 
+/* Адаптивность для блога на мобильных */
+@media (max-width: 768px) {
+    .blog-section {
+        padding: 0 1rem; /* Одинаковые отступы по краям */
+        margin: 4rem auto 2rem;
+    }
+    
+    .blog-section-header {
+        padding: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .blog-section-title {
+        font-size: 3rem; /* Уменьшаем размер заголовка на мобильных */
+    }
+    
+    .blog-section-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .blog-list {
+        grid-template-columns: 1fr; /* Одна колонка на мобильных */
+        gap: 1.5rem; /* Уменьшаем расстояние между карточками */
+        padding: 0; /* Убираем padding, так как он уже есть у .blog-section */
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .blog-card {
+        width: 100%; /* Карточка на всю ширину */
+        max-width: 100%;
+    }
+    
+    .blog-content {
+        padding: 1.5rem; /* Уменьшаем внутренние отступы карточки */
+    }
+}
+
 .blog-card {
     display: flex;
     flex-direction: column;
@@ -2331,7 +2369,7 @@ body:has(.videos-page) .hero video,
         align-items: flex-start;
         justify-content: flex-start;
         gap: 0;
-        padding-left: 1.5rem;
+        padding-left: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem */
         padding-right: 0; /* Убираем padding-right, так как используем ::after для дополнительного пространства */
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE и Edge */
@@ -2359,7 +2397,7 @@ body:has(.videos-page) .hero video,
         width: 280px;
         min-width: 280px;
         max-width: 280px;
-        margin-right: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem, стало 0.75rem */
+        margin-right: 0.375rem; /* Уменьшено еще в 2 раза: было 0.75rem, стало 0.375rem */
     }
     
     .benefit-item:first-child {
@@ -2367,7 +2405,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefit-item:last-child {
-        margin-right: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem, стало 0.75rem */
+        margin-right: 0.375rem; /* Уменьшено еще в 2 раза: было 0.75rem, стало 0.375rem */
         padding-right: 0;
     }
     
@@ -2375,8 +2413,8 @@ body:has(.videos-page) .hero video,
     .benefits-container::after {
         content: '';
         flex-shrink: 0;
-        width: 1.5rem; /* Уменьшено в 2 раза: было 3rem, стало 1.5rem */
-        min-width: 1.5rem;
+        width: 0.75rem; /* Уменьшено еще в 2 раза: было 1.5rem, стало 0.75rem */
+        min-width: 0.75rem;
         height: 1px;
         display: block;
     }
@@ -3692,27 +3730,33 @@ body:has(.videos-page) .hero video,
     }
     
     .events-container-wrapper {
-        gap: 0.75rem; /* Увеличили отступ между стрелками и карточками */
-        padding: 0 0.5rem; /* Добавили отступы по бокам */
+        gap: 1.5rem; /* Увеличили отступ между стрелками и карточкой, чтобы карточка была полностью видна */
+        padding: 0 0.25rem; /* Уменьшили боковые отступы контейнера */
+        margin: 0;
     }
     
     .events-scroll-btn {
-        width: 36px;
-        height: 36px;
+        width: 32px; /* Немного уменьшили размер стрелок */
+        height: 32px;
         display: flex; /* Показываем стрелки на мобильных */
         flex-shrink: 0; /* Стрелки не сжимаются */
+        position: relative; /* Убеждаемся, что стрелки не перекрывают карточку */
+        z-index: 5; /* Стрелки поверх, но не перекрывают контент */
     }
     
     .events-list {
         gap: 1.5rem;
-        padding: 1rem 0.5rem; /* Добавили отступы сверху и снизу */
+        padding: 1rem 0; /* Убрали боковые отступы, так как gap уже есть в wrapper */
+        flex: 1; /* Список занимает доступное пространство */
+        min-width: 0; /* Позволяет списку сжиматься */
     }
     
-    /* Уменьшаем размер карточки на мобильных */
+    /* Уменьшаем размер карточки на мобильных, чтобы она полностью помещалась */
     .event-card {
-        flex: 0 0 280px; /* Уменьшили с 350px до 280px */
-        min-width: 280px;
-        max-width: 280px;
+        flex: 0 0 240px; /* Уменьшили еще больше: с 280px до 240px */
+        min-width: 240px;
+        max-width: 240px;
+        width: 240px; /* Фиксированная ширина */
     }
 }
 
