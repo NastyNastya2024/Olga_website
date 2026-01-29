@@ -551,13 +551,18 @@
                             <h3 class="retreat-card-title">${escapeHtml(tour.title || 'Ретрит')}</h3>
                             ${tour.location ? `<p class="retreat-card-location">${escapeHtml(tour.location)}</p>` : ''}
                             <p class="retreat-card-date">${dateRange}</p>
-                            ${tour.description ? `<p class="retreat-card-description">${escapeHtml(tour.description.substring(0, 120))}${tour.description.length > 120 ? '...' : ''}</p>` : ''}
                             <a href="/tours.html" class="retreat-card-link">Подробнее →</a>
                         </div>
                     `;
 
                     list.appendChild(card);
                 });
+                
+                // Добавляем класс для центрирования, если карточек мало (1-2)
+                const cardCount = list.querySelectorAll('.retreat-card').length;
+                if (cardCount <= 2) {
+                    list.classList.add('retreats-list-centered');
+                }
             } catch (error) {
                 console.error('Ошибка загрузки ретритов:', error);
                 list.innerHTML = '<p class="empty-state">Ошибка загрузки ретритов</p>';

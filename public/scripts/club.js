@@ -71,6 +71,12 @@ async function loadClubEvents() {
         }
 
         container.innerHTML = events.map(event => renderEventCard(event)).join('');
+        
+        // Добавляем класс для центрирования, если карточек мало (1-2)
+        const cardCount = container.querySelectorAll('.event-card, .club-event-card').length;
+        if (cardCount <= 2) {
+            container.classList.add('events-list-centered');
+        }
     } catch (error) {
         console.error('Ошибка загрузки мероприятий:', error);
         container.innerHTML = '<p class="empty-state">Ошибка загрузки мероприятий</p>';

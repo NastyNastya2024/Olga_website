@@ -39,8 +39,8 @@ export default {
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 id="tariffModalTitle">Добавить тариф</h2>
-                            <button class="modal-close" onclick="closeTariffModal()">&times;</button>
                         </div>
+                        <button class="modal-close" onclick="closeTariffModal()">&times;</button>
                         <form id="tariffForm" class="modal-body">
                             <input type="hidden" id="tariffId">
                             

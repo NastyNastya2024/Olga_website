@@ -82,7 +82,11 @@ const Header = {
                         <a href="/" class="admin-logo-link">
                             <img src="/img/logo.png" alt="Olga Website" class="admin-logo">
                         </a>
-                        <button class="admin-burger" aria-label="Меню">Меню</button>
+                        <button class="admin-burger" aria-label="Меню">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
                     </div>
                     <div class="admin-header-actions">
                         ${user ? `

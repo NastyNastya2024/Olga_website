@@ -77,39 +77,8 @@
             <div class="pricing-container">
                 <h2 class="pricing-title">Практикуй вместе со мной</h2>
                 <p class="pricing-subtitle">С мастером практиковать эффективнее — получи персональный подход и поддержку на каждом занятии</p>
-                <div class="pricing-cards">
-                    <div class="pricing-card">
-                        <h3 class="pricing-card-title">Пробное занятие</h3>
-                        <div class="pricing-card-price">500₽</div>
-                        <ul class="pricing-features">
-                            <li>✓ Одно занятие</li>
-                            <li>✓ Знакомство с инструктором</li>
-                            <li>✓ Оценка уровня подготовки</li>
-                        </ul>
-                        <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
-                    </div>
-                    <div class="pricing-card pricing-card-popular">
-                        <span class="pricing-badge">Популярный</span>
-                        <h3 class="pricing-card-title">Базовый</h3>
-                        <div class="pricing-card-price">3500₽ / месяц</div>
-                        <ul class="pricing-features">
-                            <li>✓ 8 занятий в месяц</li>
-                            <li>✓ Доступ к утренним медитациям</li>
-                            <li>✓ Чат поддержки</li>
-                        </ul>
-                        <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
-                    </div>
-                    <div class="pricing-card">
-                        <h3 class="pricing-card-title">Премиум</h3>
-                        <div class="pricing-card-price">6000₽ / месяц</div>
-                        <ul class="pricing-features">
-                            <li>✓ Безлимитные занятия</li>
-                            <li>✓ Личная консультация</li>
-                            <li>✓ Доступ к видеотеке</li>
-                            <li>✓ Участие в мастер-классах</li>
-                        </ul>
-                        <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
-                    </div>
+                <div class="pricing-cards" id="pricingCards">
+                    <p class="loading">Загрузка тарифов...</p>
                 </div>
             </div>
         </section>
@@ -149,6 +118,67 @@
     <script src="/shared/scripts/api.js"></script>
     <script src="/shared/scripts/preloader.js"></script>
     <script src="/scripts/videos.js"></script>
+    <script>
+        // Функция для экранирования HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Загрузка тарифов
+        async function loadPricingTariffs() {
+            const container = document.getElementById('pricingCards');
+            if (!container) return;
+
+            try {
+                const response = await api.get('/public/pricing-tariffs');
+                const tariffs = response.data || response;
+
+                if (!tariffs || tariffs.length === 0) {
+                    container.innerHTML = '<p class="empty-state">Тарифы пока не добавлены</p>';
+                    return;
+                }
+
+                container.innerHTML = tariffs.map(tariff => {
+                    // Парсим описание в список features
+                    const features = tariff.description 
+                        ? tariff.description.split('\n').filter(line => line.trim()).map(line => line.trim())
+                        : [];
+                    
+                    const featuresHtml = features.length > 0 
+                        ? `<ul class="pricing-features">${features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>`
+                        : '';
+                    
+                    const popularBadge = tariff.is_popular 
+                        ? '<span class="pricing-badge">Популярный</span>'
+                        : '';
+                    
+                    const popularClass = tariff.is_popular ? 'pricing-card-popular' : '';
+                    
+                    return `
+                        <div class="pricing-card ${popularClass}">
+                            ${popularBadge}
+                            <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
+                            <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
+                            ${featuresHtml}
+                            <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Ошибка загрузки тарифов:', error);
+                container.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов</p>';
+            }
+        }
+
+        // Загружаем тарифы при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadPricingTariffs);
+    </script>
     <script>
         // Бургер-меню
         const burgerMenu = document.getElementById('burgerMenu');
