@@ -480,7 +480,7 @@ body:has(.videos-page) .hero video,
 @media (max-width: 768px) {
     .videos-grid {
         grid-template-columns: 1fr !important;
-        gap: 1rem;
+        gap: 0.5rem; /* Уменьшено в 2 раза: было 1rem, стало 0.5rem */
         padding: 0 1rem;
     }
 }
@@ -525,6 +525,19 @@ body:has(.videos-page) .hero video,
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* Стили для превью видео - показываем первый кадр */
+.video-placeholder video {
+    pointer-events: none; /* Отключаем клики на видео до открытия плеера */
+}
+
+.video-placeholder video::-webkit-media-controls {
+    display: none !important;
+}
+
+.video-placeholder video::-webkit-media-controls-enclosure {
+    display: none !important;
 }
 
 .video-play-overlay {
@@ -2236,7 +2249,7 @@ body:has(.videos-page) .hero video,
         width: 280px;
         min-width: 280px;
         max-width: 280px;
-        margin-right: 1.5rem;
+        margin-right: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem, стало 0.75rem */
     }
     
     .benefit-item:first-child {
@@ -2244,7 +2257,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefit-item:last-child {
-        margin-right: 1.5rem; /* Оставляем отступ справа для последней карточки */
+        margin-right: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem, стало 0.75rem */
         padding-right: 0;
     }
     
@@ -2252,8 +2265,8 @@ body:has(.videos-page) .hero video,
     .benefits-container::after {
         content: '';
         flex-shrink: 0;
-        width: 3rem; /* Увеличили отступ для полной видимости последней карточки */
-        min-width: 3rem;
+        width: 1.5rem; /* Уменьшено в 2 раза: было 3rem, стало 1.5rem */
+        min-width: 1.5rem;
         height: 1px;
         display: block;
     }
@@ -2490,6 +2503,16 @@ body:has(.videos-page) .hero video,
     .about-olga-image-wrapper {
         flex: 1 1 100%;
         max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .about-olga-image {
+        width: 100%;
+        max-width: 400px; /* Ограничиваем максимальную ширину */
+        height: auto; /* Автоматическая высота для сохранения пропорций */
+        aspect-ratio: 1 / 1; /* Сохраняем квадратные пропорции */
     }
     
     .about-olga-title {
@@ -2610,6 +2633,19 @@ body:has(.videos-page) .hero video,
     object-fit: cover;
 }
 
+/* Стили для превью видео в бесплатных видео - показываем первый кадр */
+.free-video-preview video {
+    pointer-events: none; /* Отключаем клики на видео до открытия плеера */
+}
+
+.free-video-preview video::-webkit-media-controls {
+    display: none !important;
+}
+
+.free-video-preview video::-webkit-media-controls-enclosure {
+    display: none !important;
+}
+
 .free-video-preview .video-placeholder {
     width: 100%;
     height: 100%;
@@ -2697,8 +2733,13 @@ body:has(.videos-page) .hero video,
 }
 
 @media (max-width: 768px) {
+    .free-videos-section {
+        padding: 1.25rem 1rem; /* Уменьшено в 2 раза: было 2.5rem 2rem, стало 1.25rem 1rem */
+    }
+    
     .free-videos-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem; /* Уменьшено в 2 раза: было 1.5rem, стало 0.75rem */
     }
     
     .free-videos-title {

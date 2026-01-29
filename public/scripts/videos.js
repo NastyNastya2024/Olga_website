@@ -23,10 +23,11 @@ function renderVideoCard(video) {
     
     if (isVideoFile) {
         // Прямая ссылка на видео файл - используем HTML5 video player
-        // Используем loading="lazy" и preload="metadata" для экономии трафика
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        // Используем preload="metadata" чтобы показать превью (первый кадр)
+        const thumbnailUrl = video.thumbnail_url || '';
+        const posterAttr = thumbnailUrl ? `poster="${thumbnailUrl}"` : '';
         videoContent = `
-            <video controls ${isMobile ? 'preload="metadata"' : 'preload="none"'} style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+            <video controls ${posterAttr} preload="metadata" style="width: 100%; height: 100%; object-fit: cover;">
                 <source src="${video.video_url}" type="video/mp4">
                 Ваш браузер не поддерживает видео.
             </video>
