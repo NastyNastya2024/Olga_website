@@ -410,14 +410,28 @@ body:has(.videos-page) .hero video,
     background-position: center;
 }
 
-/* Уменьшаем размер hero видео на мобильных для страниц ретритов и клуба */
+/* Уменьшаем размер hero видео на мобильных для всех страниц */
 @media (max-width: 768px) {
-    /* Применяем только к страницам с hero-background (ретриты и клуб) */
+    /* Применяем ко всем hero видео на мобильных */
+    .hero video {
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: 40vh !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+    }
+    
+    /* Для страниц с hero-background (ретриты и клуб) */
     .hero:has(.hero-background) video {
         width: 100%;
         height: auto;
         min-height: auto;
-        max-height: 60vh;
+        max-height: 40vh;
         object-fit: contain;
         object-position: center;
     }
@@ -439,9 +453,24 @@ body:has(.videos-page) .hero video,
         width: 100%;
         height: auto;
         min-height: auto;
-        max-height: 60vh;
+        max-height: 40vh;
         object-fit: contain;
         object-position: center;
+    }
+    
+    /* Убираем абсолютное позиционирование для hero на мобильных */
+    .hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: auto;
+        height: auto;
+        padding: 1rem 0;
+        margin-left: 0;
+        margin-right: 0;
+        left: auto;
+        right: auto;
+        width: 100%;
     }
 }
 
@@ -758,11 +787,17 @@ body:has(.videos-page) .hero video,
 .tour-card h3 {
     color: #008B9D;
     margin: 0;
-    font-size: 4.68rem;
+    font-size: 2.5rem;
     font-weight: 600;
     text-align: center;
     font-family: 'Great Vibes', cursive;
     text-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .tour-card h3 {
+        font-size: 1.8rem;
+    }
 }
 
 /* Tour Gallery */
@@ -3085,7 +3120,7 @@ body:has(.videos-page) .hero video,
 .retreat-card-image-wrapper {
     position: relative;
     width: 100%;
-    height: 160px;
+    height: 240px;
     overflow: hidden;
     background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
 }
@@ -3138,7 +3173,8 @@ body:has(.videos-page) .hero video,
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 0 auto;
+    min-height: 120px;
 }
 
 .retreat-card-title {
