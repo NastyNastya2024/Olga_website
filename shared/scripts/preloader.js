@@ -213,22 +213,35 @@ class VideoPreloader {
             this.preloaderElement.classList.add('active');
         }
 
-        // На мобильных с медленным интернетом не ждем полной загрузки
-        if (this.isMobile && this.isSlowConnection) {
-            // Загружаем только первое приоритетное видео
+        // На мобильных не ждем полной загрузки - скрываем прелоадер быстро
+        if (this.isMobile) {
+            // Загружаем только первое приоритетное видео (hero видео)
             const priorityVideo = this.videosToPreload.find(v => v.priority);
             if (priorityVideo) {
                 try {
-                    await this.preloadVideo(priorityVideo);
-                    this.loadedCount++;
+                    // Не ждем полной загрузки, только начинаем загрузку
+                    const videoElement = document.createElement('video');
+                    videoElement.src = priorityVideo.url;
+                    videoElement.preload = 'auto';
+                    videoElement.style.display = 'none';
+                    document.body.appendChild(videoElement);
+                    
+                    // Скрываем прелоадер сразу, не ждем загрузки
+                    setTimeout(() => {
+                        this.hide();
+                        if (document.body.contains(videoElement)) {
+                            document.body.removeChild(videoElement);
+                        }
+                    }, 500); // Быстро скрываем на мобильных
+                    return;
                 } catch (error) {
                     console.warn('Ошибка предзагрузки приоритетного видео:', error);
                 }
             }
-            // Сразу скрываем прелоадер
+            // Если нет приоритетного видео, скрываем прелоадер сразу
             setTimeout(() => {
                 this.hide();
-            }, 1000);
+            }, 500);
             return;
         }
 
