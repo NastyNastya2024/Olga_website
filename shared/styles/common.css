@@ -365,8 +365,10 @@ body.preloading .footer {
     color: #008B9D; /* Лазоревый цвет как заголовки */
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    text-shadow: 0 1px 2px rgba(0, 139, 157, 0.2); /* Легкая тень для лучшей видимости */
+    text-shadow: none; /* Убрали размытие - просто лазоревая надпись */
     letter-spacing: 0.5px; /* Небольшой межбуквенный интервал */
+    -webkit-font-smoothing: antialiased; /* Четкое отображение текста */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .preloader-progress {
@@ -375,5 +377,7 @@ body.preloading .footer {
     font-weight: 600; /* Увеличили толщину для четкости */
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    text-shadow: 0 1px 2px rgba(0, 139, 157, 0.2); /* Легкая тень для лучшей видимости */
+    text-shadow: none; /* Убрали размытие - просто лазоревая надпись */
+    -webkit-font-smoothing: antialiased; /* Четкое отображение текста */
+    -moz-osx-font-smoothing: grayscale;
 }
