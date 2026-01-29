@@ -215,3 +215,4 @@ echo "5. Запустите приложение: pm2 start index.js --name olga
 echo "6. Настройте Nginx (см. guides/DEPLOY_YANDEX_CLOUD.md)"
 echo ""
 echo "Подробная инструкция: guides/DEPLOY_YANDEX_CLOUD.md"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
