@@ -250,6 +250,12 @@ body.preloading .main-content {
     transition: opacity 0.5s ease;
 }
 
+/* Hero секция всегда видна, даже во время загрузки прелоадера */
+body.preloading .hero {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
 body.preloading .header {
     opacity: 0;
     pointer-events: none;

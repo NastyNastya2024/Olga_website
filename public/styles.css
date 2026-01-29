@@ -411,29 +411,36 @@ body:has(.videos-page) .hero video,
 }
 
 /* Уменьшаем размер hero видео на мобильных для всех страниц */
+/* Видео сохраняет пропорции и не растягивается на весь экран, чтобы текст оставался читаемым */
 @media (max-width: 768px) {
     /* Применяем ко всем hero видео на мобильных */
     .hero video {
-        width: 100% !important;
+        width: auto !important; /* Автоматическая ширина - видео сохраняет свои пропорции */
+        max-width: 90vw !important; /* Ограничиваем ширину до 90% экрана, чтобы не растягивалось */
         height: auto !important;
         min-height: auto !important;
-        max-height: 40vh !important;
-        object-fit: contain !important;
+        max-height: 100vh !important; /* Не больше высоты экрана */
+        object-fit: contain !important; /* Сохраняем пропорции, не обрезаем */
         object-position: center !important;
         position: relative !important;
         top: auto !important;
         left: auto !important;
         transform: none !important;
+        margin: 0 auto; /* Центрируем видео */
+        display: block; /* Блочный элемент для центрирования */
     }
     
     /* Для страниц с hero-background (ретриты и клуб) */
     .hero:has(.hero-background) video {
-        width: 100%;
+        width: auto;
+        max-width: 90vw;
         height: auto;
         min-height: auto;
-        max-height: 40vh;
+        max-height: 100vh;
         object-fit: contain;
         object-position: center;
+        margin: 0 auto;
+        display: block;
     }
     
     /* Убеждаемся, что надпись Yoga видна */
@@ -450,12 +457,15 @@ body:has(.videos-page) .hero video,
     body:has(.hero-background) .hero video,
     .tours-page .hero video,
     .club-page .hero video {
-        width: 100%;
+        width: auto;
+        max-width: 90vw;
         height: auto;
         min-height: auto;
-        max-height: 40vh;
+        max-height: 100vh;
         object-fit: contain;
         object-position: center;
+        margin: 0 auto;
+        display: block;
     }
     
     /* Убираем абсолютное позиционирование для hero на мобильных */
@@ -471,6 +481,7 @@ body:has(.videos-page) .hero video,
         left: auto;
         right: auto;
         width: 100%;
+        overflow: visible; /* Позволяем видео выходить за границы если нужно */
     }
 }
 
@@ -3681,17 +3692,27 @@ body:has(.videos-page) .hero video,
     }
     
     .events-container-wrapper {
-        gap: 0.5rem;
+        gap: 0.75rem; /* Увеличили отступ между стрелками и карточками */
+        padding: 0 0.5rem; /* Добавили отступы по бокам */
     }
     
     .events-scroll-btn {
         width: 36px;
         height: 36px;
-        display: none; /* Скрываем стрелки на мобильных, используем свайп */
+        display: flex; /* Показываем стрелки на мобильных */
+        flex-shrink: 0; /* Стрелки не сжимаются */
     }
     
     .events-list {
         gap: 1.5rem;
+        padding: 1rem 0.5rem; /* Добавили отступы сверху и снизу */
+    }
+    
+    /* Уменьшаем размер карточки на мобильных */
+    .event-card {
+        flex: 0 0 280px; /* Уменьшили с 350px до 280px */
+        min-width: 280px;
+        max-width: 280px;
     }
 }
 
