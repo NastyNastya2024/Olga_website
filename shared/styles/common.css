@@ -226,7 +226,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #ffffff; /* Белый фон */
+    background: transparent; /* Прозрачный фон, чтобы не перекрывать hero */
     z-index: 9999; /* Ниже hero, чтобы hero был виден */
     display: flex;
     align-items: center;
@@ -235,6 +235,14 @@ body {
     visibility: hidden;
     transition: opacity 0.5s ease, visibility 0.5s ease;
     pointer-events: none; /* Не блокируем взаимодействие с hero */
+}
+
+/* Белый фон только для контента прелоадера */
+.video-preloader .preloader-content {
+    background: #ffffff; /* Белый фон для самого прелоадера */
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* На мобильных прелоадер не должен перекрывать hero */
