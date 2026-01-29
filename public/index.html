@@ -417,8 +417,11 @@
             }
 
             card.innerHTML = `
-                <div class="free-video-preview">
+                <div class="free-video-preview" onclick="playFreeVideo('${escapeHtml(video.video_url)}', '${escapeHtml(video.title || 'Видео')}')">
                     ${videoContent}
+                    <div class="video-play-overlay">
+                        <div class="video-play-button">▶</div>
+                    </div>
                 </div>
                 <div class="free-video-content">
                     <h3>${escapeHtml(video.title || 'Без названия')}</h3>
@@ -683,6 +686,79 @@
         }
         
         document.addEventListener('DOMContentLoaded', setupBenefitsScroll);
+        
+        // Функция для воспроизведения бесплатных видео на главной странице
+        function playFreeVideo(videoUrl, videoTitle) {
+            // Проверяем, есть ли модальное окно для видео
+            let modal = document.getElementById('videoPlayerModal');
+            let videoElement = document.getElementById('videoPlayer');
+            let titleElement = document.getElementById('videoPlayerTitle');
+            
+            // Если модального окна нет, создаем его
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'videoPlayerModal';
+                modal.className = 'modal';
+                modal.style.display = 'none';
+                modal.innerHTML = `
+                    <div class="modal-content video-modal-content">
+                        <span class="close" onclick="closeVideoPlayer()">&times;</span>
+                        <div class="video-modal-header">
+                            <h2 id="videoPlayerTitle"></h2>
+                        </div>
+                        <div class="video-modal-player">
+                            <video id="videoPlayer" controls>
+                                Ваш браузер не поддерживает воспроизведение видео.
+                            </video>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                videoElement = document.getElementById('videoPlayer');
+                titleElement = document.getElementById('videoPlayerTitle');
+                
+                // Закрытие при клике вне модального окна
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeVideoPlayer();
+                    }
+                });
+            }
+            
+            if (!videoElement || !titleElement) {
+                console.error('Элементы видеоплеера не найдены');
+                return;
+            }
+            
+            // Устанавливаем данные видео
+            titleElement.textContent = videoTitle || 'Видео';
+            videoElement.src = videoUrl;
+            modal.style.display = 'block';
+            
+            // Автоматически запускаем воспроизведение
+            videoElement.play().catch(error => {
+                console.log('Автозапуск видео заблокирован браузером:', error);
+            });
+        }
+        
+        function closeVideoPlayer() {
+            const modal = document.getElementById('videoPlayerModal');
+            const videoElement = document.getElementById('videoPlayer');
+            
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.src = '';
+            }
+        }
+        
+        // Делаем функции доступными глобально
+        window.playFreeVideo = playFreeVideo;
+        window.closeVideoPlayer = closeVideoPlayer;
 
     </script>
 </body>

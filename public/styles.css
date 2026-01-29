@@ -2688,6 +2688,7 @@ body:has(.videos-page) .hero video,
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, #48BDCC 0%, #2a8a9a 100%);
+    cursor: pointer;
 }
 
 .free-video-preview video {
@@ -2737,6 +2738,8 @@ body:has(.videos-page) .hero video,
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .free-video-preview:hover .video-play-overlay {

@@ -35,6 +35,17 @@ npm start
 - **Публичная часть**: Откройте `public/index.html` в браузере
 - **Админ-панель**: Откройте `admin/login.html` в браузере
 
+## Обновление на сервере
+
+Для обновления проекта на сервере используйте скрипт:
+
+```bash
+cd ~/olga-website
+bash scripts/update-from-git.sh
+```
+
+Подробные инструкции: [UPDATE_FROM_GIT.md](guides/UPDATE_FROM_GIT.md)
+
 ## Функционал
 
 ### Публичная часть (public/)
