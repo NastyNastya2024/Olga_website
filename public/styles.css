@@ -184,12 +184,42 @@ body, html {
 }
 
 @media (max-width: 768px) {
-    .nav {
-        padding: 0.75rem 1.25rem;
+    /* Убираем блюр у всего header на мобильных */
+    .header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: transparent !important;
     }
-
+    
+    .header.scrolled {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: transparent !important;
+    }
+    
+    /* Добавляем блюр только вокруг логотипа */
+    .logo {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    /* Добавляем блюр только вокруг иконки бургер-меню */
     .burger-menu {
         display: flex;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .nav {
+        padding: 0.75rem 1.25rem;
     }
 
     .nav-menu {
@@ -432,18 +462,19 @@ body:has(.videos-page) .hero video,
 @media (max-width: 768px) {
     /* Применяем ко всем hero видео на мобильных */
     .hero video {
-        width: auto !important; /* Автоматическая ширина - видео сохраняет свои пропорции */
-        max-width: 90vw !important; /* Ограничиваем ширину до 90% экрана, чтобы не растягивалось */
+        width: 100vw !important; /* Видео заполняет всю ширину экрана */
+        max-width: 100vw !important; /* Убираем зазоры по краям */
         height: auto !important;
         min-height: auto !important;
         max-height: 100vh !important; /* Не больше высоты экрана */
-        object-fit: contain !important; /* Сохраняем пропорции, не обрезаем */
+        object-fit: contain !important; /* Сохраняем пропорции, не обрезаем текст */
         object-position: center !important;
         position: relative !important;
         top: auto !important;
         left: auto !important;
         transform: none !important;
-        margin: 0 auto; /* Центрируем видео */
+        margin: 0 !important; /* Убираем отступы для устранения зазоров */
+        padding: 0 !important; /* Убираем внутренние отступы */
         display: block !important; /* Блочный элемент для центрирования */
         opacity: 1 !important; /* Видео всегда видно на мобильных */
         visibility: visible !important; /* Видео всегда видно */
@@ -452,14 +483,15 @@ body:has(.videos-page) .hero video,
     
     /* Для страниц с hero-background (ретриты и клуб) */
     .hero:has(.hero-background) video {
-        width: auto;
-        max-width: 90vw;
+        width: 100vw !important;
+        max-width: 100vw !important;
         height: auto;
         min-height: auto;
         max-height: 100vh;
         object-fit: contain;
         object-position: center;
-        margin: 0 auto;
+        margin: 0 !important;
+        padding: 0 !important;
         display: block;
     }
     
@@ -477,14 +509,15 @@ body:has(.videos-page) .hero video,
     body:has(.hero-background) .hero video,
     .tours-page .hero video,
     .club-page .hero video {
-        width: auto;
-        max-width: 90vw;
+        width: 100vw !important;
+        max-width: 100vw !important;
         height: auto;
         min-height: auto;
         max-height: 100vh;
         object-fit: contain;
         object-position: center;
-        margin: 0 auto;
+        margin: 0 !important;
+        padding: 0 !important;
         display: block;
     }
     
@@ -495,13 +528,13 @@ body:has(.videos-page) .hero video,
         justify-content: center;
         min-height: auto;
         height: auto;
-        padding: 1rem 0;
-        margin-left: 0;
-        margin-right: 0;
+        padding: 0 !important; /* Убираем все отступы для устранения зазоров */
+        margin: 0 !important; /* Убираем все внешние отступы */
         left: auto;
         right: auto;
-        width: 100%;
-        overflow: visible; /* Позволяем видео выходить за границы если нужно */
+        width: 100vw !important; /* Полная ширина экрана */
+        max-width: 100vw !important;
+        overflow: hidden; /* Скрываем переполнение */
     }
 }
 
@@ -2305,7 +2338,7 @@ body:has(.videos-page) .hero video,
 
 .benefits-main-title {
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    font-size: clamp(1.98rem, 5vw, 3.85rem); /* Увеличено на 10%: было 1.8rem-3.5rem, стало 1.98rem-3.85rem */
     color: #008B9D;
     margin: 0 0 1rem 0;
     font-weight: 400;
@@ -2373,7 +2406,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefits-main-title {
-        font-size: clamp(1.5rem, 6vw, 2.5rem);
+        font-size: clamp(1.65rem, 6vw, 2.75rem); /* Увеличено на 10%: было 1.5rem-2.5rem, стало 1.65rem-2.75rem */
         line-height: 1.3;
         margin-bottom: 0.75rem;
     }
@@ -2397,7 +2430,7 @@ body:has(.videos-page) .hero video,
         align-items: flex-start;
         justify-content: flex-start;
         gap: 0;
-        padding-left: 0.2rem; /* Уменьшено еще в 2 раза: было 0.4rem, стало 0.2rem */
+        padding-left: 0.1rem; /* Уменьшено еще: было 0.2rem, стало 0.1rem */
         padding-right: 0; /* Убираем padding-right, так как используем ::after для дополнительного пространства */
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE и Edge */
@@ -2425,7 +2458,7 @@ body:has(.videos-page) .hero video,
         width: 280px;
         min-width: 280px;
         max-width: 280px;
-        margin-right: 0.1rem; /* Уменьшено еще в 2 раза: было 0.2rem, стало 0.1rem */
+        margin-right: 0.05rem; /* Уменьшено еще: было 0.1rem, стало 0.05rem */
     }
     
     .benefit-item:first-child {
@@ -2433,7 +2466,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefit-item:last-child {
-        margin-right: 0.1rem; /* Уменьшено еще в 2 раза: было 0.2rem, стало 0.1rem */
+        margin-right: 0.05rem; /* Уменьшено еще: было 0.1rem, стало 0.05rem */
         padding-right: 0;
     }
     
@@ -2441,21 +2474,15 @@ body:has(.videos-page) .hero video,
     .benefits-container::after {
         content: '';
         flex-shrink: 0;
-        width: 0.2rem; /* Уменьшено еще в 2 раза: было 0.4rem, стало 0.2rem */
-        min-width: 0.2rem;
+        width: 0.1rem; /* Уменьшено еще: было 0.2rem, стало 0.1rem */
+        min-width: 0.1rem;
         height: 1px;
         display: block;
     }
     
-    /* Стрелки для прокрутки */
+    /* Стрелки для прокрутки - скрыты на мобильных, используется только свайп */
     .benefits-scroll-controls {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 0.5rem; /* Уменьшили отступ сверху, чтобы стрелки были ближе к карточкам */
-        margin-bottom: 4rem; /* Увеличили отступ снизу до следующего раздела */
-        padding: 0 1.5rem;
+        display: none !important; /* Скрываем стрелки на мобильных */
     }
     
     .benefits-scroll-btn {
