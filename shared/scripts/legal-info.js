@@ -23,6 +23,10 @@
                     <dd>АО «ТБанк»</dd>
                     <dt>Юридический адрес банка</dt>
                     <dd>127287, г. Москва, ул. Хуторская 2-я, д. 38А, стр. 26</dd>
+                    <dt>Телефон</dt>
+                    <dd><a href="tel:89025796252" class="legal-info-link-inner">8 902 579-62-52</a></dd>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:ola_br@mail.ru" class="legal-info-link-inner">ola_br@mail.ru</a></dd>
                 </dl>
             </div>
         </div>

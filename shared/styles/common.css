@@ -457,7 +457,22 @@ body.preloading .footer {
     color: #333;
     font-size: 0.95rem;
 }
+.legal-info-link-inner {
+    color: #008B9D;
+    text-decoration: none;
+}
+.legal-info-link-inner:hover {
+    text-decoration: underline;
+}
 
+.footer-text {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    font-weight: 700;
+}
 .footer-link {
     color: inherit;
     text-decoration: none;
