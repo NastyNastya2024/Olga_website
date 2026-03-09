@@ -30,7 +30,7 @@ body {
 
 /* Хедер — оставляем оригинальный бирюзовый, не переопределяем цвет */
 .admin-header-top {
-  padding: 0.9rem 1.25rem !important;
+  padding: 0.9rem 1.5rem !important;
 }
 
 .admin-logo {
@@ -42,15 +42,31 @@ body {
   border-radius: var(--apple-radius) !important;
 }
 
-/* Нав — только скругление табов, цвет как в admin.css (#2c3e50, #148083) */
+/* Нав — Apple UI: крупные табы, удобная область нажатия */
 .admin-top-nav {
-  padding: 0.75rem 1.25rem !important;
-  gap: 0.25rem;
+  padding: 0.9rem 1.5rem !important;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 .admin-top-nav .nav-item {
-  border-radius: 999px;
-  padding: 0.6rem 0.9rem !important;
+  border-radius: 999px !important;
+  padding: 0.85rem 1.5rem !important;
+  font-size: 1.02rem !important;
+  font-weight: 500 !important;
+  min-height: 44px;
+  align-items: center;
+  box-shadow: none !important;
+}
+
+.admin-top-nav .nav-item.active {
+  background-color: #e8f4f5 !important;
+  color: #148083 !important;
+}
+
+.admin-top-nav .nav-icon {
+  font-size: 1.25rem !important;
+  margin-right: 0.5rem !important;
 }
 
 /* Кнопки — только скругление, цвета из common.css/admin.css */
@@ -82,6 +98,52 @@ body {
 .price-description-group textarea:focus {
   outline: none !important;
   border-color: #148083 !important;
+}
+
+/* Кнопка «Выберите файл» — в стиле Apple UI */
+.upload-group-file,
+.upload-group-file.form-control {
+  font-family: var(--apple-font) !important;
+  border-radius: var(--apple-radius) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #fff !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.92rem !important;
+  color: #333 !important;
+}
+/* Стилизация кнопки выбора файла внутри input[type=file] */
+.upload-group-file::file-selector-button {
+  font-family: var(--apple-font) !important;
+  border-radius: var(--apple-radius-sm) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #f8f9fa !important;
+  color: #333 !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.92rem !important;
+  margin-right: 0.75rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  cursor: pointer !important;
+}
+.upload-group-file::file-selector-button:hover {
+  background: #f0f0f0 !important;
+  border-color: #ddd !important;
+}
+.upload-group-file::-webkit-file-upload-button {
+  font-family: var(--apple-font) !important;
+  border-radius: var(--apple-radius-sm) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #f8f9fa !important;
+  color: #333 !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.92rem !important;
+  margin-right: 0.75rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  cursor: pointer !important;
+  -webkit-appearance: none !important;
+}
+.upload-group-file::-webkit-file-upload-button:hover {
+  background: #f0f0f0 !important;
+  border-color: #ddd !important;
 }
 
 /* Таблицы — белый фон, серая шапка и границы как было */
@@ -156,6 +218,27 @@ body {
   background: #fff !important;
   border-radius: var(--apple-radius) !important;
   border: 1px solid #e0e0e0 !important;
+}
+
+/* Окно просмотра видео — чёрный фон превью */
+#videoPlayerModal .video-modal-content {
+  background: #000 !important;
+  border-color: #000 !important;
+}
+#videoPlayerModal .video-modal-player,
+#videoPlayerModal .video-modal-player video {
+  background: #000 !important;
+}
+#videoPlayerModal .btn-share-video,
+#videoPlayerModal .btn-close-video {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+#videoPlayerModal .btn-share-video:hover,
+#videoPlayerModal .btn-close-video:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
 }
 
 .modal-close {

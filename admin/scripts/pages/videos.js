@@ -17,10 +17,10 @@ export default {
                 <div class="table-container">
                     <table class="data-table" id="videos-data-table">
                         <colgroup>
-                            <col style="width: 50px">
-                            <col>
-                            <col style="width: 180px">
-                            <col style="width: 320px">
+                            <col style="width: 5%">
+                            <col style="width: 38%">
+                            <col style="width: 12%">
+                            <col style="width: 45%">
                         </colgroup>
                         <thead>
                             <tr>
@@ -37,6 +37,7 @@ export default {
                         </tbody>
                     </table>
                 </div>
+                <div id="videosPagination" class="pagination-bar" style="display: none;"></div>
             </div>
             
             ${getVideoModal()}
@@ -56,6 +57,7 @@ export default {
         
         // Делаем функции доступными глобально (до загрузки данных)
         window.loadVideos = loadVideos;
+        window.goToVideosPage = goToVideosPage;
         window.showAddVideoModal = showAddVideoModal;
         window.closeVideoModal = closeVideoModal;
         window.editVideo = editVideo;
@@ -140,11 +142,17 @@ let currentVideoTitle = '';
 let currentShareVideoUrl = '';
 let currentShareVideoTitle = '';
 
+const VIDEOS_PAGE_SIZE = 20;
+let allVideosList = [];
+let videosCurrentPage = 1;
+
 async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Загрузка...</td></tr>';
+    const paginationEl = document.getElementById('videosPagination');
+    if (paginationEl) paginationEl.style.display = 'none';
 
     try {
         const userRole = getUserRole();
@@ -152,46 +160,26 @@ async function loadVideos() {
         let videos = [];
         
         if (isStudent) {
-            // Студент видит только назначенные ему видео
             try {
                 const userResponse = await api.get('/admin/users/me');
                 const user = userResponse.data || userResponse;
-                // Преобразуем ID в числа для корректного сравнения
                 const assignedVideoIds = (user.assigned_videos || []).map(id => parseInt(id));
                 
-                console.log('Данные пользователя:', user);
-                console.log('Назначенные видео (ID):', assignedVideoIds);
-                
                 if (assignedVideoIds.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Вам не назначено ни одного видео</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Вам не назначено ни одного видео</td></tr>';
                     return;
                 }
                 
-                // Получаем все видео и фильтруем по назначенным
                 const allVideosResponse = await api.get('/admin/videos');
                 const allVideos = allVideosResponse.data || allVideosResponse;
-                
-                console.log('Всего видео на платформе:', allVideos.length);
-                console.log('ID всех видео:', allVideos.map(v => v.id));
-                
-                // Фильтруем видео, преобразуя ID в числа для сравнения
-                videos = allVideos.filter(video => {
-                    const videoId = parseInt(video.id);
-                    const isAssigned = assignedVideoIds.includes(videoId);
-                    console.log(`Видео ${videoId} (${video.title}): назначено = ${isAssigned}`);
-                    return isAssigned;
-                });
-                
-                console.log('Отфильтрованные видео для студента:', videos.length);
+                videos = allVideos.filter(video => assignedVideoIds.includes(parseInt(video.id)));
             } catch (error) {
                 console.error('Ошибка загрузки данных пользователя:', error);
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
                 return;
             }
         } else {
-            // Админ и другие роли видят все видео
-            const endpoint = '/admin/videos';
-            const response = await api.get(endpoint);
+            const response = await api.get('/admin/videos');
             videos = response.data || response;
         }
 
@@ -200,26 +188,69 @@ async function loadVideos() {
             return;
         }
 
-        tbody.innerHTML = videos.map(video => `
-            <tr>
-                <td>${video.id}</td>
-                <td>${video.title}</td>
-                <td class="cell-status-access">
-                    <span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span>
-                </td>
-                <td class="cell-actions">
-                    ${!isStudent ? `
-                        <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
-                        <button class="btn btn-danger" title="Удалить" onclick="deleteVideo(${video.id})">Удалить</button>
-                    ` : ''}
-                    ${video.video_url ? `<button class="btn btn-view" title="Смотреть" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
-                </td>
-            </tr>
-        `).join('');
+        allVideosList = videos;
+        videosCurrentPage = 1;
+        renderVideosPage();
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
         tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
+}
+
+function renderVideosPage() {
+    const tbody = document.getElementById('videosTableBody');
+    const paginationEl = document.getElementById('videosPagination');
+    if (!tbody) return;
+
+    const isStudent = getUserRole() === 'student';
+    const total = allVideosList.length;
+    const totalPages = Math.max(1, Math.ceil(total / VIDEOS_PAGE_SIZE));
+    const page = Math.min(Math.max(1, videosCurrentPage), totalPages);
+    videosCurrentPage = page;
+
+    const start = (page - 1) * VIDEOS_PAGE_SIZE;
+    const end = Math.min(start + VIDEOS_PAGE_SIZE, total);
+    const pageVideos = allVideosList.slice(start, end);
+
+    tbody.innerHTML = pageVideos.map(video => `
+        <tr>
+            <td>${video.id}</td>
+            <td>${video.title}</td>
+            <td class="cell-status-access">
+                <span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span>
+            </td>
+            <td class="cell-actions">
+                ${!isStudent ? `
+                    <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
+                    <button class="btn btn-danger" title="Удалить" onclick="deleteVideo(${video.id})">Удалить</button>
+                ` : ''}
+                ${video.video_url ? `<button class="btn btn-view" title="Смотреть" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
+            </td>
+        </tr>
+    `).join('');
+
+    if (paginationEl) {
+        if (totalPages <= 1) {
+            paginationEl.style.display = 'none';
+            return;
+        }
+        paginationEl.style.display = 'flex';
+        const from = start + 1;
+        const to = end;
+        paginationEl.innerHTML = `
+            <span class="pagination-info">${from}–${to} из ${total}</span>
+            <div class="pagination-controls">
+                <button type="button" class="btn btn-secondary btn-sm pagination-btn" ${page <= 1 ? 'disabled' : ''} onclick="goToVideosPage(${page - 1})">Назад</button>
+                <span class="pagination-pages">Страница ${page} из ${totalPages}</span>
+                <button type="button" class="btn btn-secondary btn-sm pagination-btn" ${page >= totalPages ? 'disabled' : ''} onclick="goToVideosPage(${page + 1})">Вперёд</button>
+            </div>
+        `;
+    }
+}
+
+function goToVideosPage(pageNum) {
+    videosCurrentPage = pageNum;
+    renderVideosPage();
 }
 
 function showAddVideoModal() {
@@ -511,19 +542,27 @@ function getVideoPlayerModal() {
     return `
         <div id="videoPlayerModal" class="modal" style="display: none;">
             <div class="modal-content video-modal-content">
-                <span class="close" onclick="closeVideoPlayer()">&times;</span>
                 <div class="video-modal-header">
                     <h2 id="videoPlayerTitle"></h2>
-                    <button id="btnShareVideo" onclick="shareVideo()" class="btn-share-video" title="Поделиться видео">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="5" r="3"></circle>
-                            <circle cx="6" cy="12" r="3"></circle>
-                            <circle cx="18" cy="19" r="3"></circle>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                        </svg>
-                        Поделиться
-                    </button>
+                    <div class="video-modal-header-actions">
+                        <button id="btnShareVideo" onclick="shareVideo()" class="btn-share-video" title="Поделиться видео">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                            Поделиться
+                        </button>
+                        <button type="button" onclick="closeVideoPlayer()" class="btn-close-video" title="Закрыть">
+                            <svg class="btn-close-video-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            Закрыть
+                        </button>
+                    </div>
                 </div>
                 <div class="video-modal-player">
                     <video id="videoPlayer" controls>

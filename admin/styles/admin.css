@@ -30,10 +30,13 @@ html, body {
     flex-direction: column;
     min-height: 100vh;
     height: 100vh;
+    width: 100%;
+    max-width: 100vw;
     background-color: #FFFFFF;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
+    overflow-x: hidden;
 }
 
 .sidebar-group {
@@ -200,6 +203,20 @@ html, body {
     min-height: 80px;
 }
 
+/* Чекбокс в форме: перед надписью, на одной линии с ней */
+.form-group label.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+.form-group label.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    flex-shrink: 0;
+}
+
 /* Блоки загрузки видео и обложки — один заголовок, под ним подзаголовок, два равнозначных поля */
 .upload-group {
     margin-bottom: 1.25rem;
@@ -276,7 +293,7 @@ html, body {
     cursor: pointer;
 }
 
-/* Main Content */
+/* Main Content — при горизонтальной прокрутке шапка и разделы не двигаются */
 .admin-content {
     flex: 1;
     display: flex;
@@ -284,7 +301,9 @@ html, body {
     margin: 0 !important;
     padding: 0 !important;
     height: 100vh;
+    min-width: 0;
     overflow: hidden;
+    overflow-x: hidden;
 }
 
 .admin-header {
@@ -297,7 +316,7 @@ html, body {
 
 .admin-header-top {
     background-color: #148083;
-    padding: 0.75rem 2rem;
+    padding: 0.75rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -422,10 +441,10 @@ html, body {
 .admin-top-nav {
     display: flex;
     background-color: white;
-    padding: 0;
+    padding: 0 1.5rem;
     margin: 0;
     overflow-x: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .admin-top-nav .nav-item {
@@ -434,19 +453,18 @@ html, body {
     padding: 1rem 1.5rem;
     color: #2c3e50;
     text-decoration: none;
-    transition: all 0.3s;
-    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    border-bottom: none;
     white-space: nowrap;
 }
 
 .admin-top-nav .nav-item:hover {
-    background-color: #f8f9fa;
+    background-color: #f5f5f5;
     color: #148083;
 }
 
 .admin-top-nav .nav-item.active {
-    background-color: #f8f9fa;
-    border-bottom-color: #148083;
+    background-color: #e8f4f5;
     color: #148083;
     font-weight: 600;
 }
@@ -476,7 +494,9 @@ html, body {
     flex: 1;
     padding: 2rem 2rem 1rem 2rem !important;
     margin: 0 !important;
+    min-width: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     min-height: 0;
 }
 
@@ -519,7 +539,10 @@ html, body {
 #videos-page,
 #students-page,
 #tours-page,
-#blog-page {
+#blog-page,
+#club-page,
+#club-prices-page,
+#pricing-tariffs-page {
     margin: 0 !important;
     padding: 0 !important;
     width: 100%;
@@ -527,20 +550,32 @@ html, body {
     flex-direction: column;
 }
 
+/* Десктоп: размер страницы от начала заголовка до конца кнопки (как на Видео) */
+#videos-page,
+#students-page,
+#tours-page,
+#blog-page,
+#club-page,
+#club-prices-page,
+#pricing-tariffs-page {
+    max-width: 1400px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+}
+
 .table-container {
     margin-top: 0 !important;
     padding-top: 0 !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     padding: 0 !important;
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     overflow-x: auto;
     flex: 1;
     background: transparent !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    display: flex;
-    justify-content: center;
 }
 
 .data-table {
@@ -553,22 +588,49 @@ html, body {
     table-layout: auto;
 }
 
-/* Таблица видео: фиксированная раскладка — колонки не пересекаются */
+/* Таблица видео: всегда по ширине контейнера, без горизонтальной прокрутки */
+#videos-page .table-container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
 #videos-data-table {
     table-layout: fixed;
-    min-width: 720px;
-    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+#videos-data-table th,
+#videos-data-table td {
+    min-width: 0;
+}
+/* Статус и действия в одной строке */
+#videos-data-table tbody tr {
+    display: table-row;
+}
+#videos-data-table td {
+    vertical-align: middle;
+    display: table-cell;
+}
+/* Колонка «Название» — обрезка длинного текста */
+#videos-data-table th:nth-child(2),
+#videos-data-table td:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #videos-data-table .cell-status-access {
-    width: 180px;
-    max-width: 180px;
     overflow: hidden;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+/* Колонка «Действия» — кнопки справа */
+#videos-data-table th.col-actions,
+#videos-data-table td.cell-actions {
+    text-align: right;
 }
 #videos-data-table td.cell-actions {
     box-sizing: border-box;
-    width: 320px;
-    min-width: 320px;
     overflow: visible;
+    justify-content: flex-end;
 }
 
 .data-table thead {
@@ -595,10 +657,10 @@ html, body {
     border-bottom: none;
 }
 
-/* Объединённая колонка «Статус / Доступ» */
+/* Колонка «Статус» — одна строка, слева от «Действия» */
 .cell-status-access {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.35rem;
 }
@@ -607,11 +669,9 @@ html, body {
     font-size: 0.9rem;
 }
 
-/* Колонка «Действия»: шире, кнопки в одну строку — одна строка на одно видео */
-.data-table th.col-actions,
-.data-table td.cell-actions {
-    min-width: 320px;
-    width: 320px;
+/* Колонка «Действия»: кнопки в одну строку */
+.data-table th.col-actions {
+    text-align: right;
 }
 .data-table td.cell-actions {
     display: flex;
@@ -619,17 +679,16 @@ html, body {
     flex-wrap: nowrap;
     gap: 0.5rem;
     align-items: center;
+    justify-content: flex-end;
 }
 .data-table td.cell-actions .btn {
     white-space: nowrap;
     flex-shrink: 0;
 }
-@media (min-width: 900px) {
-    .data-table th.col-actions,
-    .data-table td.cell-actions {
-        min-width: 360px;
-        width: 360px;
-    }
+/* У таблицы видео колонки по ширине (%), у остальных таблиц — минимум для действий */
+.data-table:not(#videos-data-table) th.col-actions,
+.data-table:not(#videos-data-table) td.cell-actions {
+    min-width: 200px;
 }
 
 .data-table .loading,
@@ -637,6 +696,75 @@ html, body {
     text-align: center;
     padding: 2rem;
     color: #7f8c8d;
+}
+
+/* Пагинация таблицы видео */
+.pagination-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pagination-pages {
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Раскрываемая строка «Подробнее» в таблице учеников */
+tr.user-detail-row {
+    background-color: #f8f9fa;
+}
+tr.user-detail-row td.user-detail-cell {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+}
+.user-detail-content {
+    padding-left: 0.5rem;
+}
+.user-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem 1.5rem;
+}
+.user-detail-item {
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+.user-detail-item strong {
+    color: #2c3e50;
+    margin-right: 0.35rem;
+}
+.btn-details {
+    background-color: #f0f0f0;
+    color: #2c3e50;
+    border: 1px solid #ddd;
+}
+.btn-details:hover {
+    background-color: #e8e8e8;
+    color: #148083;
+    border-color: #148083;
 }
 
 .page-header h1 {
@@ -801,6 +929,94 @@ html, body {
         white-space: nowrap;
     }
 
+    /* Страница «Видео» на мобильном: убираем пустое пространство справа — блок на всю ширину экрана */
+    #videos-page {
+        margin-left: -1rem !important;
+        margin-right: -1rem !important;
+        width: calc(100% + 2rem) !important;
+        max-width: none !important;
+    }
+    #videos-page .page-header {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    #videos-page #videosPagination {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* Таблица видео на мобильном: по ширине контейнера, без горизонтальной прокрутки */
+    .table-container {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    #videos-data-table {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed;
+        box-sizing: border-box;
+    }
+    #videos-data-table th,
+    #videos-data-table td {
+        box-sizing: border-box;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    /* Скрываем ID на мобильном — больше места для названия и кнопок */
+    #videos-data-table th:nth-child(1),
+    #videos-data-table td:nth-child(1) {
+        display: none;
+    }
+    #videos-data-table th:nth-child(2),
+    #videos-data-table td:nth-child(2) {
+        width: 34%;
+        max-width: none;
+    }
+    #videos-data-table th:nth-child(3),
+    #videos-data-table td:nth-child(3),
+    #videos-data-table .cell-status-access {
+        width: 16% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+    }
+    #videos-data-table .cell-status-access .status-badge {
+        font-size: 0.58rem !important;
+        padding: 0.12rem 0.28rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    #videos-data-table th.col-actions,
+    #videos-data-table td.cell-actions {
+        width: 50% !important;
+        min-width: 0 !important;
+    }
+    /* Кнопки в одну строку, компактные — все три видны */
+    #videos-data-table .cell-actions {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 0.25rem !important;
+        justify-content: flex-end;
+    }
+    #videos-data-table .cell-actions .btn {
+        padding: 0.45rem 0.5rem !important;
+        min-width: 36px !important;
+    }
+    #videos-data-table .cell-actions .btn-edit,
+    #videos-data-table .cell-actions .btn-primary,
+    #videos-data-table .cell-actions .btn-danger,
+    #videos-data-table .cell-actions .btn-view {
+        padding: 0.45rem 0.5rem !important;
+    }
+    #videos-data-table .cell-actions .btn-edit::before,
+    #videos-data-table .cell-actions .btn-primary::before,
+    #videos-data-table .cell-actions .btn-danger::before,
+    #videos-data-table .cell-actions .btn-view::before {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+
     /* Уменьшаем кнопки на 20% для мобильной версии */
     .btn {
         padding: 0.6rem 1.2rem !important; /* было 0.75rem 1.5rem */
@@ -828,11 +1044,12 @@ html, body {
         white-space: nowrap;
     }
     
-    /* Кнопки в таблицах: больше расстояние между кнопками, на мобильном — значки */
+    /* Кнопки в таблицах: больше расстояние между кнопками, на мобильном — значки, выравнивание по правому краю */
     .data-table .cell-actions {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        align-items: flex-end;
     }
     .data-table .cell-actions .btn {
         padding: 0.6rem 0.75rem !important;
@@ -1089,8 +1306,8 @@ html, body {
 }
 
 .status-badge.published {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: #cce6e8;
+    color: #0d5c5e;
 }
 
 .status-badge.hidden,

@@ -3634,26 +3634,32 @@ body:has(.videos-page) .hero video,
     line-height: 1.6;
 }
 
+/* Тарифы в один ряд; при 5 карточках — перенос; каждая новая строка по центру */
 .pricing-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 2rem;
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
 .pricing-card {
+    flex: 1 1 calc((100% - 8rem) / 5); /* до 5 в ряд с учётом gap 2rem × 4 */
+    min-width: 200px;
+    max-width: 320px;
     background: #ffffff;
     border-radius: 24px;
     padding: 2.25rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-        flex-direction: column;
+    flex-direction: column;
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.05);
     min-height: auto;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .pricing-card::before {
@@ -3792,10 +3798,18 @@ body:has(.videos-page) .hero video,
 
 @media (max-width: 968px) {
     .pricing-cards {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
         max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
     }
-    
+    .pricing-card {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 400px;
+        width: 100%;
+    }
     .pricing-title {
         font-size: 3rem;
     }

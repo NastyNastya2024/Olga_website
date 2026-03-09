@@ -1,5 +1,5 @@
 /**
- * Страница управления клубом (тарифы и отзывы)
+ * Страница управления клубом (мероприятия)
  */
 
 export default {
@@ -7,82 +7,28 @@ export default {
         return `
             <div id="club-page">
                 <div class="page-header">
-                    <h1>Клуб</h1>
+                    <h1>Мероприятия клуба</h1>
+                    <button class="btn btn-primary" onclick="showAddEventModal()">Добавить мероприятие</button>
                 </div>
 
-                <div class="club-sections-container">
-                    <!-- Секция тарифов -->
-                    <div class="club-prices-section">
-                    <div class="club-prices-header">
-                        <h2>Тарифы</h2>
-                        <button type="submit" form="clubPricesForm" class="btn btn-primary">Сохранить тарифы и описания</button>
-                    </div>
-                    <form id="clubPricesForm" class="club-prices-form">
-                        <div class="price-form-group">
-                            <div class="price-input-group">
-                                <label for="price1Month">1 месяц</label>
-                                <input type="number" id="price1Month" step="0.01" min="0" placeholder="0.00">
-                                <span class="price-currency">руб.</span>
-                            </div>
-                            <div class="price-description-group">
-                                <label for="description1Month">Описание (1 месяц)</label>
-                                <textarea id="description1Month" rows="3" placeholder="Описание тарифа на 1 месяц"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="price-form-group">
-                            <div class="price-input-group">
-                                <label for="price3Months">3 месяца</label>
-                                <input type="number" id="price3Months" step="0.01" min="0" placeholder="0.00">
-                                <span class="price-currency">руб.</span>
-                            </div>
-                            <div class="price-description-group">
-                                <label for="description3Months">Описание (3 месяца)</label>
-                                <textarea id="description3Months" rows="3" placeholder="Описание тарифа на 3 месяца"></textarea>
-                            </div>
-                        </div>
-                        
-                        <div class="price-form-group">
-                            <div class="price-input-group">
-                                <label for="price6Months">6 месяцев</label>
-                                <input type="number" id="price6Months" step="0.01" min="0" placeholder="0.00">
-                                <span class="price-currency">руб.</span>
-                            </div>
-                            <div class="price-description-group">
-                                <label for="description6Months">Описание (6 месяцев)</label>
-                                <textarea id="description6Months" rows="3" placeholder="Описание тарифа на 6 месяцев"></textarea>
-                            </div>
-                        </div>
-                    </form>
-                    </div>
-
-                    <!-- Секция мероприятий -->
-                    <div class="club-events-section">
-                        <div class="club-events-header">
-                            <h2>Мероприятия</h2>
-                            <button class="btn btn-primary" onclick="showAddEventModal()">Добавить мероприятие</button>
-                        </div>
-
-                        <div class="table-container">
-                            <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Название</th>
-                                    <th>Дата</th>
-                                    <th>Статус</th>
-                                    <th>Галерея</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody id="eventsTableBody">
-                                <tr>
-                                    <td colspan="6" class="loading">Загрузка...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Дата</th>
+                                <th>Статус</th>
+                                <th>Галерея</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">Загрузка...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -93,7 +39,7 @@ export default {
     init: async () => {
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {
-            pageTitle.textContent = 'Клуб';
+            pageTitle.textContent = 'Мероприятия клуба';
         }
         
         // Инициализация функций для мероприятий
@@ -104,11 +50,9 @@ export default {
         window.deleteEvent = deleteEvent;
         
         // Загружаем данные
-        await loadPrices();
         await loadEvents();
         
-        // Настраиваем формы
-        setupPricesForm();
+        // Настраиваем форму мероприятий
         setTimeout(() => {
             setupEventForm();
         }, 100);

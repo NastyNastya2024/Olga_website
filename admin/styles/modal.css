@@ -26,15 +26,63 @@
     -webkit-overflow-scrolling: touch;
 }
 
+/* Кнопки в подвале модалки — одного размера */
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+.modal-footer .btn {
+    min-width: 120px;
+    box-sizing: border-box;
+}
+
 /* Стили для модального окна видео */
 .video-modal-content {
     max-width: 90vw;
     width: 90vw;
     max-height: 90vh;
     padding: 1rem;
-    background: #000;
+    background: #000 !important;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Окно просмотра видео на весь экран */
+#videoPlayerModal .video-modal-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 1rem 1rem 1.5rem !important;
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+#videoPlayerModal .video-modal-header {
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+}
+#videoPlayerModal .video-modal-player {
+    flex: 1;
+    min-height: 0;
+    padding-bottom: 0 !important;
+    height: calc(100vh - 5rem) !important;
+}
+#videoPlayerModal .video-modal-player video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .video-modal-header {
@@ -44,6 +92,42 @@
     margin-bottom: 1rem;
     flex-wrap: wrap;
     gap: 1rem;
+}
+
+/* Блок кнопок в шапке видео-модалки — небольшой отступ между кнопками */
+#videoPlayerModal .video-modal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+/* Кнопки «Поделиться» и «Закрыть» — одинаковый стиль (белая обводка и текст) */
+#videoPlayerModal .btn-share-video,
+#videoPlayerModal .btn-close-video {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+#videoPlayerModal .btn-share-video:hover,
+#videoPlayerModal .btn-close-video:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+#videoPlayerModal .btn-share-video svg {
+    stroke: currentColor;
+}
+#videoPlayerModal .btn-close-video {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+#videoPlayerModal .btn-close-video svg {
+    stroke: currentColor;
+    flex-shrink: 0;
 }
 
 .video-modal-header h2 {
@@ -75,7 +159,7 @@
     position: relative;
     width: 100%;
     padding-bottom: 56.25%;
-    background: #000;
+    background: #000 !important;
 }
 
 .video-modal-player video {
@@ -84,6 +168,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    background: #000 !important;
 }
 
 /* Стили для модального окна видео на мобильных */
@@ -93,16 +178,12 @@
         -webkit-overflow-scrolling: touch;
     }
     
-    .video-modal-content {
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        min-height: 100vh;
-        max-height: none;
-        border-radius: 0;
-        padding: 3rem 1rem 1rem 1rem;
-        overflow-y: visible;
+    #videoPlayerModal .video-modal-content {
+        padding: 3.5rem 1rem 1rem 1rem;
+    }
+    
+    #videoPlayerModal .video-modal-player {
+        height: calc(100vh - 6rem) !important;
     }
     
     .video-modal-header {
@@ -124,24 +205,6 @@
         height: 14px;
     }
     
-    .video-modal-player {
-        padding-bottom: 56.25%;
-    }
-    
-    #videoPlayerModal .close {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1002;
-        background: rgba(0, 0, 0, 0.7);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
 }
 
 .close {
@@ -165,8 +228,8 @@
 }
 
 .status-badge.published {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: #cce6e8;
+    color: #0d5c5e;
 }
 
 .status-badge.hidden,

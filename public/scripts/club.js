@@ -140,7 +140,7 @@ async function loadClubTariffs() {
     
     if (!pricesGrid) return;
     
-    pricesGrid.innerHTML = '<p class="loading">Загрузка цен...</p>';
+    pricesGrid.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
 
     try {
         const response = await api.get('/public/club/tariffs');
@@ -149,16 +149,16 @@ async function loadClubTariffs() {
         // API возвращает данные напрямую, не в response.data
         const data = response;
 
-        // Загружаем цены клуба
+        // Загружаем тарифы клуба
         if (!data) {
             console.error('Пустой ответ от API');
-            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
             return;
         }
 
         if (data.clubPrices) {
             const prices = data.clubPrices;
-            console.log('Цены клуба:', prices);
+            console.log('Тарифы клуба:', prices);
             console.log('Описания:', {
                 description_1_month: prices.description_1_month,
                 description_3_months: prices.description_3_months,
@@ -171,10 +171,10 @@ async function loadClubTariffs() {
                 { period: '6 месяцев', price: prices.price_6_months, months: 6, description: prices.description_6_months || '' }
             ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
 
-            console.log('Отфильтрованные цены с описаниями:', pricesArray);
+            console.log('Отфильтрованные тарифы с описаниями:', pricesArray);
 
             if (pricesArray.length === 0) {
-                pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+                pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
             } else {
                 pricesGrid.innerHTML = pricesArray.map(p => {
                     console.log(`Рендерим карточку для ${p.period}, описание: "${p.description}"`);
@@ -191,7 +191,7 @@ async function loadClubTariffs() {
             }
         } else {
             console.error('Некорректная структура данных. Ожидалось data.clubPrices, получено:', data);
-            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
         }
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
@@ -200,7 +200,7 @@ async function loadClubTariffs() {
         if (error.stack) {
             console.error('Стек ошибки:', error.stack);
         }
-        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки цен. Проверьте консоль для деталей.</p>';
+        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов. Проверьте консоль для деталей.</p>';
     }
 }
 

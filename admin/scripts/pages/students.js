@@ -17,17 +17,13 @@ export default {
                             <tr>
                                 <th>ID</th>
                                 <th>Имя</th>
-                                <th>Email</th>
                                 <th>Роль</th>
-                                <th>Тариф</th>
-                                <th>Назначенные видео</th>
-                                <th>Дата регистрации</th>
-                                <th>Действия</th>
+                                <th class="col-actions">Действия</th>
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
                             <tr>
-                                <td colspan="8" class="loading">Загрузка...</td>
+                                <td colspan="4" class="loading">Загрузка...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -49,6 +45,7 @@ export default {
         window.deleteUser = deleteUser;
         window.closeUserModal = closeUserModal;
         window.showAddUserModal = showAddUserModal;
+        window.toggleUserDetail = toggleUserDetail;
         
         await loadAllUsers();
         setTimeout(() => {
@@ -127,14 +124,14 @@ async function loadAllUsers() {
     const tbody = document.getElementById('usersTableBody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="8" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Загрузка...</td></tr>';
 
     try {
         const response = await api.get('/admin/users');
         const users = response.data || response;
 
         if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Нет пользователей</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Нет пользователей</td></tr>';
             return;
         }
 
@@ -143,26 +140,38 @@ async function loadAllUsers() {
             const videosText = assignedVideosCount > 0 
                 ? `${assignedVideosCount} ${assignedVideosCount === 1 ? 'видео' : 'видео'}` 
                 : 'Нет';
+            const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-';
+            const email = (user.email || '-').replace(/"/g, '&quot;');
+            const tariff = (user.tariff || '-').replace(/"/g, '&quot;');
             
             return `
-                <tr>
+                <tr data-user-id="${user.id}">
                     <td>${user.id}</td>
                     <td>${user.name || '-'}</td>
-                    <td>${user.email}</td>
                     <td>${user.role}</td>
-                    <td>${user.tariff || '-'}</td>
-                    <td>${videosText}</td>
-                    <td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-'}</td>
                     <td class="cell-actions">
+                        <button class="btn btn-sm btn-details" title="Подробнее" onclick="toggleUserDetail(${user.id})">Подробнее</button>
                         <button class="btn btn-edit" title="Редактировать" onclick="editUser(${user.id})">Редактировать</button>
                         <button class="btn btn-danger" title="Удалить" onclick="deleteUser(${user.id})">Удалить</button>
+                    </td>
+                </tr>
+                <tr class="user-detail-row" data-detail-for="${user.id}" style="display: none;">
+                    <td colspan="4" class="user-detail-cell">
+                        <div class="user-detail-content">
+                            <div class="user-detail-grid">
+                                <div class="user-detail-item"><strong>Email:</strong> ${email}</div>
+                                <div class="user-detail-item"><strong>Тариф:</strong> ${tariff}</div>
+                                <div class="user-detail-item"><strong>Назначенные видео:</strong> ${videosText}</div>
+                                <div class="user-detail-item"><strong>Дата регистрации:</strong> ${createdDate}</div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             `;
         }).join('');
     } catch (error) {
         console.error('Ошибка загрузки пользователей:', error);
-        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Ошибка загрузки данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
 }
 
@@ -235,6 +244,18 @@ async function editUser(id) {
     } catch (error) {
         alert('Ошибка загрузки пользователя: ' + error.message);
     }
+}
+
+function toggleUserDetail(userId) {
+    const detailRow = document.querySelector(`tr.user-detail-row[data-detail-for="${userId}"]`);
+    const mainRow = document.querySelector(`tr[data-user-id="${userId}"]`);
+    if (!detailRow || !mainRow) return;
+    
+    const isHidden = detailRow.style.display === 'none';
+    detailRow.style.display = isHidden ? 'table-row' : 'none';
+    
+    const btn = mainRow.querySelector('.btn-details');
+    if (btn) btn.textContent = isHidden ? 'Свернуть' : 'Подробнее';
 }
 
 function renderVideosSelect(videos, selectedVideoIds = []) {

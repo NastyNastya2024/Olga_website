@@ -1,5 +1,5 @@
 /**
- * Роуты для работы с ценами клуба
+ * Роуты для работы с тарифами клуба (цены и описания периодов)
  */
 
 const express = require('express');
@@ -8,7 +8,7 @@ const { loadData, saveData } = require('../utils/data-storage');
 
 /**
  * GET /api/admin/club/prices
- * Получить текущие цены клуба
+ * Получить текущие тарифы клуба
  */
 router.get('/', (req, res) => {
   // Всегда загружаем свежие данные из файла
@@ -18,10 +18,10 @@ router.get('/', (req, res) => {
 
 /**
  * PUT /api/admin/club/prices
- * Обновить цены клуба
+ * Обновить тарифы клуба
  */
 router.put('/', (req, res) => {
-  console.log('📝 Получен запрос на обновление цен:', req.body);
+  console.log('📝 Получен запрос на обновление тарифов:', req.body);
   
   // Загружаем текущие данные из файла
   const clubPrices = loadData('clubPrices');
