@@ -136,14 +136,14 @@ async function loadClubTariffs() {
     
     if (!pricesGrid) return;
     
-    pricesGrid.innerHTML = '<p class="loading">Загрузка цен...</p>';
+    pricesGrid.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
 
     try {
         const response = await api.get('/public/club/tariffs');
         const data = response.data || response;
 
         if (!data || !data.clubPrices) {
-            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
             return;
         }
 
@@ -155,7 +155,7 @@ async function loadClubTariffs() {
         ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
 
         if (pricesArray.length === 0) {
-            pricesGrid.innerHTML = '<p class="empty-state">Цены пока не установлены</p>';
+            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
         } else {
             pricesGrid.innerHTML = pricesArray.map(p => `
                 <div class="club-price-card">
@@ -169,7 +169,7 @@ async function loadClubTariffs() {
         }
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
-        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки цен</p>';
+        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов</p>';
     }
 }
 
