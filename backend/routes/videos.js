@@ -47,7 +47,7 @@ router.get('/:id', (req, res) => {
  * Создать новое видео
  */
 router.post('/', (req, res) => {
-  const { title, description, video_url, status, access_type, category } = req.body;
+  const { title, description, video_url, thumbnail_url, status, access_type, category } = req.body;
   
   if (!title || !video_url) {
     return res.status(400).json({ error: 'Название и URL видео обязательны' });
@@ -58,6 +58,7 @@ router.post('/', (req, res) => {
     title,
     description: description || '',
     video_url,
+    thumbnail_url: thumbnail_url || null,
     status: status || 'published',
     access_type: access_type || 'open',
     category: category || 'blog_1',
@@ -83,13 +84,14 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Видео не найдено' });
   }
   
-  const { title, description, video_url, status, access_type, category } = req.body;
+  const { title, description, video_url, thumbnail_url, status, access_type, category } = req.body;
   
   videos[videoIndex] = {
     ...videos[videoIndex],
     title: title || videos[videoIndex].title,
     description: description !== undefined ? description : videos[videoIndex].description,
     video_url: video_url || videos[videoIndex].video_url,
+    thumbnail_url: thumbnail_url !== undefined ? thumbnail_url : (videos[videoIndex].thumbnail_url || null),
     status: status || videos[videoIndex].status,
     access_type: access_type || videos[videoIndex].access_type,
     category: category !== undefined ? category : (videos[videoIndex].category || 'blog_1'),

@@ -1,5 +1,5 @@
 /**
- * Страница управления клубом (цены и отзывы)
+ * Страница управления клубом (тарифы и отзывы)
  */
 
 export default {
@@ -11,11 +11,11 @@ export default {
                 </div>
 
                 <div class="club-sections-container">
-                    <!-- Секция цен -->
+                    <!-- Секция тарифов -->
                     <div class="club-prices-section">
                     <div class="club-prices-header">
-                        <h2>Цены клуба</h2>
-                        <button type="submit" form="clubPricesForm" class="btn btn-primary">Сохранить цены и описания</button>
+                        <h2>Тарифы</h2>
+                        <button type="submit" form="clubPricesForm" class="btn btn-primary">Сохранить тарифы и описания</button>
                     </div>
                     <form id="clubPricesForm" class="club-prices-form">
                         <div class="price-form-group">
@@ -115,14 +115,14 @@ export default {
     }
 };
 
-// ========== Функции для цен ==========
+// ========== Функции для тарифов ==========
 
 async function loadPrices() {
     try {
         const response = await api.get('/admin/club/prices');
         const prices = response.data || response;
         
-        console.log('Загруженные цены:', prices);
+        console.log('Загруженные тарифы:', prices);
         
         const price1MonthEl = document.getElementById('price1Month');
         const price3MonthsEl = document.getElementById('price3Months');
@@ -205,7 +205,7 @@ function setupPricesForm() {
         try {
             const response = await api.put('/admin/club/prices', data);
             console.log('Ответ от сервера:', response);
-            alert('Цены и описания успешно сохранены!');
+            alert('Тарифы и описания успешно сохранены!');
             // Перезагружаем данные после сохранения
             await loadPrices();
         } catch (error) {

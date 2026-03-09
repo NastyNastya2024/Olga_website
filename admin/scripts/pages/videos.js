@@ -15,19 +15,24 @@ export default {
                 </div>
 
                 <div class="table-container">
-                    <table class="data-table">
+                    <table class="data-table" id="videos-data-table">
+                        <colgroup>
+                            <col style="width: 50px">
+                            <col>
+                            <col style="width: 180px">
+                            <col style="width: 320px">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Название</th>
                                 <th>Статус</th>
-                                <th>Доступ</th>
-                                <th>Действия</th>
+                                <th class="col-actions">Действия</th>
                             </tr>
                         </thead>
                         <tbody id="videosTableBody">
                             <tr>
-                                <td colspan="5" class="loading">Загрузка...</td>
+                                <td colspan="4" class="loading">Загрузка...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -93,13 +98,12 @@ function getVideoModal() {
                     </div>
                     
                     <!-- Загрузка видео файла -->
-                    <div class="form-group">
-                        <label>Загрузить видео файл</label>
-                        <input type="file" id="videoFile" accept="video/*">
-                        <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
-                            Выберите видео файл для загрузки в S3, или укажите URL вручную ниже
-                        </small>
-                        <div id="uploadProgress" style="display: none; margin-top: 1rem;">
+                    <div class="form-group upload-group">
+                        <label class="upload-group-title">Загрузить видео файл</label>
+                        <label class="upload-group-sub">Выберите файл или укажите URL</label>
+                        <input type="file" id="videoFile" accept="video/*" class="upload-group-file">
+                        <input type="url" id="videoUrl" placeholder="http://..." class="upload-group-url">
+                        <div id="uploadProgress" style="display: none; margin-top: 0.75rem;">
                             <div class="progress-bar">
                                 <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                             </div>
@@ -107,12 +111,13 @@ function getVideoModal() {
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label>Или укажите URL видео</label>
-                        <input type="url" id="videoUrl" placeholder="http://...">
-                        <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
-                            Если вы загрузили файл выше, URL заполнится автоматически
-                        </small>
+                    <!-- Обложка для видео -->
+                    <div class="form-group upload-group">
+                        <label class="upload-group-title">Обложка для видео</label>
+                        <label class="upload-group-sub">Выберите файл или укажите URL</label>
+                        <input type="file" id="videoCover" accept="image/*" class="upload-group-file">
+                        <input type="url" id="videoCoverUrl" placeholder="http://..." class="upload-group-url">
+                        <div id="videoCoverPreview" style="margin-top: 0.5rem;"></div>
                     </div>
                     
                     <div class="form-group">
@@ -120,13 +125,6 @@ function getVideoModal() {
                         <select id="videoStatus">
                             <option value="published">Опубликовано</option>
                             <option value="hidden">Скрыто</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Тип доступа</label>
-                        <select id="videoAccess">
-                            <option value="open">Открыто</option>
-                            <option value="subscription">По подписке</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -198,7 +196,7 @@ async function loadVideos() {
         }
 
         if (videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет видео</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Нет видео</td></tr>';
             return;
         }
 
@@ -206,8 +204,9 @@ async function loadVideos() {
             <tr>
                 <td>${video.id}</td>
                 <td>${video.title}</td>
-                <td><span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span></td>
-                <td>${video.access_type === 'open' ? 'Открыто' : 'По подписке'}</td>
+                <td class="cell-status-access">
+                    <span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span>
+                </td>
                 <td class="cell-actions">
                     ${!isStudent ? `
                         <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
@@ -219,7 +218,7 @@ async function loadVideos() {
         `).join('');
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
 }
 
@@ -227,6 +226,9 @@ function showAddVideoModal() {
     currentVideoId = null;
     document.getElementById('modalTitle').textContent = 'Добавить видео';
     document.getElementById('videoForm').reset();
+    
+    const coverPreview = document.getElementById('videoCoverPreview');
+    if (coverPreview) coverPreview.innerHTML = '';
     
     // Устанавливаем категорию по умолчанию
     const categoryInput = document.getElementById('videoCategory');
@@ -260,6 +262,9 @@ function closeVideoModal() {
     // Сбрасываем форму и прогресс
     const form = document.getElementById('videoForm');
     if (form) form.reset();
+    
+    const coverPreview = document.getElementById('videoCoverPreview');
+    if (coverPreview) coverPreview.innerHTML = '';
     
     const uploadProgress = document.getElementById('uploadProgress');
     const uploadStatus = document.getElementById('uploadStatus');
@@ -327,8 +332,16 @@ async function editVideo(id) {
         document.getElementById('videoDescription').value = video.description || '';
         document.getElementById('videoCategory').value = video.category || 'blog_1';
         document.getElementById('videoUrl').value = video.video_url || '';
+        document.getElementById('videoCoverUrl').value = video.thumbnail_url || '';
         document.getElementById('videoStatus').value = video.status || 'published';
-        document.getElementById('videoAccess').value = video.access_type || 'open';
+        const coverPreview = document.getElementById('videoCoverPreview');
+        if (coverPreview) {
+            coverPreview.innerHTML = video.thumbnail_url
+                ? `<img src="${video.thumbnail_url.replace(/"/g, '&quot;')}" alt="Обложка" style="max-width: 200px; max-height: 120px; object-fit: cover; border-radius: 8px;">`
+                : '';
+        }
+        const coverInput = document.getElementById('videoCover');
+        if (coverInput) coverInput.value = '';
         
         document.getElementById('videoModal').style.display = 'block';
     } catch (error) {
@@ -421,6 +434,25 @@ function setupVideoForm() {
         });
     }
     
+    // Обложка: превью при выборе файла
+    const videoCoverInput = document.getElementById('videoCover');
+    const videoCoverUrlInput = document.getElementById('videoCoverUrl');
+    const videoCoverPreview = document.getElementById('videoCoverPreview');
+    if (videoCoverInput && videoCoverPreview) {
+        videoCoverInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    videoCoverPreview.innerHTML = `<img src="${ev.target.result}" alt="Обложка" style="max-width: 200px; max-height: 120px; object-fit: cover; border-radius: 8px;">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                videoCoverPreview.innerHTML = '';
+            }
+        });
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -431,13 +463,33 @@ function setupVideoForm() {
             return;
         }
 
+        let thumbnailUrl = null;
+        if (videoCoverInput && videoCoverInput.files[0]) {
+            try {
+                const formData = new FormData();
+                formData.append('file', videoCoverInput.files[0]);
+                const uploadResponse = await api.uploadFile('/upload', formData);
+                if (uploadResponse.success && uploadResponse.data) {
+                    thumbnailUrl = uploadResponse.data.publicUrl || uploadResponse.data.url;
+                }
+            } catch (err) {
+                alert('Ошибка загрузки обложки: ' + (err.message || err));
+                return;
+            }
+        } else if (videoCoverUrlInput && videoCoverUrlInput.value.trim()) {
+            thumbnailUrl = videoCoverUrlInput.value.trim();
+        } else if (videoCoverPreview && videoCoverPreview.querySelector('img') && videoCoverPreview.querySelector('img').src && !videoCoverPreview.querySelector('img').src.startsWith('data:')) {
+            thumbnailUrl = videoCoverPreview.querySelector('img').src;
+        }
+
         const data = {
             title: document.getElementById('videoTitle').value,
             description: document.getElementById('videoDescription').value,
             category: document.getElementById('videoCategory').value || 'blog_1',
             video_url: videoUrl,
+            thumbnail_url: thumbnailUrl,
             status: document.getElementById('videoStatus').value,
-            access_type: document.getElementById('videoAccess').value,
+            access_type: 'open',
         };
 
         try {

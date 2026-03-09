@@ -1,5 +1,5 @@
 /**
- * Страница управления ценами клуба
+ * Страница управления тарифами клуба
  */
 
 export default {
@@ -7,27 +7,27 @@ export default {
         return `
             <div id="club-prices-page">
                 <div class="page-header">
-                    <h1>Цены клуба</h1>
+                    <h1>Тарифы</h1>
                 </div>
 
                 <div class="admin-content">
                     <form id="clubPricesForm" class="club-prices-form">
                         <div class="form-group">
-                            <label for="price1Month">Цена на 1 месяц (руб.)</label>
+                            <label for="price1Month">Тариф на 1 месяц (руб.)</label>
                             <input type="number" id="price1Month" step="0.01" min="0" placeholder="0.00">
                         </div>
                         
                         <div class="form-group">
-                            <label for="price3Months">Цена на 3 месяца (руб.)</label>
+                            <label for="price3Months">Тариф на 3 месяца (руб.)</label>
                             <input type="number" id="price3Months" step="0.01" min="0" placeholder="0.00">
                         </div>
                         
                         <div class="form-group">
-                            <label for="price6Months">Цена на 6 месяцев (руб.)</label>
+                            <label for="price6Months">Тариф на 6 месяцев (руб.)</label>
                             <input type="number" id="price6Months" step="0.01" min="0" placeholder="0.00">
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">Сохранить цены</button>
+                        <button type="submit" class="btn btn-primary">Сохранить тарифы</button>
                     </form>
                 </div>
             </div>
@@ -37,7 +37,7 @@ export default {
     init: async () => {
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {
-            pageTitle.textContent = 'Цены клуба';
+            pageTitle.textContent = 'Тарифы';
         }
         
         await loadPrices();
@@ -60,8 +60,8 @@ async function loadPrices() {
             document.getElementById('price6Months').value = prices.price_6_months;
         }
     } catch (error) {
-        console.error('Ошибка загрузки цен:', error);
-        alert('Ошибка загрузки цен: ' + error.message);
+        console.error('Ошибка загрузки тарифов:', error);
+        alert('Ошибка загрузки тарифов: ' + error.message);
     }
 }
 
@@ -83,9 +83,9 @@ function setupPricesForm() {
         
         try {
             await api.put('/admin/club/prices', data);
-            alert('Цены успешно сохранены!');
+            alert('Тарифы успешно сохранены!');
         } catch (error) {
-            alert('Ошибка сохранения цен: ' + error.message);
+            alert('Ошибка сохранения тарифов: ' + error.message);
         }
     });
 }
