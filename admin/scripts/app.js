@@ -39,6 +39,10 @@ const Sidebar = {
                         <span class="sidebar-icon">🎥</span>
                         <span>Видео</span>
                     </a>
+                    <a href="#" data-route="/chat" class="sidebar-item">
+                        <span class="sidebar-icon">💬</span>
+                        <span>Чат</span>
+                    </a>
                     ${!isStudent ? `
                         <a href="#" data-route="/students" class="sidebar-item">
                             <span class="sidebar-icon">👥</span>
@@ -103,6 +107,10 @@ const Header = {
                         <a href="#" data-route="/videos" class="nav-item">
                             <span class="nav-icon">🎥</span>
                             <span>Видео</span>
+                        </a>
+                        <a href="#" data-route="/chat" class="nav-item">
+                            <span class="nav-icon">💬</span>
+                            <span>Чат</span>
                         </a>
                         ${!isStudent ? `
                             <a href="#" data-route="/students" class="nav-item">
@@ -347,6 +355,14 @@ function loadPageComponents() {
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     }, [authGuard, adminGuard]);
+    
+    // Чат (доступен всем авторизованным: ученики и админы)
+    router.route('/chat', async () => {
+        const ChatPage = await import('./pages/chat.js');
+        const content = await ChatPage.default.render();
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
+    }, [authGuard]);
     
     // 403 - Доступ запрещен (показываем страницу логина)
     router.route('/403', async () => {

@@ -22,10 +22,22 @@ cd backend
 npm install
 ```
 
-## Настройка
+## Настройка для локальной разработки
 
-1. Создайте файл `.env` в папке `backend`:
+Чтобы проверить загрузку видео локально (перед деплоем на Yandex Cloud):
 
+1. Запустите MinIO:
+```bash
+docker-compose up -d minio
+```
+
+2. Создайте `.env` в папке `backend` (или скопируйте из примера):
+```bash
+cd backend
+cp .env.example .env
+```
+
+3. В `.env` должны быть настройки для MinIO (по умолчанию в .env.example):
 ```env
 S3_ENDPOINT=http://localhost:9000
 S3_ACCESS_KEY=minioadmin
@@ -35,10 +47,18 @@ S3_REGION=us-east-1
 PORT=5000
 ```
 
-2. Убедитесь, что MinIO запущен:
+4. Запустите backend и проверьте загрузку видео в админке.
 
-```bash
-docker-compose up -d
+Консоль MinIO: http://localhost:9001 (логин: minioadmin, пароль: minioadmin)
+
+## Деплой на Yandex Cloud
+
+При деплое замените в `.env`:
+```env
+S3_ENDPOINT=https://storage.yandexcloud.net
+S3_ACCESS_KEY=ваш_access_key
+S3_SECRET_KEY=ваш_secret_key
+S3_REGION=ru-central1
 ```
 
 ## Использование

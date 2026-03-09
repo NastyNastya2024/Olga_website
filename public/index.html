@@ -58,15 +58,10 @@
 
         <section class="about-olga-section">
             <div class="about-olga-container">
-                <div class="about-olga-image-wrapper">
-                    <img src="/img/Olga.png" alt="Ольга" class="about-olga-image">
-                </div>
                 <div class="about-olga-content">
-                    <h2 class="about-olga-title">Ольга</h2>
                     <div class="about-olga-text">
-                        <p class="about-olga-intro">Преподаю уже более 10 лет.</p>
-                        <p class="about-olga-main">Йога полностью изменила мою жизнь. Я переехала в теплый Сочи из Сибири и продолжаю свое дело здесь, а мои ученицы имеют возможность заниматься со мной из любой точки мира.</p>
-                        <p class="about-olga-value">Моя миссия — помочь каждой женщине обрести гармонию, силу и уверенность в себе через практику йоги.</p>
+                        <h2 class="about-olga-heading">О мастере</h2>
+                        <p class="about-olga-main">Ольга Алексеева — дипломированный специалист по адаптивной йоге, хатха-йога и йогатерапии женского здоровья. Опыт преподавания более 10 лет. Мне 46 лет и я показываю своим примером, как продлить молодость и повысить качество жизни без боли в любом возрасте. Тысячи женщин изменили свою жизнь, занимаясь со мной лично в Сочи или онлайн из любой точки мира!</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +69,7 @@
 
         <section class="benefits-section">
             <div class="benefits-header">
-                <h2 class="benefits-main-title">Йога — это путь к гармонии тела и души</h2>
+                <h2 class="benefits-main-title">Что вы получите через месяц занятий</h2>
                 <p class="benefits-subtitle">Что ты получишь уже через месяц регулярных занятий?</p>
             </div>
             <div class="benefits-container" id="benefitsContainer">
@@ -723,9 +718,27 @@
                 modal.style.display = 'none';
                 modal.innerHTML = `
                     <div class="modal-content video-modal-content">
-                        <span class="close" onclick="closeVideoPlayer()">&times;</span>
                         <div class="video-modal-header">
                             <h2 id="videoPlayerTitle"></h2>
+                            <div class="video-modal-header-actions">
+                                <button type="button" onclick="shareVideoOnMain()" class="btn-share-video" title="Поделиться видео">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                    </svg>
+                                    Поделиться
+                                </button>
+                                <button type="button" onclick="closeVideoPlayer()" class="btn-close-video" title="Закрыть">
+                                    <svg class="btn-close-video-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Закрыть
+                                </button>
+                            </div>
                         </div>
                         <div class="video-modal-player">
                             <video id="videoPlayer" controls>
@@ -752,8 +765,10 @@
                 return;
             }
             
-            // Устанавливаем данные видео
-            titleElement.textContent = videoTitle || 'Видео';
+            // Устанавливаем данные видео (сохраняем для кнопки «Поделиться»)
+            window._currentVideoUrl = videoUrl;
+            window._currentVideoTitle = videoTitle || 'Видео';
+            titleElement.textContent = window._currentVideoTitle;
             videoElement.src = videoUrl;
             modal.style.display = 'block';
             
@@ -761,6 +776,19 @@
             videoElement.play().catch(error => {
                 console.log('Автозапуск видео заблокирован браузером:', error);
             });
+        }
+        
+        function shareVideoOnMain() {
+            const url = window._currentVideoUrl;
+            const title = window._currentVideoTitle || 'Видео';
+            if (!url) return;
+            if (navigator.share) {
+                navigator.share({ title: title, url: url }).catch(() => {});
+            } else {
+                navigator.clipboard && navigator.clipboard.writeText(url).then(() => {
+                    alert('Ссылка скопирована');
+                }).catch(() => alert(url));
+            }
         }
         
         function closeVideoPlayer() {

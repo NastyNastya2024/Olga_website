@@ -188,7 +188,7 @@ function getEventModal() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Обложка (загрузить изображение)</label>
+                        <label>Обложка (для плашки на сайте)</label>
                         <input type="file" id="eventCover" accept="image/*">
                         <div id="eventCoverPreview" style="margin-top: 1rem;"></div>
                         <div id="eventCoverUploadProgress" style="margin-top: 1rem; display: none;">
@@ -196,6 +196,14 @@ function getEventModal() {
                                 <div id="eventCoverProgressFill" style="background: #48BDCC; height: 100%; width: 0%; border-radius: 4px; transition: width 0.3s;"></div>
                             </div>
                             <p id="eventCoverUploadStatus" style="margin-top: 5px; font-size: 0.9rem; color: #666;"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Галерея фотографий (для попапа «Подробнее»)</label>
+                        <input type="file" id="eventImages" accept="image/*" multiple>
+                        <div id="eventImagesPreview" style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+                        <div id="eventImagesUploadProgress" style="margin-top: 1rem; display: none;">
+                            <p id="eventImagesUploadStatus" style="font-size: 0.9rem; color: #666;"></p>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -207,6 +215,7 @@ function getEventModal() {
 
 let currentEventId = null;
 let eventCover = null;
+let eventImages = [];
 
 async function loadEvents() {
     const tbody = document.getElementById('eventsTableBody');
@@ -229,7 +238,7 @@ async function loadEvents() {
                 <td>${event.title || ''}</td>
                 <td>${event.date ? new Date(event.date).toLocaleDateString('ru-RU') : '-'}</td>
                 <td><span class="status-badge ${event.status}">${event.status === 'upcoming' ? 'Предстоящее' : 'Прошедшее'}</span></td>
-                <td>${event.cover ? 'Есть' : 'Нет'}</td>
+                <td>${(event.images && event.images.length) ? event.images.length + ' фото' : (event.cover ? 'Обложка' : 'Нет')}</td>
                 <td class="cell-actions">
                     <button class="btn btn-edit" title="Редактировать" onclick="editEvent(${event.id})">Редактировать</button>
                     <button class="btn btn-danger" title="Удалить" onclick="deleteEvent(${event.id})">Удалить</button>
@@ -245,10 +254,13 @@ async function loadEvents() {
 function showAddEventModal() {
     currentEventId = null;
     eventCover = null;
+    eventImages = [];
     document.getElementById('eventModalTitle').textContent = 'Добавить мероприятие';
     document.getElementById('eventForm').reset();
     document.getElementById('eventCoverPreview').innerHTML = '';
     document.getElementById('eventCover').value = '';
+    document.getElementById('eventImagesPreview').innerHTML = '';
+    document.getElementById('eventImages').value = '';
     
     const eventModal = document.getElementById('eventModal');
     if (eventModal) {
@@ -262,11 +274,15 @@ function closeEventModal() {
     eventModal.style.display = 'none';
     currentEventId = null;
     eventCover = null;
+    eventImages = [];
     
     const form = document.getElementById('eventForm');
     if (form) form.reset();
     
-    document.getElementById('eventCoverPreview').innerHTML = '';
+    const coverPreview = document.getElementById('eventCoverPreview');
+    const imagesPreview = document.getElementById('eventImagesPreview');
+    if (coverPreview) coverPreview.innerHTML = '';
+    if (imagesPreview) imagesPreview.innerHTML = '';
 }
 
 async function editEvent(id) {
@@ -274,6 +290,7 @@ async function editEvent(id) {
         const event = await api.get(`/admin/club/events/${id}`);
         currentEventId = id;
         eventCover = event.cover || null;
+        eventImages = Array.isArray(event.images) ? [...event.images] : [];
         
         document.getElementById('eventModalTitle').textContent = 'Редактировать мероприятие';
         document.getElementById('eventTitle').value = event.title || '';
@@ -281,8 +298,8 @@ async function editEvent(id) {
         document.getElementById('eventDate').value = event.date || '';
         document.getElementById('eventStatus').value = event.status || 'upcoming';
         
-        // Отображаем существующую обложку
         renderEventCoverPreview();
+        renderEventImagesPreview();
         
         const eventModal = document.getElementById('eventModal');
         if (eventModal) {
@@ -325,6 +342,23 @@ function renderEventCoverPreview() {
 window.removeEventCover = function() {
     eventCover = null;
     renderEventCoverPreview();
+};
+
+function renderEventImagesPreview() {
+    const preview = document.getElementById('eventImagesPreview');
+    if (!preview) return;
+    
+    preview.innerHTML = eventImages.map((url, idx) => `
+        <div style="position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f0f0f0;">
+            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" alt="Фото ${idx + 1}">
+            <button type="button" onclick="removeEventImage(${idx})" style="position: absolute; top: 2px; right: 2px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1;">×</button>
+        </div>
+    `).join('');
+}
+
+window.removeEventImage = function(idx) {
+    eventImages.splice(idx, 1);
+    renderEventImagesPreview();
 };
 
 function setupEventForm() {
@@ -376,6 +410,39 @@ function setupEventForm() {
         });
     }
     
+    // Загрузка нескольких фотографий в галерею
+    const imagesInput = document.getElementById('eventImages');
+    if (imagesInput) {
+        imagesInput.addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files || []);
+            if (files.length === 0) return;
+            
+            const progressContainer = document.getElementById('eventImagesUploadProgress');
+            const uploadStatus = document.getElementById('eventImagesUploadStatus');
+            progressContainer.style.display = 'block';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                uploadStatus.textContent = `Загрузка ${i + 1}/${files.length}: ${file.name}`;
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const response = await api.uploadFile('/upload', formData);
+                    if (response.success && response.data) {
+                        const url = response.data.publicUrl || response.data.url;
+                        eventImages.push(url);
+                    }
+                } catch (err) {
+                    console.error('Ошибка загрузки:', err);
+                }
+            }
+            
+            progressContainer.style.display = 'none';
+            imagesInput.value = '';
+            renderEventImagesPreview();
+        });
+    }
+    
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -385,6 +452,7 @@ function setupEventForm() {
             date: document.getElementById('eventDate').value || null,
             status: document.getElementById('eventStatus').value || 'upcoming',
             cover: eventCover || null,
+            images: eventImages || [],
         };
 
         try {

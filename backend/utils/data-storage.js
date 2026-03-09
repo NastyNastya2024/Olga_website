@@ -17,6 +17,11 @@ const FILES = {
   clubEvents: path.join(DATA_DIR, 'club-events.json'),
   lessonTariffs: path.join(DATA_DIR, 'lesson-tariffs.json'),
   pricingTariffs: path.join(DATA_DIR, 'pricing-tariffs.json'),
+  chatMessages: path.join(DATA_DIR, 'chat-messages.json'),
+  chatThreads: path.join(DATA_DIR, 'chat-threads.json'),
+  privateChatMessages: path.join(DATA_DIR, 'private-chat-messages.json'),
+  generalChatMessages: path.join(DATA_DIR, 'general-chat-messages.json'),
+  generalChatJoins: path.join(DATA_DIR, 'general-chat-joins.json'),
 };
 
 // Создаем директорию для данных, если её нет
@@ -109,6 +114,16 @@ function getDefaultData(fileKey) {
       return { items: [], nextId: 1 };
     case 'pricingTariffs':
       return { items: [], nextId: 1 };
+    case 'chatMessages':
+      return { items: [], nextId: 1 };
+    case 'chatThreads':
+      return { items: [], nextId: 1 };
+    case 'privateChatMessages':
+      return { items: [], nextId: 1 };
+    case 'generalChatMessages':
+      return { items: [], nextId: 1 };
+    case 'generalChatJoins':
+      return { items: [] };
     default:
       return { items: [], nextId: 1 };
   }

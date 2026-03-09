@@ -70,6 +70,7 @@ async function loadClubEvents() {
             return;
         }
 
+        clubEventsCache = events;
         container.innerHTML = events.map(event => renderEventCard(event)).join('');
         
         // Добавляем класс для центрирования, если карточек мало (1-2)
@@ -83,6 +84,8 @@ async function loadClubEvents() {
     }
 }
 
+let clubEventsCache = [];
+
 function renderEventCard(event) {
     const eventId = event.id || Math.random();
     const dateStr = event.date ? new Date(event.date).toLocaleDateString('ru-RU', {
@@ -91,10 +94,11 @@ function renderEventCard(event) {
         day: 'numeric'
     }) : '';
     
-    // Определяем статус для отображения
     const displayStatus = event.displayStatus || event.status || 'upcoming';
     const statusLabel = displayStatus === 'past' ? 'Прошедшее' : 'Предстоящее';
     const statusClass = displayStatus === 'past' ? 'event-status-past' : 'event-status-upcoming';
+    
+    const hasDetails = event.description || (event.images && event.images.length > 0);
     
     return `
         <div class="event-card" data-event-id="${eventId}">
@@ -110,6 +114,7 @@ function renderEventCard(event) {
                     ${dateStr ? `<p class="event-date">📅 ${dateStr}</p>` : ''}
                 </div>
                 ${event.description ? `<p class="event-description">${escapeHtml(event.description)}</p>` : ''}
+                ${hasDetails ? `<button type="button" class="event-details-btn" onclick="openEventDetails(${eventId})">Подробнее</button>` : ''}
             </div>
         </div>
     `;
@@ -133,80 +138,51 @@ if (document.getElementById('eventsList')) {
 }
 
 /**
- * Загрузка тарифов клуба
+ * Загрузка тарифов (те же, что на главной — из /public/pricing-tariffs)
  */
-async function loadClubTariffs() {
-    const pricesGrid = document.getElementById('clubPricesGrid');
-    
-    if (!pricesGrid) return;
-    
-    pricesGrid.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
+async function loadPricingTariffs() {
+    const container = document.getElementById('pricingCards');
+    if (!container) return;
+
+    container.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
 
     try {
-        const response = await api.get('/public/club/tariffs');
-        console.log('Ответ от API тарифов:', response);
-        
-        // API возвращает данные напрямую, не в response.data
-        const data = response;
+        const response = await api.get('/public/pricing-tariffs');
+        const tariffs = response.data || response;
 
-        // Загружаем тарифы клуба
-        if (!data) {
-            console.error('Пустой ответ от API');
-            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
+        if (!tariffs || tariffs.length === 0) {
+            container.innerHTML = '<p class="empty-state">Тарифы пока не добавлены</p>';
             return;
         }
 
-        if (data.clubPrices) {
-            const prices = data.clubPrices;
-            console.log('Тарифы клуба:', prices);
-            console.log('Описания:', {
-                description_1_month: prices.description_1_month,
-                description_3_months: prices.description_3_months,
-                description_6_months: prices.description_6_months
-            });
-            
-            const pricesArray = [
-                { period: '1 месяц', price: prices.price_1_month, months: 1, description: prices.description_1_month || '' },
-                { period: '3 месяца', price: prices.price_3_months, months: 3, description: prices.description_3_months || '' },
-                { period: '6 месяцев', price: prices.price_6_months, months: 6, description: prices.description_6_months || '' }
-            ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
-
-            console.log('Отфильтрованные тарифы с описаниями:', pricesArray);
-
-            if (pricesArray.length === 0) {
-                pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
-            } else {
-                pricesGrid.innerHTML = pricesArray.map(p => {
-                    console.log(`Рендерим карточку для ${p.period}, описание: "${p.description}"`);
-                    return `
-                    <div class="club-price-card">
-                        <h4 class="price-period">${p.period}</h4>
-                        <div class="price-amount">${p.price.toFixed(0)} ₽</div>
-                        ${p.months > 1 ? `<div class="price-per-month">${(p.price / p.months).toFixed(0)} ₽/мес</div>` : ''}
-                        ${p.description && p.description.trim() ? `<p class="price-description">${escapeHtml(p.description)}</p>` : ''}
-                        <button class="price-select-btn" onclick="selectTariff('${p.period}', ${p.price}, ${p.months})">Выбрать тариф</button>
-                    </div>
-                `;
-                }).join('');
-            }
-        } else {
-            console.error('Некорректная структура данных. Ожидалось data.clubPrices, получено:', data);
-            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
-        }
+        container.innerHTML = tariffs.map(tariff => {
+            const features = tariff.description 
+                ? tariff.description.split('\n').filter(line => line.trim()).map(line => line.trim())
+                : [];
+            const featuresHtml = features.length > 0 
+                ? `<ul class="pricing-features">${features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>`
+                : '';
+            const popularBadge = tariff.is_popular ? '<span class="pricing-badge">Популярный</span>' : '';
+            const popularClass = tariff.is_popular ? 'pricing-card-popular' : '';
+            return `
+                <div class="pricing-card ${popularClass}">
+                    ${popularBadge}
+                    <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
+                    <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
+                    ${featuresHtml}
+                    <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
+                </div>
+            `;
+        }).join('');
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
-        console.error('Тип ошибки:', error.constructor.name);
-        console.error('Сообщение ошибки:', error.message);
-        if (error.stack) {
-            console.error('Стек ошибки:', error.stack);
-        }
-        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов. Проверьте консоль для деталей.</p>';
+        container.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов</p>';
     }
 }
 
 // Загружаем тарифы при загрузке страницы
-if (document.getElementById('clubPricesGrid')) {
-    loadClubTariffs();
+if (document.getElementById('pricingCards')) {
+    loadPricingTariffs();
 }
 
 /**
@@ -289,3 +265,59 @@ function selectTariff(period, price, months) {
 
 // Делаем функцию доступной глобально
 window.selectTariff = selectTariff;
+
+/**
+ * Попап с описанием мероприятия и фотографиями
+ */
+function openEventDetails(eventId) {
+    const event = clubEventsCache.find(e => (e.id || e) === eventId || e.id === parseInt(eventId));
+    if (!event) return;
+    
+    const dateStr = event.date ? new Date(event.date).toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }) : '';
+    
+    const images = Array.isArray(event.images) ? event.images : [];
+    const imagesHtml = images.length > 0
+        ? `<div class="event-detail-gallery">${images.map(url => `<img src="${escapeHtml(url)}" alt="Фото мероприятия" loading="lazy">`).join('')}</div>`
+        : '';
+    
+    let modal = document.getElementById('eventDetailModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'eventDetailModal';
+        modal.className = 'event-detail-modal';
+        modal.innerHTML = `
+            <div class="event-detail-content">
+                <button type="button" class="event-detail-close" onclick="closeEventDetails()">&times;</button>
+                <div class="event-detail-body"></div>
+            </div>
+        `;
+        modal.onclick = (e) => { if (e.target === modal) closeEventDetails(); };
+        document.body.appendChild(modal);
+    }
+    
+    const body = modal.querySelector('.event-detail-body');
+    body.innerHTML = `
+        <h2 class="event-detail-title">${escapeHtml(event.title || '')}</h2>
+        ${dateStr ? `<p class="event-detail-date">📅 ${dateStr}</p>` : ''}
+        ${event.description ? `<div class="event-detail-description">${escapeHtml(event.description).replace(/\n/g, '<br>')}</div>` : ''}
+        ${imagesHtml}
+    `;
+    
+    modal.classList.add('event-detail-modal-open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEventDetails() {
+    const modal = document.getElementById('eventDetailModal');
+    if (modal) {
+        modal.classList.remove('event-detail-modal-open');
+        document.body.style.overflow = '';
+    }
+}
+
+window.openEventDetails = openEventDetails;
+window.closeEventDetails = closeEventDetails;

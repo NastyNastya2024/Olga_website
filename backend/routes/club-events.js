@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
   console.log('POST /api/admin/club/events - получен запрос');
   console.log('Body:', req.body);
   
-  const { title, description, date, status, cover } = req.body;
+  const { title, description, date, status, cover, images } = req.body;
   
   if (!title) {
     return res.status(400).json({ error: 'Название мероприятия обязательно' });
@@ -50,6 +50,7 @@ router.post('/', (req, res) => {
     date: date || null,
     status: status || 'upcoming',
     cover: cover || null,
+    images: Array.isArray(images) ? images : [],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -87,7 +88,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Мероприятие не найдено' });
   }
   
-  const { title, description, date, status, cover } = req.body;
+  const { title, description, date, status, cover, images } = req.body;
   
   events[eventIndex] = {
     ...events[eventIndex],
@@ -96,6 +97,7 @@ router.put('/:id', (req, res) => {
     date: date !== undefined ? date : events[eventIndex].date,
     status: status || events[eventIndex].status,
     cover: cover !== undefined ? cover : events[eventIndex].cover,
+    images: images !== undefined ? (Array.isArray(images) ? images : []) : (events[eventIndex].images || []),
     updated_at: new Date().toISOString(),
   };
   

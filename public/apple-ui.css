@@ -56,7 +56,10 @@ body {
 }
 
 /* Заголовки секций */
-.benefits-main-title,
+.benefits-main-title {
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
 .services-section-title,
 .events-section-title,
 .blog-section-title,

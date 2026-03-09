@@ -24,6 +24,7 @@ const pricingTariffsRoutes = require('./routes/pricing-tariffs');
 const publicPricingTariffsRoutes = require('./routes/public-pricing-tariffs');
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -63,6 +64,7 @@ app.use('/api/public/club/tariffs', publicClubTariffsRoutes);
 app.use('/api/admin/pricing-tariffs', pricingTariffsRoutes);
 app.use('/api/public/pricing-tariffs', publicPricingTariffsRoutes);
 app.use('/api/admin/users', usersRoutes);
+app.use('/api/admin/chat', chatRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

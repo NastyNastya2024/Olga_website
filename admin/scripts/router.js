@@ -145,6 +145,10 @@ class Router {
                 html = '<div class="error">Ошибка загрузки компонента</div>';
             }
             
+            if (window.__chatCleanup) {
+                window.__chatCleanup();
+                window.__chatCleanup = null;
+            }
             app.innerHTML = html;
             
             // Вызываем init для текущей страницы после загрузки
@@ -204,6 +208,11 @@ class Router {
                 const PricingTariffsPage = await import('./pages/pricing-tariffs.js');
                 if (PricingTariffsPage.default && PricingTariffsPage.default.init) {
                     await PricingTariffsPage.default.init();
+                }
+            } else if (path === '/chat') {
+                const ChatPage = await import('./pages/chat.js');
+                if (ChatPage.default && ChatPage.default.init) {
+                    await ChatPage.default.init();
                 }
             } else if (path === '/club/prices' || path === '/club/reviews' || path === '/reviews') {
                 // Редирект со старых маршрутов на новый

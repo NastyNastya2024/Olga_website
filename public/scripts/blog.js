@@ -129,59 +129,55 @@ if (document.getElementById('blogList')) {
 }
 
 /**
- * Загрузка тарифов клуба
+ * Загрузка тарифов (те же, что на главной — из /public/pricing-tariffs)
  */
-async function loadClubTariffs() {
-    const pricesGrid = document.getElementById('clubPricesGrid');
-    
-    if (!pricesGrid) return;
-    
-    pricesGrid.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
+async function loadPricingTariffs() {
+    const container = document.getElementById('pricingCards');
+    if (!container) return;
+
+    container.innerHTML = '<p class="loading">Загрузка тарифов...</p>';
 
     try {
-        const response = await api.get('/public/club/tariffs');
-        const data = response.data || response;
+        const response = await api.get('/public/pricing-tariffs');
+        const tariffs = response.data || response;
 
-        if (!data || !data.clubPrices) {
-            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
+        if (!tariffs || tariffs.length === 0) {
+            container.innerHTML = '<p class="empty-state">Тарифы пока не добавлены</p>';
             return;
         }
 
-        const prices = data.clubPrices;
-        const pricesArray = [
-            { period: '1 месяц', price: prices.price_1_month, months: 1, description: prices.description_1_month || '' },
-            { period: '3 месяца', price: prices.price_3_months, months: 3, description: prices.description_3_months || '' },
-            { period: '6 месяцев', price: prices.price_6_months, months: 6, description: prices.description_6_months || '' }
-        ].filter(p => p.price !== null && p.price !== undefined && !isNaN(p.price) && p.price > 0);
-
-        if (pricesArray.length === 0) {
-            pricesGrid.innerHTML = '<p class="empty-state">Тарифы пока не установлены</p>';
-        } else {
-            pricesGrid.innerHTML = pricesArray.map(p => `
-                <div class="club-price-card">
-                    <h4 class="price-period">${p.period}</h4>
-                    <div class="price-amount">${p.price.toFixed(0)} ₽</div>
-                    ${p.months > 1 ? `<div class="price-per-month">${(p.price / p.months).toFixed(0)} ₽/мес</div>` : ''}
-                    ${p.description && p.description.trim() ? `<p class="price-description">${escapeHtml(p.description)}</p>` : ''}
-                    <button class="price-select-btn" onclick="selectTariff('${p.period}', ${p.price}, ${p.months})">Выбрать тариф</button>
+        container.innerHTML = tariffs.map(tariff => {
+            const features = tariff.description 
+                ? tariff.description.split('\n').filter(line => line.trim()).map(line => line.trim())
+                : [];
+            const featuresHtml = features.length > 0 
+                ? `<ul class="pricing-features">${features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>`
+                : '';
+            const popularBadge = tariff.is_popular ? '<span class="pricing-badge">Популярный</span>' : '';
+            const popularClass = tariff.is_popular ? 'pricing-card-popular' : '';
+            return `
+                <div class="pricing-card ${popularClass}">
+                    ${popularBadge}
+                    <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
+                    <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
+                    ${featuresHtml}
+                    <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
                 </div>
-            `).join('');
-        }
+            `;
+        }).join('');
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
-        pricesGrid.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов</p>';
+        container.innerHTML = '<p class="empty-state">Ошибка загрузки тарифов</p>';
     }
 }
 
 function selectTariff(period, price, months) {
-    // Открываем Telegram для связи
     window.open('https://web.telegram.org/a/#295895912', '_blank');
 }
 
-// Делаем функции доступными глобально
 window.selectTariff = selectTariff;
 
 // Загружаем тарифы при загрузке страницы
-if (document.getElementById('clubPricesGrid')) {
-    loadClubTariffs();
+if (document.getElementById('pricingCards')) {
+    loadPricingTariffs();
 }
