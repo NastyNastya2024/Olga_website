@@ -2080,7 +2080,7 @@ body:has(.videos-page) .hero video,
 
 .blog-image {
     width: 100%;
-    height: 220px;
+    aspect-ratio: 9 / 16;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
@@ -2878,7 +2878,7 @@ body:has(.videos-page) .hero video,
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    align-items: center;
+    align-items: stretch;
     max-width: 900px;
     margin: 0 auto;
 }
@@ -2899,7 +2899,7 @@ body:has(.videos-page) .hero video,
     margin: 0;
     line-height: 1.8;
     font-weight: 400;
-    text-align: center;
+    text-align: left;
 }
 
 .about-olga-value {
@@ -2910,7 +2910,7 @@ body:has(.videos-page) .hero video,
     line-height: 1.8;
     font-weight: 400;
     font-style: italic;
-    text-align: center;
+    text-align: left;
 }
 
 .about-olga-quote {
@@ -2921,7 +2921,7 @@ body:has(.videos-page) .hero video,
     padding: 1rem 1.5rem;
     line-height: 1.8;
     font-style: italic;
-    text-align: center;
+    text-align: left;
     background: rgba(0, 139, 157, 0.06);
     border-radius: 12px;
 }
@@ -2954,6 +2954,17 @@ body:has(.videos-page) .hero video,
     
     .about-olga-heading {
         font-size: clamp(1.4rem, 4.5vw, 2.4rem); /* меньше, чем benefits-main-title — разный кегль */
+    }
+    
+    .about-olga-text {
+        align-items: center;
+    }
+    
+    .about-olga-main,
+    .about-olga-value,
+    .about-olga-quote,
+    .about-olga-intro {
+        text-align: center;
     }
 }
 
