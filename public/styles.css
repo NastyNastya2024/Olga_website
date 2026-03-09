@@ -3861,6 +3861,45 @@ body:has(.videos-page) .hero video,
     display: block;
 }
 
+.home-reviews-scroll-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.home-reviews-scroll-btn {
+    background: #008B9D;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 139, 157, 0.3);
+}
+
+.home-reviews-scroll-btn:hover {
+    background: #005A6B;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 139, 157, 0.4);
+}
+
+.home-reviews-scroll-btn:active {
+    transform: scale(0.95);
+}
+
+.home-reviews-scroll-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
 @media (max-width: 768px) {
     .home-reviews-title {
         font-size: 3rem;
