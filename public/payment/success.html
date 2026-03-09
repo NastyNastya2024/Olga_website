@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата прошла успешно — Olga Yoga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/shared/styles/common.css">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .payment-success {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .payment-success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .payment-success h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .payment-success p {
+            color: var(--text-secondary, #666);
+            margin-bottom: 2rem;
+        }
+        .payment-success .btn-back {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent, #8b7355);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .payment-success .btn-back:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <a href="/">
+                    <img src="/img/logo.png" alt="Olga Website" class="logo-img">
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/videos.html">Видео</a></li>
+                <li><a href="/club.html">Клуб</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="payment-success">
+            <div class="payment-success-icon">✓</div>
+            <h1>Оплата прошла успешно</h1>
+            <p>Спасибо за оплату! Мы свяжемся с вами в ближайшее время.</p>
+            <a href="/" class="btn-back">На главную</a>
+        </section>
+    </main>
+</body>
+</html>

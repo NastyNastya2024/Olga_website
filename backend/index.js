@@ -27,6 +27,7 @@ const authRoutes = require('./routes/auth');
 const chatRoutes = require('./routes/chat');
 const reviewImagesRoutes = require('./routes/review-images');
 const publicReviewImagesRoutes = require('./routes/public-review-images');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +70,7 @@ app.use('/api/admin/users', usersRoutes);
 app.use('/api/admin/chat', chatRoutes);
 app.use('/api/admin/review-images', reviewImagesRoutes);
 app.use('/api/public/review-images', publicReviewImagesRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

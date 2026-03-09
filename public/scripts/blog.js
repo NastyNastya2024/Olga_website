@@ -161,7 +161,7 @@ async function loadPricingTariffs() {
                     <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
                     <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
                     ${featuresHtml}
-                    <button class="pricing-button" onclick="window.open('https://web.telegram.org/a/#295895912', '_blank')">Выбрать тариф</button>
+                    <button class="pricing-button" onclick="handlePayment(${tariff.id})">Выбрать тариф</button>
                 </div>
             `;
         }).join('');
@@ -171,8 +171,12 @@ async function loadPricingTariffs() {
     }
 }
 
-function selectTariff(period, price, months) {
-    window.open('https://web.telegram.org/a/#295895912', '_blank');
+function selectTariff(period, price, months, tariffId) {
+    if (tariffId != null) {
+        handlePayment(tariffId);
+    } else {
+        window.open('https://web.telegram.org/a/#295895912', '_blank');
+    }
 }
 
 window.selectTariff = selectTariff;

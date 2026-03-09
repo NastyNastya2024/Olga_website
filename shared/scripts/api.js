@@ -202,6 +202,30 @@ const api = new ApiClient();
 // Делаем доступным глобально для использования в скриптах
 window.api = api;
 
+/**
+ * Переход к оплате тарифа через ЮKassa
+ * @param {number} tariffId - ID тарифа из pricing-tariffs
+ */
+async function handlePayment(tariffId) {
+    try {
+        const baseUrl = window.location.origin;
+        const data = await api.post('/payment/create', {
+            tariff_id: tariffId,
+            return_url: baseUrl + '/payment/success.html',
+            cancel_url: baseUrl + '/'
+        });
+        if (data.confirmation_url) {
+            window.location.href = data.confirmation_url;
+        } else {
+            alert('Ошибка: не получена ссылка на оплату');
+        }
+    } catch (error) {
+        console.error('Ошибка создания платежа:', error);
+        alert(error.message || 'Ошибка создания платежа');
+    }
+}
+window.handlePayment = handlePayment;
+
 // Экспорт для использования в модулях
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { ApiClient, api };
