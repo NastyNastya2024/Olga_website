@@ -3774,6 +3774,83 @@ body:has(.videos-page) .hero video,
     }
 }
 
+/* Отзывы на главной */
+.home-reviews-section {
+    padding: 5rem 2rem;
+    background-color: #f8f9fa;
+    position: relative;
+    z-index: 10;
+}
+
+.home-reviews-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-reviews-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+    color: #008B9D;
+    text-align: center;
+    margin: 0 0 0.5rem 0;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.home-reviews-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    text-align: center;
+    margin: 0 0 3rem 0;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.home-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+}
+
+.home-review-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+}
+
+.home-review-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.home-review-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    line-height: 1.7;
+    margin: 0;
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .home-reviews-title {
+        font-size: 3rem;
+    }
+    
+    .home-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .home-review-card {
+        min-height: 260px;
+    }
+}
+
 /* Pricing Section */
 .pricing-section {
     padding: 5rem 2rem;
