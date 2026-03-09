@@ -45,6 +45,53 @@
         .payment-success .btn-back:hover {
             opacity: 0.9;
         }
+        .registration-form {
+            max-width: 360px;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+        }
+        .registration-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .registration-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .registration-form button {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: #008B9D;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .registration-form button:hover {
+            opacity: 0.9;
+        }
+        .registration-form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .payment-success .status-loading {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .payment-success .error-msg {
+            color: #c00;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -67,9 +114,112 @@
         <section class="payment-success">
             <div class="payment-success-icon">✓</div>
             <h1>Оплата прошла успешно</h1>
-            <p>Спасибо за оплату! Мы свяжемся с вами в ближайшее время.</p>
-            <a href="/" class="btn-back">На главную</a>
+            <p id="successMessage">Спасибо за оплату!</p>
+            <div id="loadingStatus" class="status-loading" style="display: none;"></div>
+            <div id="registrationBlock" style="display: none;">
+                <p style="margin-bottom: 1rem;">Введите email и пароль для входа в личный кабинет:</p>
+                <form class="registration-form" id="registrationForm" autocomplete="off">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" name="email" required placeholder="your@email.com" autocomplete="off">
+                    <label for="regPassword">Пароль (минимум 6 символов)</label>
+                    <input type="password" id="regPassword" name="password" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                    <label for="regPasswordConfirm">Подтвердите пароль</label>
+                    <input type="password" id="regPasswordConfirm" name="password_confirm" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                    <div class="error-msg" id="formError"></div>
+                    <button type="submit" id="submitBtn">Войти в личный кабинет</button>
+                </form>
+            </div>
+            <a href="/" class="btn-back" id="btnBack" style="margin-top: 2rem;">На главную</a>
         </section>
     </main>
+
+    <script src="/shared/scripts/api.js"></script>
+    <script>
+        (function() {
+            function getCookie(name) {
+                const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+                return v ? v[2] : null;
+            }
+            function clearCookie(name) {
+                document.cookie = name + '=; path=/; max-age=0';
+            }
+            function getPaymentId() {
+                const fromUrl = new URLSearchParams(location.search).get('payment_id') || new URLSearchParams(location.search).get('orderId');
+                const fromCookie = getCookie('payment_pending');
+                let fromStorage = null;
+                try { fromStorage = sessionStorage.getItem('payment_pending'); } catch (e) {}
+                return fromUrl || fromCookie || fromStorage;
+            }
+
+            const paymentId = getPaymentId();
+            const loadingEl = document.getElementById('loadingStatus');
+            const regBlock = document.getElementById('registrationBlock');
+            const successMsg = document.getElementById('successMessage');
+            const form = document.getElementById('registrationForm');
+            const formError = document.getElementById('formError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!paymentId) {
+                successMsg.textContent = 'Спасибо за оплату! Если вы только что оплатили, обновите страницу через 10 секунд — форма регистрации появится. Либо свяжитесь с нами: 8 902 579-62-52.';
+                loadingEl.style.display = 'block';
+                loadingEl.textContent = 'Сохранённый платёж не найден. Обновите страницу.';
+                return;
+            }
+
+            // Показываем форму сразу — пользователь может заполнять пока обрабатывается платёж
+            loadingEl.style.display = 'block';
+            loadingEl.textContent = 'Обрабатываем платёж…';
+            regBlock.style.display = 'block';
+            successMsg.textContent = 'Спасибо за оплату! Заполните данные для доступа в личный кабинет и чат с преподавателем.';
+
+            let pollCount = 0;
+            const maxPoll = 60;
+            const pollInterval = setInterval(function() {
+                pollCount++;
+                api.get('/payment/check-pending?payment_id=' + encodeURIComponent(paymentId))
+                    .then(function(data) {
+                        if (data.ready) {
+                            clearInterval(pollInterval);
+                            loadingEl.textContent = '';
+                            loadingEl.style.display = 'none';
+                        }
+                    })
+                    .catch(function() {});
+                if (pollCount >= maxPoll) {
+                    clearInterval(pollInterval);
+                    loadingEl.textContent = 'Платёж обрабатывается. Заполните форму и нажмите кнопку — если появится ошибка, попробуйте через минуту.';
+                }
+            }, 500);
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                formError.textContent = '';
+                const password = document.getElementById('regPassword').value;
+                const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+                if (password !== passwordConfirm) {
+                    formError.textContent = 'Пароли не совпадают';
+                    return;
+                }
+                submitBtn.disabled = true;
+                const email = document.getElementById('regEmail').value.trim();
+                try {
+                    const data = await api.post('/payment/complete-registration', {
+                        payment_id: paymentId,
+                        email,
+                        password
+                    });
+                    if (data.token) {
+                        localStorage.setItem('auth_token', data.token);
+                        clearCookie('payment_pending');
+                        try { sessionStorage.removeItem('payment_pending'); } catch (e) {}
+                        window.location.href = (data.redirect || '/admin/chat');
+                    }
+                } catch (err) {
+                    formError.textContent = err.message || 'Ошибка. Попробуйте снова через минуту.';
+                    submitBtn.disabled = false;
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

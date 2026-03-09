@@ -222,6 +222,10 @@ async function handlePayment(tariffId, evt) {
             cancel_url: baseUrl + '/'
         });
         if (data.confirmation_url) {
+            if (data.payment_id) {
+                document.cookie = `payment_pending=${data.payment_id}; path=/; max-age=86400; SameSite=Lax`;
+                try { sessionStorage.setItem('payment_pending', data.payment_id); } catch (e) {}
+            }
             window.location.href = data.confirmation_url;
         } else {
             alert('Ошибка: не получена ссылка на оплату');

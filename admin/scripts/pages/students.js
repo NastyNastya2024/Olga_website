@@ -141,7 +141,9 @@ async function loadAllUsers() {
                 ? `${assignedVideosCount} ${assignedVideosCount === 1 ? 'видео' : 'видео'}` 
                 : 'Нет';
             const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-';
-            const email = (user.email || '-').replace(/"/g, '&quot;');
+            const paymentDate = user.payment_date ? new Date(user.payment_date).toLocaleDateString('ru-RU') : '-';
+            const emailDisplay = (user.email || '').startsWith('pending_') ? 'Ожидает регистрации' : (user.email || '-');
+            const email = emailDisplay.replace(/"/g, '&quot;');
             const tariff = (user.tariff || '-').replace(/"/g, '&quot;');
             
             return `
@@ -161,6 +163,7 @@ async function loadAllUsers() {
                             <div class="user-detail-grid">
                                 <div class="user-detail-item"><strong>Email:</strong> ${email}</div>
                                 <div class="user-detail-item"><strong>Тариф:</strong> ${tariff}</div>
+                                <div class="user-detail-item"><strong>Дата платежа:</strong> ${paymentDate}</div>
                                 <div class="user-detail-item"><strong>Назначенные видео:</strong> ${videosText}</div>
                                 <div class="user-detail-item"><strong>Дата регистрации:</strong> ${createdDate}</div>
                             </div>

@@ -37,6 +37,10 @@ function persistData() {
  * Получить список всех пользователей
  */
 router.get('/', (req, res) => {
+  // Перезагружаем из файла (могут быть новые пользователи из webhook оплаты)
+  const freshData = loadData('users');
+  users = freshData.items || users;
+  nextId = freshData.nextId || nextId;
   // Не возвращаем пароли в списке пользователей
   const usersWithoutPasswords = users.map(({ password: _, ...user }) => user);
   res.json(usersWithoutPasswords);
