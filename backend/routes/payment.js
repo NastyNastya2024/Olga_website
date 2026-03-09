@@ -14,7 +14,7 @@ const { loadData } = require('../utils/data-storage');
  */
 router.post('/create', async (req, res) => {
   try {
-    const { tariff_id, return_url, cancel_url } = req.body;
+    const { tariff_id, return_url, cancel_url, customer_email } = req.body;
 
     const shopId = process.env.YOOKASSA_SHOP_ID;
     const secretKey = process.env.YOOKASSA_SECRET_KEY;
@@ -49,6 +49,9 @@ router.post('/create', async (req, res) => {
       secretKey
     });
 
+    // Email для чека (54-ФЗ). Можно передать customer_email в запросе или задать в .env
+    const receiptEmail = customer_email || process.env.YOOKASSA_RECEIPT_EMAIL || process.env.YOOKASSA_RECEIPT_EMAIL_BACKUP || 'ola_br@mail.ru' || 'anastkomarova@yandex.ru';
+
     const payment = await yooKassa.createPayment({
       amount: {
         value: amount.toFixed(2),
@@ -61,7 +64,29 @@ router.post('/create', async (req, res) => {
         cancel_url: cancel_url || defaultCancelUrl
       },
       capture: true,
-      description: `Оплата тарифа: ${tariff.name || 'Йога'}`
+      description: `Оплата тарифа: ${tariff.name || 'Йога'}`,
+      metadata: {
+        tariff_id: String(tariff.id),
+        tariff_name: tariff.name || 'Йога'
+      },
+      receipt: {
+        customer: {
+          email: receiptEmail
+        },
+        items: [
+          {
+            description: tariff.name ? `Тариф: ${tariff.name}` : 'Онлайн-занятия йогой',
+            quantity: 1,
+            amount: {
+              value: amount.toFixed(2),
+              currency: 'RUB'
+            },
+            vat_code: 1,
+            payment_mode: 'full_prepayment',
+            payment_subject: 'service'
+          }
+        ]
+      }
     });
 
     const confirmationUrl = payment.confirmationUrl || (payment.confirmation && payment.confirmation.confirmation_url);

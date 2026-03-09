@@ -195,7 +195,7 @@
 
     <footer class="footer">
         <div class="footer-container">
-            <p class="footer-text">&copy; 2024 Olga Website. Все права защищены.</p>
+            <p class="footer-text">© ИП АЛЕКСЕЕВА О.В. · <a href="tel:89025796252" class="footer-link">8 902 579-62-52</a> · <a href="https://vk.com/id51840911" class="footer-link" target="_blank" rel="noopener">ВКонтакте</a></p>
         </div>
     </footer>
 
@@ -203,6 +203,7 @@
 
     <script src="/shared/scripts/api.js"></script>
     <script src="/shared/scripts/preloader.js"></script>
+    <script src="/shared/scripts/legal-info.js"></script>
     <script>
         // Бургер-меню
         const burgerMenu = document.getElementById('burgerMenu');
@@ -707,7 +708,7 @@
                             <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
                             <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
                             ${featuresHtml}
-                            <button class="pricing-button" onclick="handlePayment(${tariff.id})">Выбрать тариф</button>
+                            <button class="pricing-button" onclick="handlePayment(${tariff.id}, event)">Выбрать тариф</button>
                         </div>
                     `;
                 }).join('');

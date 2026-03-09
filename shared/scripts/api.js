@@ -205,8 +205,15 @@ window.api = api;
 /**
  * Переход к оплате тарифа через ЮKassa
  * @param {number} tariffId - ID тарифа из pricing-tariffs
+ * @param {Event} [evt] - событие клика (для показа загрузки на кнопке)
  */
-async function handlePayment(tariffId) {
+async function handlePayment(tariffId, evt) {
+    const btn = evt?.target;
+    const originalText = btn?.textContent;
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Переход к оплате…';
+    }
     try {
         const baseUrl = window.location.origin;
         const data = await api.post('/payment/create', {
@@ -218,10 +225,12 @@ async function handlePayment(tariffId) {
             window.location.href = data.confirmation_url;
         } else {
             alert('Ошибка: не получена ссылка на оплату');
+            if (btn) { btn.disabled = false; btn.textContent = originalText; }
         }
     } catch (error) {
         console.error('Ошибка создания платежа:', error);
         alert(error.message || 'Ошибка создания платежа');
+        if (btn) { btn.disabled = false; btn.textContent = originalText; }
     }
 }
 window.handlePayment = handlePayment;

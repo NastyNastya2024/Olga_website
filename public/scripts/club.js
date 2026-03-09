@@ -170,7 +170,7 @@ async function loadPricingTariffs() {
                     <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
                     <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
                     ${featuresHtml}
-                    <button class="pricing-button" onclick="handlePayment(${tariff.id})">Выбрать тариф</button>
+                    <button class="pricing-button" onclick="handlePayment(${tariff.id}, event)">Выбрать тариф</button>
                 </div>
             `;
         }).join('');

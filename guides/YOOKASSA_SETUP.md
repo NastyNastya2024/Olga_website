@@ -41,6 +41,8 @@ npm install yookassa
 ```env
 YOOKASSA_SHOP_ID=ваш_shop_id
 YOOKASSA_SECRET_KEY=ваш_секретный_ключ
+YOOKASSA_RECEIPT_EMAIL=ola_br@mail.ru
+YOOKASSA_RECEIPT_EMAIL_BACKUP=anastkomarova@yandex.ru   # Резервный email для чека
 ```
 
 > ⚠️ Не добавляйте `.env` в git. Убедитесь, что он в `.gitignore`.
@@ -134,7 +136,7 @@ app.use('/api/payment', paymentRoutes);
 ## Шаг 7. Настройка вебхука (уведомления о платежах)
 
 1. В личном кабинете ЮKassa: **Настройки → Уведомления**
-2. Укажите URL: `https://ваш-домен.ru/api/payment/webhook`
+2. Укажите URL: `https://Yolga.pro/api/payment/webhook`
 3. Включите события: **payment.succeeded**, **payment.canceled**
 
 Создайте обработчик webhook в `backend/routes/payment.js`:
