@@ -19,6 +19,7 @@ const FILES = {
   pricingTariffs: path.join(DATA_DIR, 'pricing-tariffs.json'),
   chatMessages: path.join(DATA_DIR, 'chat-messages.json'),
   chatThreads: path.join(DATA_DIR, 'chat-threads.json'),
+  reviewImages: path.join(DATA_DIR, 'review-images.json'),
   privateChatMessages: path.join(DATA_DIR, 'private-chat-messages.json'),
   generalChatMessages: path.join(DATA_DIR, 'general-chat-messages.json'),
   generalChatJoins: path.join(DATA_DIR, 'general-chat-joins.json'),
@@ -124,6 +125,8 @@ function getDefaultData(fileKey) {
       return { items: [], nextId: 1 };
     case 'generalChatJoins':
       return { items: [] };
+    case 'reviewImages':
+      return { items: [], nextId: 1 };
     default:
       return { items: [], nextId: 1 };
   }

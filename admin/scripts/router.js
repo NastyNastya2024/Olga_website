@@ -214,6 +214,11 @@ class Router {
                 if (ChatPage.default && ChatPage.default.init) {
                     await ChatPage.default.init();
                 }
+            } else if (path === '/review-images') {
+                const ReviewImagesPage = await import('./pages/review-images.js');
+                if (ReviewImagesPage.default && ReviewImagesPage.default.init) {
+                    await ReviewImagesPage.default.init();
+                }
             } else if (path === '/club/prices' || path === '/club/reviews' || path === '/reviews') {
                 // Редирект со старых маршрутов на новый
                 this.navigate('/club');

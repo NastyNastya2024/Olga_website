@@ -66,6 +66,10 @@ const Sidebar = {
                             <span class="sidebar-icon">💳</span>
                             <span>Тарифы</span>
                         </a>
+                        <a href="#" data-route="/review-images" class="sidebar-item">
+                            <span class="sidebar-icon">⭐</span>
+                            <span>Отзывы</span>
+                        </a>
                     ` : ''}
                 </nav>
             </aside>
@@ -131,11 +135,15 @@ const Header = {
                                 <span class="nav-icon">💰</span>
                                 <span>Клуб</span>
                             </a>
-                            <a href="#" data-route="/pricing-tariffs" class="nav-item">
-                                <span class="nav-icon">💳</span>
-                                <span>Тарифы</span>
-                            </a>
-                        ` : ''}
+                        <a href="#" data-route="/pricing-tariffs" class="nav-item">
+                            <span class="nav-icon">💳</span>
+                            <span>Тарифы</span>
+                        </a>
+                        <a href="#" data-route="/review-images" class="nav-item">
+                            <span class="nav-icon">⭐</span>
+                            <span>Отзывы</span>
+                        </a>
+                    ` : ''}
                     </div>
                     <div class="burger-menu-footer">
                         <a href="/" class="btn btn-return-site">На сайт</a>
@@ -363,6 +371,14 @@ function loadPageComponents() {
         const layoutHtml = Layout.render();
         return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
     }, [authGuard]);
+    
+    // Отзывы (скриншоты для главной)
+    router.route('/review-images', async () => {
+        const ReviewImagesPage = await import('./pages/review-images.js');
+        const content = await ReviewImagesPage.default.render();
+        const layoutHtml = Layout.render();
+        return layoutHtml.replace('<!-- Контент страницы будет здесь -->', content);
+    }, [authGuard, adminGuard]);
     
     // 403 - Доступ запрещен (показываем страницу логина)
     router.route('/403', async () => {

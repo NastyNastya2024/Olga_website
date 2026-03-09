@@ -1340,7 +1340,54 @@ tr.user-detail-row td.user-detail-cell {
     border-radius: 4px;
 }
 
-/* Чат */
+/* Отзывы (review-images) */
+#review-images-page {
+    text-align: center;
+}
+
+#review-images-page .page-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+#review-images-page .review-images-hint {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem 0;
+}
+
+.review-images-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.review-image-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.review-image-thumb {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+}
+
+.review-image-actions {
+    padding: 0.75rem;
+}
+
+.review-images-empty,
+.review-images-error {
+    padding: 2rem;
+    text-align: center;
+    color: #888;
+}
+
 #chat-page {
     flex: 1;
     display: flex;

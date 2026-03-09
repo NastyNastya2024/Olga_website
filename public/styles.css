@@ -2878,9 +2878,16 @@ body:has(.videos-page) .hero video,
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    align-items: stretch;
+    align-items: center;
     max-width: 900px;
     margin: 0 auto;
+    width: 100%;
+}
+
+.about-olga-text .about-olga-main,
+.about-olga-text .about-olga-quote,
+.about-olga-text .about-olga-value {
+    width: 100%;
 }
 
 .about-olga-intro {
@@ -2899,7 +2906,7 @@ body:has(.videos-page) .hero video,
     margin: 0;
     line-height: 1.8;
     font-weight: 400;
-    text-align: left;
+    text-align: center;
 }
 
 .about-olga-value {
@@ -2910,7 +2917,7 @@ body:has(.videos-page) .hero video,
     line-height: 1.8;
     font-weight: 400;
     font-style: italic;
-    text-align: left;
+    text-align: center;
 }
 
 .about-olga-quote {
@@ -2921,7 +2928,7 @@ body:has(.videos-page) .hero video,
     padding: 1rem 1.5rem;
     line-height: 1.8;
     font-style: italic;
-    text-align: left;
+    text-align: center;
     background: rgba(0, 139, 157, 0.06);
     border-radius: 12px;
 }
@@ -3807,34 +3814,50 @@ body:has(.videos-page) .hero video,
     line-height: 1.6;
 }
 
-.home-reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 1.5rem;
-}
-
-.home-review-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    min-height: 280px;
+.home-reviews-scroll {
     display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.3s ease;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 }
 
-.home-review-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+.home-reviews-scroll .empty-state {
+    width: 100%;
+    text-align: center;
+    color: #888;
+    padding: 2rem;
 }
 
-.home-review-text {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.95rem;
-    color: #2c3e50;
-    line-height: 1.7;
-    margin: 0;
-    flex: 1;
+.home-reviews-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.home-reviews-scroll::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 4px;
+}
+
+.home-reviews-scroll::-webkit-scrollbar-thumb {
+    background: #008B9D;
+    border-radius: 4px;
+}
+
+.home-review-image-card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.home-review-image-card img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    display: block;
 }
 
 @media (max-width: 768px) {
@@ -3842,12 +3865,12 @@ body:has(.videos-page) .hero video,
         font-size: 3rem;
     }
     
-    .home-reviews-grid {
-        grid-template-columns: 1fr;
+    .home-review-image-card {
+        flex: 0 0 240px;
     }
     
-    .home-review-card {
-        min-height: 260px;
+    .home-review-image-card img {
+        height: 340px;
     }
 }
 
