@@ -617,6 +617,7 @@
         // Загрузка отзывов-скриншотов для главной
         async function loadReviewImages() {
             const container = document.getElementById('homeReviewsScroll');
+            const controls = document.querySelector('.home-reviews-scroll-controls');
             if (!container) return;
 
             try {
@@ -624,6 +625,7 @@
 
                 if (!items || items.length === 0) {
                     container.innerHTML = '<p class="empty-state">Отзывы пока не добавлены</p>';
+                    if (controls) controls.style.display = 'none';
                     return;
                 }
 
@@ -632,10 +634,39 @@
                         <img src="${escapeHtml(item.image_url)}" alt="Отзыв" loading="lazy">
                     </div>
                 `).join('');
+
+                if (controls) controls.style.display = 'flex';
+                setupHomeReviewsScroll();
             } catch (error) {
                 console.error('Ошибка загрузки отзывов:', error);
                 container.innerHTML = '<p class="empty-state">Ошибка загрузки отзывов</p>';
+                if (controls) controls.style.display = 'none';
             }
+        }
+
+        function setupHomeReviewsScroll() {
+            const container = document.getElementById('homeReviewsScroll');
+            const leftBtn = document.getElementById('homeReviewsScrollLeft');
+            const rightBtn = document.getElementById('homeReviewsScrollRight');
+            if (!container || !leftBtn || !rightBtn) return;
+
+            function updateButtons() {
+                const scrollLeft = container.scrollLeft;
+                const scrollWidth = container.scrollWidth;
+                const clientWidth = container.clientWidth;
+                const scrollRight = scrollWidth - scrollLeft - clientWidth;
+                leftBtn.disabled = scrollLeft <= 5;
+                rightBtn.disabled = scrollRight <= 5;
+            }
+
+            leftBtn.addEventListener('click', () => {
+                container.scrollBy({ left: -320, behavior: 'smooth' });
+            });
+            rightBtn.addEventListener('click', () => {
+                container.scrollBy({ left: 320, behavior: 'smooth' });
+            });
+            container.addEventListener('scroll', updateButtons);
+            updateButtons();
         }
 
         document.addEventListener('DOMContentLoaded', loadReviewImages);
