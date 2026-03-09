@@ -99,34 +99,42 @@ const Header = {
                     </div>
                 </div>
                 <nav class="admin-top-nav">
-                    <a href="#" data-route="/videos" class="nav-item">
-                        <span class="nav-icon">🎥</span>
-                        <span>Видео</span>
-                    </a>
-                    ${!isStudent ? `
-                        <a href="#" data-route="/students" class="nav-item">
-                            <span class="nav-icon">👥</span>
-                            <span>Ученики</span>
+                    <div class="burger-nav-links">
+                        <a href="#" data-route="/videos" class="nav-item">
+                            <span class="nav-icon">🎥</span>
+                            <span>Видео</span>
                         </a>
-                    ` : ''}
-                    ${isAdmin ? `
-                        <a href="#" data-route="/tours" class="nav-item">
-                            <span class="nav-icon">✈️</span>
-                            <span>Ретриты</span>
-                        </a>
-                        <a href="#" data-route="/blog" class="nav-item">
-                            <span class="nav-icon">📝</span>
-                            <span>Блог</span>
-                        </a>
-                        <a href="#" data-route="/club" class="nav-item">
-                            <span class="nav-icon">💰</span>
-                            <span>Клуб</span>
-                        </a>
-                        <a href="#" data-route="/pricing-tariffs" class="nav-item">
-                            <span class="nav-icon">💳</span>
-                            <span>Тарифы</span>
-                        </a>
-                    ` : ''}
+                        ${!isStudent ? `
+                            <a href="#" data-route="/students" class="nav-item">
+                                <span class="nav-icon">👥</span>
+                                <span>Ученики</span>
+                            </a>
+                        ` : ''}
+                        ${isAdmin ? `
+                            <a href="#" data-route="/tours" class="nav-item">
+                                <span class="nav-icon">✈️</span>
+                                <span>Ретриты</span>
+                            </a>
+                            <a href="#" data-route="/blog" class="nav-item">
+                                <span class="nav-icon">📝</span>
+                                <span>Блог</span>
+                            </a>
+                            <a href="#" data-route="/club" class="nav-item">
+                                <span class="nav-icon">💰</span>
+                                <span>Клуб</span>
+                            </a>
+                            <a href="#" data-route="/pricing-tariffs" class="nav-item">
+                                <span class="nav-icon">💳</span>
+                                <span>Тарифы</span>
+                            </a>
+                        ` : ''}
+                    </div>
+                    <div class="burger-menu-footer">
+                        <a href="/" class="btn btn-return-site">На сайт</a>
+                        ${user ? `
+                            <button type="button" onclick="handleLogout()" class="btn btn-logout">Выйти</button>
+                        ` : ''}
+                    </div>
                 </nav>
             </header>
         `;
@@ -249,7 +257,7 @@ function setupAdminBurgerMenu() {
             return;
         }
 
-        if (navItemClicked) {
+        if (navItemClicked || event.target.closest('.burger-menu-footer')) {
             burger.classList.remove('active');
             nav.classList.remove('active');
             return;

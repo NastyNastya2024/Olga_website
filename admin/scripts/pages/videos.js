@@ -208,12 +208,12 @@ async function loadVideos() {
                 <td>${video.title}</td>
                 <td><span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span></td>
                 <td>${video.access_type === 'open' ? 'Открыто' : 'По подписке'}</td>
-                <td>
+                <td class="cell-actions">
                     ${!isStudent ? `
-                        <button class="btn btn-edit" onclick="editVideo(${video.id})">Редактировать</button>
-                        <button class="btn btn-danger" onclick="deleteVideo(${video.id})">Удалить</button>
+                        <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
+                        <button class="btn btn-danger" title="Удалить" onclick="deleteVideo(${video.id})">Удалить</button>
                     ` : ''}
-                    ${video.video_url ? `<button class="btn btn-view" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
+                    ${video.video_url ? `<button class="btn btn-view" title="Смотреть" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
                 </td>
             </tr>
         `).join('');

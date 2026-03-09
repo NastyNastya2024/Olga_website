@@ -107,9 +107,9 @@ async function loadTariffs() {
                 <td>${escapeHtml(tariff.price || '')}</td>
                 <td>${escapeHtml(tariff.description || '').substring(0, 50)}${tariff.description && tariff.description.length > 50 ? '...' : ''}</td>
                 <td>${tariff.is_popular ? '✓' : ''}</td>
-                <td>
-                    <button class="btn btn-sm btn-edit" onclick="editTariff(${tariff.id})">Редактировать</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteTariff(${tariff.id})">Удалить</button>
+                <td class="cell-actions">
+                    <button class="btn btn-sm btn-edit" title="Редактировать" onclick="editTariff(${tariff.id})">Редактировать</button>
+                    <button class="btn btn-sm btn-danger" title="Удалить" onclick="deleteTariff(${tariff.id})">Удалить</button>
                 </td>
             </tr>
         `).join('');

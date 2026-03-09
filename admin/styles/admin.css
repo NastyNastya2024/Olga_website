@@ -429,6 +429,16 @@ html, body {
     font-size: 1.1rem;
 }
 
+/* На десктопе: ссылки меню в ряд, блок «На сайт / Выйти» скрыт */
+.burger-nav-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.burger-menu-footer {
+    display: none;
+}
+
 .user-info {
     display: flex;
     align-items: center;
@@ -623,10 +633,37 @@ html, body {
 
     .admin-top-nav.active {
         display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 60px);
     }
 
     .admin-burger {
         display: flex;
+    }
+
+    /* Кнопки «На сайт» и «Выйти» только в бургер-меню, в хедере скрыты */
+    .admin-header-actions .btn-return-site,
+    .admin-header-actions .btn-logout {
+        display: none !important;
+    }
+    .burger-menu-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding: 1rem 1rem 1.5rem;
+        border-top: 1px solid #e8e8e8;
+        background: #f8f9fa;
+    }
+    .burger-menu-footer .btn {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+    
+    .admin-top-nav .burger-nav-links {
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .admin-top-nav .nav-item {
@@ -635,6 +672,16 @@ html, body {
         border-bottom: 1px solid #e8e8e8;
     }
     
+    /* Поле «Название» в два раза уже на мобильном */
+    #videoTitle,
+    #tourTitle,
+    #postTitle,
+    #eventTitle,
+    #tariffName {
+        max-width: 50%;
+        box-sizing: border-box;
+    }
+
     /* Уменьшаем кнопки на 20% для мобильной версии */
     .btn {
         padding: 0.6rem 1.2rem !important; /* было 0.75rem 1.5rem */
@@ -717,7 +764,7 @@ html, body {
     .data-table .cell-actions .btn-sm {
         padding: 0.65rem 0.85rem !important;
     }
-    .data-table .btn:not(.cell-actions .btn) {
+    .data-table td:not(.cell-actions) .btn {
         padding: 0.5rem 1rem !important;
         font-size: 0.75rem !important;
         white-space: nowrap;
@@ -786,7 +833,7 @@ html, body {
     .data-table .cell-actions .btn-success::before {
         font-size: 1.15rem;
     }
-    .data-table .btn:not(.cell-actions .btn) {
+    .data-table td:not(.cell-actions) .btn {
         padding: 0.4rem 0.8rem !important;
         font-size: 0.7rem !important;
         white-space: nowrap;

@@ -1,0 +1,150 @@
+/* Apple-style UI для основного сайта — только форма и типографика, цветовая гамма не меняется */
+
+:root {
+  --apple-font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --apple-radius: 14px;
+  --apple-radius-sm: 12px;
+  --apple-radius-lg: 20px;
+  --apple-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --apple-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Типографика: системный шрифт Apple, сглаживание */
+body {
+  font-family: var(--apple-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Декоративные заголовки (Great Vibes) оставляем как есть — не переопределяем */
+
+/* Кнопка «Вход» — скругление в стиле Apple */
+.btn-login {
+  border-radius: 999px !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Нав-ссылки: лёгкая читаемость */
+.nav-menu a {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Мобильное меню: скругление пунктов при наведении не трогаем, только шрифт уже через body */
+
+/* Hero контент (блок с текстом поверх hero) */
+.hero-content {
+  border-radius: var(--apple-radius) !important;
+  box-shadow: var(--apple-shadow) !important;
+}
+
+/* Секции контента */
+.content-section {
+  border-radius: var(--apple-radius-sm) !important;
+}
+
+/* Карточки преимуществ (benefit-card) */
+.benefit-card {
+  border-radius: var(--apple-radius) !important;
+  box-shadow: var(--apple-shadow) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.benefit-card:hover {
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+/* Заголовки секций */
+.benefits-main-title,
+.services-section-title,
+.events-section-title,
+.blog-section-title,
+.reviews-section h2,
+.club-services h2 {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/* Карточки бесплатных видео */
+.free-video-card,
+.video-card-content {
+  border-radius: var(--apple-radius) !important;
+  overflow: hidden;
+}
+
+/* Карточки туров */
+.tour-card {
+  border-radius: var(--apple-radius-lg) !important;
+  box-shadow: var(--apple-shadow) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.tour-card:hover {
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+/* Карточки клуба / сервисов / событий / отзывов */
+.service-card,
+.event-card,
+.review-card,
+.club-event-card,
+.club-price-card {
+  border-radius: var(--apple-radius) !important;
+  box-shadow: var(--apple-shadow) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.service-card:hover,
+.event-card:hover,
+.review-card:hover,
+.club-event-card:hover,
+.club-price-card:hover {
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+/* Карточки блога */
+.blog-card {
+  border-radius: var(--apple-radius-lg) !important;
+  box-shadow: var(--apple-shadow) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.blog-card:hover {
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+/* Кнопки CTA (призыв к действию) — только скругление */
+.pricing-section .btn,
+.content-section .btn,
+a.btn-primary,
+button.btn-primary {
+  border-radius: var(--apple-radius-sm) !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Модальные окна */
+.modal-content,
+.video-modal-content {
+  border-radius: var(--apple-radius-lg) !important;
+  box-shadow: var(--apple-shadow-hover) !important;
+}
+
+/* Поля ввода (если есть на публичных страницах) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  border-radius: var(--apple-radius-sm) !important;
+}
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+/* Логотип и бургер на мобильном — уже имеют border-radius 12px в styles.css, оставляем */
+
+/* Блок тарифов / цен */
+.pricing-card,
+.tariff-card {
+  border-radius: var(--apple-radius) !important;
+  box-shadow: var(--apple-shadow) !important;
+}

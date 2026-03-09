@@ -115,9 +115,9 @@ async function loadReviews() {
                 <td>${'⭐'.repeat(review.rating || 5)}</td>
                 <td>${(review.text || '').substring(0, 50)}${review.text && review.text.length > 50 ? '...' : ''}</td>
                 <td><span class="status-badge ${review.status}">${review.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span></td>
-                <td>
-                    <button class="btn btn-primary" onclick="editReview(${review.id})">Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteReview(${review.id})">Удалить</button>
+                <td class="cell-actions">
+                    <button class="btn btn-primary" title="Редактировать" onclick="editReview(${review.id})">Редактировать</button>
+                    <button class="btn btn-danger" title="Удалить" onclick="deleteReview(${review.id})">Удалить</button>
                 </td>
             </tr>
         `).join('');

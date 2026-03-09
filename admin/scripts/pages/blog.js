@@ -127,10 +127,10 @@ async function loadPosts() {
                 <td>${post.category || '-'}</td>
                 <td>${post.published_at ? new Date(post.published_at).toLocaleDateString('ru-RU') : '-'}</td>
                 <td><span class="status-badge ${post.status}">${post.status === 'published' ? 'Опубликовано' : 'Черновик'}</span></td>
-                <td>
-                    ${post.status === 'draft' ? `<button class="btn btn-success" onclick="publishPost(${post.id})" style="margin-right: 0.5rem;">Опубликовать</button>` : ''}
-                    <button class="btn btn-edit" onclick="editPost(${post.id})">Редактировать</button>
-                    <button class="btn btn-danger" onclick="deletePost(${post.id})">Удалить</button>
+                <td class="cell-actions">
+                    ${post.status === 'draft' ? `<button class="btn btn-success" title="Опубликовать" onclick="publishPost(${post.id})" style="margin-right: 0.5rem;">Опубликовать</button>` : ''}
+                    <button class="btn btn-edit" title="Редактировать" onclick="editPost(${post.id})">Редактировать</button>
+                    <button class="btn btn-danger" title="Удалить" onclick="deletePost(${post.id})">Удалить</button>
                 </td>
             </tr>
         `).join('');

@@ -286,9 +286,9 @@ async function loadEvents() {
                 <td>${event.date ? new Date(event.date).toLocaleDateString('ru-RU') : '-'}</td>
                 <td><span class="status-badge ${event.status}">${event.status === 'upcoming' ? 'Предстоящее' : 'Прошедшее'}</span></td>
                 <td>${event.cover ? 'Есть' : 'Нет'}</td>
-                <td>
-                    <button class="btn btn-edit" onclick="editEvent(${event.id})">Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteEvent(${event.id})">Удалить</button>
+                <td class="cell-actions">
+                    <button class="btn btn-edit" title="Редактировать" onclick="editEvent(${event.id})">Редактировать</button>
+                    <button class="btn btn-danger" title="Удалить" onclick="deleteEvent(${event.id})">Удалить</button>
                 </td>
             </tr>
         `).join('');

@@ -138,9 +138,9 @@ async function loadTours() {
                 <td>${formatDateRange(tour.start_date, tour.end_date)}</td>
                 <td>${tour.location || '-'}</td>
                 <td><span class="status-badge ${tour.status}">${tour.status === 'upcoming' ? 'Предстоящий' : 'Прошедший'}</span></td>
-                <td>
-                    <button class="btn btn-edit" onclick="editTour(${tour.id})">Редактировать</button>
-                    <button class="btn btn-danger" onclick="deleteTour(${tour.id})">Удалить</button>
+                <td class="cell-actions">
+                    <button class="btn btn-edit" title="Редактировать" onclick="editTour(${tour.id})">Редактировать</button>
+                    <button class="btn btn-danger" title="Удалить" onclick="deleteTour(${tour.id})">Удалить</button>
                 </td>
             </tr>
         `).join('');
