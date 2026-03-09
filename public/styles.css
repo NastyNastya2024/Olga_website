@@ -3821,6 +3821,12 @@ body:has(.videos-page) .hero video,
     padding: 1rem 0;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.home-reviews-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 .home-reviews-scroll .empty-state {
@@ -3828,20 +3834,6 @@ body:has(.videos-page) .hero video,
     text-align: center;
     color: #888;
     padding: 2rem;
-}
-
-.home-reviews-scroll::-webkit-scrollbar {
-    height: 8px;
-}
-
-.home-reviews-scroll::-webkit-scrollbar-track {
-    background: #eee;
-    border-radius: 4px;
-}
-
-.home-reviews-scroll::-webkit-scrollbar-thumb {
-    background: #008B9D;
-    border-radius: 4px;
 }
 
 .home-review-image-card {
