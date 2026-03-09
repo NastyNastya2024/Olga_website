@@ -662,8 +662,62 @@ html, body {
         white-space: nowrap;
     }
     
-    /* Кнопки в таблицах */
-    .data-table .btn {
+    /* Кнопки в таблицах: больше расстояние между кнопками, на мобильном — значки */
+    .data-table .cell-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .data-table .cell-actions .btn {
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap;
+        min-width: 44px;
+        justify-content: center;
+    }
+    /* Только иконки на мобильном (текст скрыт, подсказка в title) */
+    .data-table .cell-actions .btn-edit,
+    .data-table .cell-actions .btn-primary {
+        font-size: 0 !important;
+        padding: 0.65rem 0.85rem !important;
+    }
+    .data-table .cell-actions .btn-edit::before,
+    .data-table .cell-actions .btn-primary::before {
+        content: "✏️";
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .data-table .cell-actions .btn-danger {
+        font-size: 0 !important;
+        padding: 0.65rem 0.85rem !important;
+    }
+    .data-table .cell-actions .btn-danger::before {
+        content: "🗑️";
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .data-table .cell-actions .btn-view {
+        font-size: 0 !important;
+        padding: 0.65rem 0.85rem !important;
+    }
+    .data-table .cell-actions .btn-view::before {
+        content: "▶️";
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .data-table .cell-actions .btn-success {
+        font-size: 0 !important;
+        padding: 0.65rem 0.85rem !important;
+    }
+    .data-table .cell-actions .btn-success::before {
+        content: "📤";
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .data-table .cell-actions .btn-sm {
+        padding: 0.65rem 0.85rem !important;
+    }
+    .data-table .btn:not(.cell-actions .btn) {
         padding: 0.5rem 1rem !important;
         font-size: 0.75rem !important;
         white-space: nowrap;
@@ -721,8 +775,18 @@ html, body {
         min-width: 0;
     }
     
-    /* Уменьшаем размер кнопок в таблицах */
-    .data-table .btn {
+    /* Ячейка с кнопками: расстояние сохраняем */
+    .data-table .cell-actions {
+        gap: 1rem;
+    }
+    .data-table .cell-actions .btn-edit::before,
+    .data-table .cell-actions .btn-primary::before,
+    .data-table .cell-actions .btn-danger::before,
+    .data-table .cell-actions .btn-view::before,
+    .data-table .cell-actions .btn-success::before {
+        font-size: 1.15rem;
+    }
+    .data-table .btn:not(.cell-actions .btn) {
         padding: 0.4rem 0.8rem !important;
         font-size: 0.7rem !important;
         white-space: nowrap;
