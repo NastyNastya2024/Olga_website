@@ -56,6 +56,7 @@ async function uploadFile(filePath) {
         Key: key,
         Body: fileStream,
         ContentType: contentType,
+        CacheControl: 'public, max-age=31536000, immutable',
         ACL: 'public-read',
     });
     

@@ -30,6 +30,8 @@ class S3Service {
         Key: key,
         Body: fileBuffer,
         ContentType: mimeType,
+        // Ключи уникальные (timestamp), можно агрессивно кэшировать
+        CacheControl: 'public, max-age=31536000, immutable',
         ACL: 'public-read', // Публичный доступ для чтения
       });
 

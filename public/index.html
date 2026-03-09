@@ -45,6 +45,7 @@
             <div class="hero-background">
                 <div class="hero-logo-text">Yoga</div>
             </div>
+            <div class="hero-video-loading" id="heroVideoLoading" aria-hidden="true">Загрузка видео…</div>
             <video id="heroVideo" autoplay muted loop playsinline preload="auto">
                 <!-- Видео загружается динамически из S3 -->
                 Ваш браузер не поддерживает видео.
@@ -251,85 +252,59 @@
                 if (isSuccess && videoUrl) {
                     console.log('✅ Получен URL видео:', videoUrl);
                     
-                    // Добавляем в прелоадер с приоритетом (hero видео)
-                    if (window.videoPreloader) {
-                        window.videoPreloader.addVideo(videoUrl, 'file', true);
-                    }
+                    // Hero уже грузится здесь — в прелоадер не добавляем, чтобы не качать дважды
                     
-                    // Определяем оптимальный preload для устройства
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
                     console.log('📱 Мобильное устройство:', isMobile);
                     
-                    // Для hero видео всегда используем auto, чтобы видео загружалось на всех устройствах
                     video.preload = 'auto';
-                    console.log('📥 Установлен preload:', video.preload);
                     
-                    // Создаем source элемент с URL из S3
                     const source = document.createElement('source');
                     source.src = videoUrl;
                     source.type = 'video/mp4';
-                    console.log('🎬 Создан source с URL:', videoUrl);
                     
-                    // Очищаем старые source элементы
                     video.innerHTML = '';
                     video.appendChild(source);
                     
-                    // На мобильных принудительно устанавливаем атрибуты для загрузки
                     if (isMobile) {
                         video.setAttribute('playsinline', '');
                         video.setAttribute('muted', '');
                         video.setAttribute('autoplay', '');
                         video.setAttribute('loop', '');
-                        // На мобильных показываем видео сразу
                         video.classList.add('loaded');
                         video.style.opacity = '1';
                         video.style.visibility = 'visible';
-                        console.log('📱 Установлены мобильные атрибуты для видео и показано сразу');
                     }
                     
-                    // Обработчики событий для отладки
+                    const loadingEl = document.getElementById('heroVideoLoading');
+                    
                     video.addEventListener('loadeddata', () => {
                         console.log('✅ Видео main1 загружено успешно из S3');
-                        console.log('   Длительность:', video.duration, 'секунд');
-                        console.log('   Разрешение:', video.videoWidth + 'x' + video.videoHeight);
-                        // Добавляем класс для показа видео и скрытия фона
                         video.classList.add('loaded');
-                        // Убираем сообщение об ошибке если оно было
+                        if (loadingEl) loadingEl.classList.add('hidden');
                         const errorMsg = document.querySelector('.hero .error-msg');
                         if (errorMsg) errorMsg.remove();
                     });
                     
-                    // Обработчик для мобильных - показываем видео как только начинается загрузка
+                    // Показываем видео сразу при начале загрузки (на всех устройствах)
                     video.addEventListener('loadstart', () => {
                         console.log('🔄 Начало загрузки видео');
-                        // На мобильных показываем видео сразу, не ждем полной загрузки
-                        if (isMobile) {
-                            video.classList.add('loaded');
-                            video.style.opacity = '1';
-                            video.style.visibility = 'visible';
-                            console.log('📱 Видео показано на мобильном при начале загрузки');
-                        }
+                        video.classList.add('loaded');
+                        video.style.opacity = '1';
+                        video.style.visibility = 'visible';
+                        if (isMobile && loadingEl) loadingEl.classList.add('hidden');
                     });
                     
                     video.addEventListener('error', (e) => {
                         console.error('❌ Ошибка воспроизведения видео:', e);
-                        console.error('   URL:', videoUrl);
-                        console.error('   Video error:', video.error);
-                        console.error('   Video networkState:', video.networkState);
+                        if (loadingEl) loadingEl.classList.add('hidden');
                         showError('Ошибка воспроизведения видео. Проверьте консоль.');
                     });
                     
-                    // Загружаем видео
                     video.load();
                     
-                    // На мобильных принудительно показываем видео сразу
                     if (isMobile) {
-                        // Показываем видео сразу на мобильных, не ждем загрузки
-                        video.classList.add('loaded');
-                        video.style.opacity = '1';
-                        video.style.visibility = 'visible';
                         video.style.display = 'block';
-                        console.log('📱 Видео принудительно показано на мобильном');
                     }
                     
                     // Пытаемся запустить воспроизведение
@@ -349,11 +324,14 @@
                         response.availableVideos.forEach(v => console.log(`   - ${v.key}`));
                     }
                     
-                    // Скрываем видео, но не показываем ошибку
                     video.style.display = 'none';
+                    const loadingNone = document.getElementById('heroVideoLoading');
+                    if (loadingNone) loadingNone.classList.add('hidden');
                     return null;
                 }
             } catch (error) {
+                const loadingErr = document.getElementById('heroVideoLoading');
+                if (loadingErr) loadingErr.classList.add('hidden');
                 console.error('❌ Ошибка загрузки hero видео:', error);
                 console.error('   Детали:', error.message);
                 console.error('   Stack:', error.stack);

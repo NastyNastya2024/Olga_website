@@ -93,3 +93,4 @@ pm2 logs olga-backend --lines 50
 # Проверьте, что приложение работает
 pm2 status
 ```
+7y6troiuytr

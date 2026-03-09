@@ -1,0 +1,188 @@
+/* Apple-style UI kit for admin — только форма (скругления, шрифт).
+   Цвета не меняем: белый фон, бирюзовый акцент #148083, как в оригинале. */
+
+:root {
+  --apple-font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --apple-radius: 12px;
+  --apple-radius-sm: 10px;
+}
+
+/* Тёмная тема отключена — интерфейс всегда светлый */
+html,
+body {
+  background: #ffffff !important;
+  color: #333 !important;
+}
+
+body {
+  font-family: var(--apple-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.admin-layout {
+  background: #ffffff !important;
+}
+
+.admin-main {
+  padding: 1.25rem 1.25rem 1.5rem 1.25rem !important;
+}
+
+/* Хедер — оставляем оригинальный бирюзовый, не переопределяем цвет */
+.admin-header-top {
+  padding: 0.9rem 1.25rem !important;
+}
+
+.admin-logo {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* Бургер — только скругление */
+.admin-burger {
+  border-radius: var(--apple-radius) !important;
+}
+
+/* Нав — только скругление табов, цвет как в admin.css (#2c3e50, #148083) */
+.admin-top-nav {
+  padding: 0.75rem 1.25rem !important;
+  gap: 0.25rem;
+}
+
+.admin-top-nav .nav-item {
+  border-radius: 999px;
+  padding: 0.6rem 0.9rem !important;
+}
+
+/* Кнопки — только скругление, цвета из common.css/admin.css */
+.btn {
+  font-family: var(--apple-font) !important;
+  border-radius: var(--apple-radius) !important;
+}
+
+/* Формы — только скругление и границы #e0e0e0, цвет текста #333 */
+.form-group label {
+  font-size: 0.92rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select,
+.price-input-group input,
+.price-description-group textarea {
+  border-radius: var(--apple-radius) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #fff !important;
+  color: #333 !important;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.price-input-group input:focus,
+.price-description-group textarea:focus {
+  outline: none !important;
+  border-color: #148083 !important;
+}
+
+/* Таблицы — белый фон, серая шапка и границы как было */
+.table-container {
+  background: transparent !important;
+}
+
+.data-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  background: #fff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: var(--apple-radius) !important;
+  overflow: hidden;
+}
+
+.data-table thead {
+  background: #f8f9fa !important;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid #e0e0e0 !important;
+  color: #333 !important;
+}
+
+.data-table th {
+  color: #2c3e50 !important;
+  font-size: 0.92rem;
+}
+
+.data-table tbody tr:hover {
+  background: #f8f9fa !important;
+}
+
+/* Карточки/секции — белый фон, лёгкая тень */
+.club-prices-section,
+.club-events-section,
+.club-reviews-section,
+.login-container {
+  background: #fff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: var(--apple-radius) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+.price-form-group {
+  background: #f9f9f9 !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: var(--apple-radius) !important;
+}
+
+/* Логин — белый фон страницы и градиент как в оригинале (бирюзовый) */
+.login-page {
+  background: linear-gradient(135deg, #5CD6DA 0%, #148083 100%) !important;
+}
+
+.login-container h1 {
+  color: #2c3e50 !important;
+}
+
+.login-subtitle {
+  color: #7f8c8d !important;
+}
+
+.back-link {
+  color: #148083 !important;
+}
+
+/* Модалки — белый контент */
+.modal-content {
+  background: #fff !important;
+  border-radius: var(--apple-radius) !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.modal-close {
+  border-radius: 999px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: #f8f9fa !important;
+  color: #666 !important;
+}
+
+.modal-close:hover {
+  background: #f0f0f0 !important;
+  color: #333 !important;
+}
+
+/* Бейджи — оставляем привычные зелёный/жёлтый/синий */
+.status-badge {
+  border-radius: 999px !important;
+}
+
+@media (max-width: 768px) {
+  .admin-top-nav {
+    padding: 0.6rem 0.75rem !important;
+    background: #fff !important;
+    border-top: 1px solid #e0e0e0 !important;
+  }
+
+  .admin-main {
+    padding: 1rem !important;
+  }
+}

@@ -7,6 +7,11 @@ const s3Service = require('../services/s3-service');
 
 const router = express.Router();
 
+// Кэш hero video URL, чтобы не дергать S3 list при каждом запросе
+const HERO_CACHE_TTL_MS = 5 * 60 * 1000; // 5 минут
+let heroVideoCache = null;
+let heroVideoCacheTime = 0;
+
 /**
  * Вспомогательная функция для поиска видео по имени
  */
@@ -87,9 +92,15 @@ async function findVideoByName(searchName, folders = ['hero', 'videos', 'uploads
 /**
  * GET /api/public/hero/video
  * Получить URL фонового видео главной страницы (ищет "main1" или "main")
+ * Результат кэшируется на 5 минут для быстрого ответа.
  */
 router.get('/video', async (req, res) => {
     try {
+        if (heroVideoCache && (Date.now() - heroVideoCacheTime) < HERO_CACHE_TTL_MS) {
+            console.log('✅ Hero видео из кэша');
+            return res.json(heroVideoCache);
+        }
+
         console.log('🔍 Поиск hero видео (main1) в S3...');
         
         // Сначала ищем "main1"
@@ -125,13 +136,16 @@ router.get('/video', async (req, res) => {
             }
         }
 
-        console.log(`✅ Возвращаю URL: ${heroVideo.url}`);
-        res.json({
+        const payload = {
             success: true,
             url: heroVideo.url,
             key: heroVideo.key,
             size: heroVideo.size
-        });
+        };
+        heroVideoCache = payload;
+        heroVideoCacheTime = Date.now();
+        console.log(`✅ Возвращаю URL (кэш обновлён): ${heroVideo.url}`);
+        res.json(payload);
     } catch (error) {
         console.error('❌ Ошибка получения hero видео:', error);
         console.error('   Stack:', error.stack);
