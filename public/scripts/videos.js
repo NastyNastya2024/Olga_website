@@ -357,6 +357,8 @@ if (document.getElementById('videosGrid')) {
     // Показываем прелоадер
     if (window.videoPreloader) {
         window.videoPreloader.show();
+        // На случай зависания — принудительно скрыть через 12 сек, чтобы контент отобразился
+        window.videoPreloader.forceHideAfter(12000);
     }
     
     // Загружаем видео

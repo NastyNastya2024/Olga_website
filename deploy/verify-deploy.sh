@@ -56,8 +56,9 @@ else
 fi
 echo ""
 
-echo "=== Если 404 на yolga.pro/videos.html ==="
-echo "1. Убедитесь, что путь в Nginx совпадает с п.3 выше"
-echo "2. Запустите: ./deploy/apply-nginx.sh"
-echo "3. Проверьте: ls -la $PROJECT_DIR/public/videos.html"
+echo "=== Если 404 на videos.html ==="
+echo "1. Проверьте файл: ls -la $PROJECT_DIR/public/videos.html"
+echo "2. Права для nginx (www-data): ls -la $PROJECT_DIR/public/ | head -5"
+echo "3. Запустите: ./deploy/apply-nginx.sh"
+echo "4. Проверьте активный конфиг: sudo nginx -T 2>/dev/null | grep -A2 'root.*public'"
 echo ""

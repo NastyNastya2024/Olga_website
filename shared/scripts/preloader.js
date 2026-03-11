@@ -272,6 +272,19 @@ class VideoPreloader {
     }
 
     /**
+     * Принудительно скрыть прелоадер (на случай зависания)
+     * Вызывается по таймауту, чтобы контент всегда отобразился
+     */
+    forceHideAfter(ms) {
+        setTimeout(() => {
+            if (document.body.classList.contains('preloading')) {
+                console.warn('Прелоадер принудительно скрыт по таймауту');
+                this.hide();
+            }
+        }, ms);
+    }
+
+    /**
      * Скрыть прелоадер
      */
     hide() {
