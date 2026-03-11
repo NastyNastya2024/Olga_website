@@ -1,5 +1,40 @@
 # Деплой на сервер
 
+## Хранилище: Yandex Object Storage
+
+Все медиа (видео, фото) хранятся в **Yandex Object Storage** (экосистема Yandex Cloud). URL вида `https://storage.yandexcloud.net/olga-website-media/...` — публичные, работают напрямую из браузера.
+
+В `backend/.env` на сервере должны быть:
+```env
+S3_ENDPOINT=https://storage.yandexcloud.net
+S3_ACCESS_KEY=ключ_из_консоли_yandex
+S3_SECRET_KEY=секрет_из_консоли_yandex
+S3_BUCKET=olga-website-media
+S3_REGION=ru-central1
+NODE_ENV=production
+```
+
+---
+
+## «Загрузка...» не исчезает (видео, ретриты, отзывы, тарифы)
+
+**Проверьте в браузере (F12 → Console):**
+- Есть ли ошибки в консоли?
+- Есть ли ошибки вкладки Network (красные запросы к /api/...)?
+
+**Частые причины:**
+1. **HTTPS** — если открываете https://yolga.pro, а SSL не настроен, запросы могут не проходить. Попробуйте **http://yolga.pro** или **http://158.160.173.153**
+2. **Кэш** — очистите кэш браузера (Ctrl+Shift+Delete) или откройте в режиме инкогнито
+3. **Деплой** — убедитесь, что выполнили `git pull` и `pm2 restart olga-backend`
+
+**Проверка API с сервера:**
+```bash
+curl -s http://localhost:5000/api/public/videos | head -c 200
+curl -s http://localhost:5000/api/public/tours | head -c 200
+```
+
+---
+
 ## Видео/фото не загружаются на сайте
 
 Убедитесь, что в `backend/.env` на сервере указано:

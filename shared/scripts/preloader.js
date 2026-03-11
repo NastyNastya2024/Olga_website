@@ -13,7 +13,6 @@ class VideoPreloader {
         this.progressText = null;
         this.isMobile = this.detectMobile();
         this.isSlowConnection = this.detectSlowConnection();
-        this.init();
     }
 
     /**

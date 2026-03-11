@@ -209,6 +209,7 @@
         const burgerMenu = document.getElementById('burgerMenu');
         const navMenu = document.getElementById('navMenu');
 
+        if (burgerMenu && navMenu) {
         burgerMenu.addEventListener('click', () => {
             burgerMenu.classList.toggle('active');
             navMenu.classList.toggle('active');
@@ -230,6 +231,7 @@
                 navMenu.classList.remove('active');
             }
         });
+        }
 
         // Инверсия цветов меню с самого начала
         const header = document.querySelector('.header');
