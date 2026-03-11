@@ -55,6 +55,32 @@ class S3Service {
   }
 
   /**
+   * Получение потока файла из S3 (для проксирования видео)
+   * @param {string} key - Ключ файла в S3
+   * @param {object} range - Опционально { start, end } для Range запросов
+   * @returns {Promise<Object>} { stream, contentType, contentLength }
+   */
+  async getFileStream(key, range = null) {
+    try {
+      const params = { Bucket: BUCKET_NAME, Key: key };
+      if (range) {
+        params.Range = `bytes=${range.start}-${range.end}`;
+      }
+      const command = new GetObjectCommand(params);
+      const result = await s3.send(command);
+      return {
+        stream: result.Body,
+        contentType: result.ContentType || 'video/mp4',
+        contentLength: result.ContentLength,
+        contentRange: result.ContentRange,
+      };
+    } catch (error) {
+      console.error('Ошибка получения потока из S3:', error);
+      throw new Error(`Не удалось получить файл: ${error.message}`);
+    }
+  }
+
+  /**
    * Получение файла из S3
    * @param {string} key - Ключ файла в S3
    * @returns {Promise<Object>} Данные файла

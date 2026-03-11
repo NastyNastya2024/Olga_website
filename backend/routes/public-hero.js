@@ -5,6 +5,7 @@
 const express = require('express');
 const s3Service = require('../services/s3-service');
 const { transformMediaUrls } = require('../utils/transform-media-urls');
+const { isYandexStorage } = require('../config/s3-config');
 
 const router = express.Router();
 
@@ -91,6 +92,68 @@ async function findVideoByName(searchName, folders = ['hero', 'videos', 'uploads
 }
 
 /**
+ * Получить ключ hero видео (из кэша или поиском)
+ */
+async function getHeroVideoKey() {
+    if (heroVideoCache && heroVideoCache.key) {
+        return heroVideoCache.key;
+    }
+    let { foundVideo } = await findVideoByName('main1');
+    if (!foundVideo) {
+        const res = await findVideoByName('main');
+        foundVideo = res.foundVideo;
+    }
+    if (foundVideo) {
+        heroVideoCache = { key: foundVideo.key, url: foundVideo.url, size: foundVideo.size };
+        heroVideoCacheTime = Date.now();
+        return foundVideo.key;
+    }
+    return null;
+}
+
+/**
+ * GET /api/public/hero/video/stream
+ * Проксирование hero видео через backend (обходит CORS)
+ */
+router.get('/video/stream', async (req, res) => {
+    try {
+        const key = await getHeroVideoKey();
+        if (!key) {
+            return res.status(404).json({ error: 'Hero видео не найдено' });
+        }
+
+        const range = req.headers.range;
+        let streamResult;
+
+        if (range) {
+            const parts = range.replace(/bytes=/, '').split('-');
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : undefined;
+            streamResult = await s3Service.getFileStream(key, { start, end });
+        } else {
+            streamResult = await s3Service.getFileStream(key);
+        }
+
+        res.setHeader('Content-Type', streamResult.contentType || 'video/mp4');
+        res.setHeader('Accept-Ranges', 'bytes');
+
+        if (streamResult.contentRange) {
+            res.setHeader('Content-Range', streamResult.contentRange);
+            res.status(206);
+        }
+        if (streamResult.contentLength) {
+            res.setHeader('Content-Length', streamResult.contentLength);
+        }
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        streamResult.stream.pipe(res);
+    } catch (error) {
+        console.error('❌ Ошибка стриминга hero видео:', error);
+        res.status(500).json({ error: 'Ошибка загрузки видео' });
+    }
+});
+
+/**
  * GET /api/public/hero/video
  * Получить URL фонового видео главной страницы (ищет "main1" или "main")
  * Результат кэшируется на 5 минут для быстрого ответа.
@@ -137,9 +200,14 @@ router.get('/video', async (req, res) => {
             }
         }
 
+        // Для Yandex Storage возвращаем proxy URL (обходит CORS)
+        const videoUrl = isYandexStorage
+            ? '/api/public/hero/video/stream'
+            : heroVideo.url;
+
         const payload = {
             success: true,
-            url: heroVideo.url,
+            url: videoUrl,
             key: heroVideo.key,
             size: heroVideo.size
         };
