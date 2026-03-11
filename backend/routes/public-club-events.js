@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { loadData } = require('../utils/data-storage');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 
 let getEvents = null;
 
@@ -74,7 +75,7 @@ router.get('/', (req, res) => {
       }
     });
     
-    res.json(eventsWithStatus);
+    res.json(transformMediaUrls(eventsWithStatus));
   } catch (error) {
     console.error('Ошибка в публичном роуте мероприятий:', error);
     res.status(500).json({ error: 'Ошибка загрузки мероприятий', message: error.message });

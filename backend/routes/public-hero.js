@@ -4,6 +4,7 @@
 
 const express = require('express');
 const s3Service = require('../services/s3-service');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 
 const router = express.Router();
 
@@ -98,7 +99,7 @@ router.get('/video', async (req, res) => {
     try {
         if (heroVideoCache && (Date.now() - heroVideoCacheTime) < HERO_CACHE_TTL_MS) {
             console.log('✅ Hero видео из кэша');
-            return res.json(heroVideoCache);
+            return res.json(transformMediaUrls(heroVideoCache));
         }
 
         console.log('🔍 Поиск hero видео (main1) в S3...');
@@ -127,12 +128,12 @@ router.get('/video', async (req, res) => {
                 heroVideo = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${heroVideo.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Hero видео не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
@@ -145,7 +146,7 @@ router.get('/video', async (req, res) => {
         heroVideoCache = payload;
         heroVideoCacheTime = Date.now();
         console.log(`✅ Возвращаю URL (кэш обновлён): ${heroVideo.url}`);
-        res.json(payload);
+        res.json(transformMediaUrls(payload));
     } catch (error) {
         console.error('❌ Ошибка получения hero видео:', error);
         console.error('   Stack:', error.stack);
@@ -190,22 +191,22 @@ router.get('/video/retrits', async (req, res) => {
                 video = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${video.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Видео ретритов не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
         console.log(`✅ Возвращаю URL видео ретритов: ${video.url}`);
-        res.json({
+        res.json(transformMediaUrls({
             success: true,
             url: video.url,
             key: video.key,
             size: video.size
-        });
+        }));
     } catch (error) {
         console.error('❌ Ошибка получения видео ретритов:', error);
         console.error('   Stack:', error.stack);
@@ -250,22 +251,22 @@ router.get('/video/practics', async (req, res) => {
                 video = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${video.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Видео practics не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
         console.log(`✅ Возвращаю URL видео practics: ${video.url}`);
-        res.json({
+        res.json(transformMediaUrls({
             success: true,
             url: video.url,
             key: video.key,
             size: video.size
-        });
+        }));
     } catch (error) {
         console.error('❌ Ошибка получения видео practics:', error);
         console.error('   Stack:', error.stack);
@@ -310,22 +311,22 @@ router.get('/video/practice', async (req, res) => {
                 video = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${video.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Видео practice не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
         console.log(`✅ Возвращаю URL видео practice: ${video.url}`);
-        res.json({
+        res.json(transformMediaUrls({
             success: true,
             url: video.url,
             key: video.key,
             size: video.size
-        });
+        }));
     } catch (error) {
         console.error('❌ Ошибка получения видео practice:', error);
         console.error('   Stack:', error.stack);
@@ -380,22 +381,22 @@ router.get('/video/club808', async (req, res) => {
                 video = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${video.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Видео club2001 не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
         console.log(`✅ Возвращаю URL видео club2001: ${video.url}`);
-        res.json({
+        res.json(transformMediaUrls({
             success: true,
             url: video.url,
             key: video.key,
             size: video.size
-        });
+        }));
     } catch (error) {
         console.error('❌ Ошибка получения видео club2001:', error);
         console.error('   Stack:', error.stack);
@@ -450,22 +451,22 @@ router.get('/video/blog_1', async (req, res) => {
                 video = allVideos[0];
                 console.log(`📹 Используем первое доступное видео: ${video.key}`);
             } else {
-                return res.json({
+                return res.json(transformMediaUrls({
                     success: false,
                     message: 'Видео blog_1 не найдено в S3',
                     url: null,
                     availableVideos: allVideos.map(v => ({ key: v.key, url: v.url }))
-                });
+                }));
             }
         }
 
         console.log(`✅ Возвращаю URL видео blog_1: ${video.url}`);
-        res.json({
+        res.json(transformMediaUrls({
             success: true,
             url: video.url,
             key: video.key,
             size: video.size
-        });
+        }));
     } catch (error) {
         console.error('❌ Ошибка получения видео blog_1:', error);
         console.error('   Stack:', error.stack);

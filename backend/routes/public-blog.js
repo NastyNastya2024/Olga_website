@@ -3,6 +3,7 @@
  */
 
 const express = require('express');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 const router = express.Router();
 
 let getPosts = () => [];
@@ -37,7 +38,7 @@ router.get('/', (req, res) => {
       return dateB - dateA;
     });
     
-    res.json(publishedPosts);
+    res.json(transformMediaUrls(publishedPosts));
   } catch (error) {
     console.error('Ошибка получения публичных статей:', error);
     res.status(500).json({ error: 'Ошибка загрузки статей' });

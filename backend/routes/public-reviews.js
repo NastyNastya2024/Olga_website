@@ -3,6 +3,7 @@
  */
 
 const express = require('express');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 const router = express.Router();
 
 let getReviews = () => [];
@@ -31,7 +32,7 @@ router.get('/', (req, res) => {
       return dateB - dateA;
     });
     
-    res.json(publishedReviews);
+    res.json(transformMediaUrls(publishedReviews));
   } catch (error) {
     console.error('Ошибка получения публичных отзывов:', error);
     res.status(500).json({ error: 'Ошибка загрузки отзывов' });

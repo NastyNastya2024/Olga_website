@@ -3,6 +3,7 @@
  */
 
 const express = require('express');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 const router = express.Router();
 
 let getTours = () => [];
@@ -31,7 +32,7 @@ router.get('/', (req, res) => {
       return dateA - dateB;
     });
     
-    res.json(publishedTours);
+    res.json(transformMediaUrls(publishedTours));
   } catch (error) {
     console.error('Ошибка получения публичных туров:', error);
     res.status(500).json({ error: 'Ошибка загрузки туров' });

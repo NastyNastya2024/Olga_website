@@ -3,6 +3,7 @@
  */
 
 const express = require('express');
+const { transformMediaUrls } = require('../utils/transform-media-urls');
 const router = express.Router();
 
 // Получаем доступ к массиву видео из роута videos
@@ -37,7 +38,7 @@ router.get('/', (req, res) => {
       );
     }
     
-    res.json(publishedVideos);
+    res.json(transformMediaUrls(publishedVideos));
   } catch (error) {
     console.error('Ошибка получения публичных видео:', error);
     res.status(500).json({ error: 'Ошибка загрузки видео' });
