@@ -101,7 +101,7 @@ server {
     listen 80;
     server_name 158.160.192.242;
 
-    client_max_body_size 500M;
+    client_max_body_size 20G;
 
     location / {
         root /home/admin/olga-website/public;

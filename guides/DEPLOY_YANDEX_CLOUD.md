@@ -350,7 +350,7 @@ server {
     server_name 158.160.192.242;
 
     # Максимальный размер загружаемых файлов
-    client_max_body_size 500M;
+    client_max_body_size 20G;
 
     # Логи
     access_log /var/log/nginx/olga-website-access.log;

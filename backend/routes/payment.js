@@ -119,6 +119,7 @@ router.post('/webhook', async (req, res) => {
     const paymentId = object?.id;
     const metadata = object?.metadata || {};
     const tariffName = metadata.tariff_name || 'Тариф';
+    const tariffId = metadata.tariff_id ? parseInt(metadata.tariff_id, 10) : null;
     const paidAt = object?.created_at || new Date().toISOString();
 
     console.log('Платёж успешен:', paymentId, 'тариф:', tariffName);
@@ -135,6 +136,17 @@ router.post('/webhook', async (req, res) => {
         return res.status(200).send('OK');
       }
 
+      // Вычисляем дату окончания тарифа
+      let tariffEndDate = null;
+      if (tariffId) {
+        const tariffsData = loadData('pricingTariffs');
+        const tariff = (tariffsData.items || []).find(t => t.id === tariffId);
+        const months = tariff?.duration_months || 1;
+        const start = new Date(paidAt);
+        start.setMonth(start.getMonth() + months);
+        tariffEndDate = start.toISOString();
+      }
+
       const tempPassword = crypto.randomBytes(16).toString('hex');
       const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash(tempPassword, 10);
@@ -149,6 +161,7 @@ router.post('/webhook', async (req, res) => {
         tariff: tariffName,
         payment_id: paymentId,
         payment_date: paidAt,
+        tariff_end_date: tariffEndDate,
         assigned_videos: [],
         program_notes: '',
         created_at: new Date().toISOString(),
@@ -204,7 +217,17 @@ router.post('/complete-registration', async (req, res) => {
           if (payment && (payment.status === 'succeeded' || payment.isSucceeded)) {
             const metadata = payment.metadata || {};
             const tariffName = metadata.tariff_name || 'Тариф';
+            const tariffId = metadata.tariff_id ? parseInt(metadata.tariff_id, 10) : null;
             const paidAt = payment.created_at || payment.createdAt || new Date().toISOString();
+            let tariffEndDate = null;
+            if (tariffId) {
+              const tariffsData = loadData('pricingTariffs');
+              const tariff = (tariffsData.items || []).find(t => t.id === tariffId);
+              const months = tariff?.duration_months || 1;
+              const start = new Date(paidAt);
+              start.setMonth(start.getMonth() + months);
+              tariffEndDate = start.toISOString();
+            }
             const tempPassword = crypto.randomBytes(16).toString('hex');
             const bcrypt = require('bcryptjs');
             const hashedPassword = await bcrypt.hash(tempPassword, 10);
@@ -218,6 +241,7 @@ router.post('/complete-registration', async (req, res) => {
               tariff: tariffName,
               payment_id: payment_id,
               payment_date: paidAt,
+              tariff_end_date: tariffEndDate,
               assigned_videos: [],
               program_notes: '',
               created_at: new Date().toISOString(),

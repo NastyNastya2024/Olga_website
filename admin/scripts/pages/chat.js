@@ -69,6 +69,20 @@ export default {
 
         if (!isAdminUser && threads && threads.length > 0) {
             selectThread(threads[0].id);
+        } else if (isAdminUser && threads && threads.length > 0) {
+            let studentIdToOpen = null;
+            try {
+                studentIdToOpen = sessionStorage.getItem('chatOpenStudentId');
+                if (studentIdToOpen) sessionStorage.removeItem('chatOpenStudentId');
+            } catch (_) {}
+            if (!studentIdToOpen) {
+                studentIdToOpen = new URLSearchParams(window.location.search).get('student');
+            }
+            if (studentIdToOpen) {
+                const sid = parseInt(studentIdToOpen, 10);
+                const thread = threads.find(t => t.student_id === sid);
+                if (thread) selectThread(thread.id);
+            }
         }
 
         startChatPolling();
@@ -124,6 +138,7 @@ async function loadThreads() {
         return threads;
     } catch (error) {
         console.error('Ошибка загрузки чатов:', error);
+        if (error.message === '__AUTH_REDIRECT__') return [];
         if (listEl) listEl.innerHTML = `<div class="chat-error">Ошибка: ${error.message}</div>`;
         return [];
     }

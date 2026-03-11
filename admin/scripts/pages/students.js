@@ -46,6 +46,7 @@ export default {
         window.closeUserModal = closeUserModal;
         window.showAddUserModal = showAddUserModal;
         window.toggleUserDetail = toggleUserDetail;
+        window.openChatWithStudent = openChatWithStudent;
         
         await loadAllUsers();
         setTimeout(() => {
@@ -90,6 +91,20 @@ function getUserModal() {
                     <div class="form-group">
                         <label>Тариф</label>
                         <input type="text" id="userTariff" placeholder="Например: 1 месяц, 3 месяца">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Дата окончания тарифа</label>
+                        <input type="date" id="userTariffEndDate" placeholder="ГГГГ-ММ-ДД">
+                        <small style="color: #666;">Когда истекает подписка. По истечении ученик будет отключён.</small>
+                    </div>
+                    
+                    <div class="form-group" id="userStatusGroup">
+                        <label>Статус</label>
+                        <select id="userStatus">
+                            <option value="active">Активен</option>
+                            <option value="disabled">Отключён</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -142,6 +157,12 @@ async function loadAllUsers() {
                 : 'Нет';
             const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-';
             const paymentDate = user.payment_date ? new Date(user.payment_date).toLocaleDateString('ru-RU') : '-';
+            const tariffEndDate = user.tariff_end_date ? new Date(user.tariff_end_date).toLocaleDateString('ru-RU') : '-';
+            const statusBadge = user.role === 'student' && user.status === 'disabled'
+                ? '<span style="margin-left: 0.5rem; padding: 0.2em 0.5em; background: #dc3545; color: white; border-radius: 4px; font-size: 0.85em;">Отключён</span>'
+                : (user.role === 'student' && user.tariff_end_date && new Date(user.tariff_end_date) <= new Date()
+                    ? '<span style="margin-left: 0.5rem; padding: 0.2em 0.5em; background: #ffc107; color: #333; border-radius: 4px; font-size: 0.85em;">Подписка истекла</span>'
+                    : '');
             const emailDisplay = (user.email || '').startsWith('pending_') ? 'Ожидает регистрации' : (user.email || '-');
             const email = emailDisplay.replace(/"/g, '&quot;');
             const tariff = (user.tariff || '-').replace(/"/g, '&quot;');
@@ -149,9 +170,10 @@ async function loadAllUsers() {
             return `
                 <tr data-user-id="${user.id}">
                     <td>${user.id}</td>
-                    <td>${user.name || '-'}</td>
+                    <td>${user.name || '-'}${statusBadge}</td>
                     <td>${user.role}</td>
                     <td class="cell-actions">
+                        ${user.role === 'student' ? `<button class="btn btn-sm btn-chat" title="Чат" onclick="openChatWithStudent(${user.id})">Чат</button>` : ''}
                         <button class="btn btn-sm btn-details" title="Подробнее" onclick="toggleUserDetail(${user.id})">Подробнее</button>
                         <button class="btn btn-edit" title="Редактировать" onclick="editUser(${user.id})">Редактировать</button>
                         <button class="btn btn-danger" title="Удалить" onclick="deleteUser(${user.id})">Удалить</button>
@@ -161,11 +183,34 @@ async function loadAllUsers() {
                     <td colspan="4" class="user-detail-cell">
                         <div class="user-detail-content">
                             <div class="user-detail-grid">
-                                <div class="user-detail-item"><strong>Email:</strong> ${email}</div>
-                                <div class="user-detail-item"><strong>Тариф:</strong> ${tariff}</div>
-                                <div class="user-detail-item"><strong>Дата платежа:</strong> ${paymentDate}</div>
-                                <div class="user-detail-item"><strong>Назначенные видео:</strong> ${videosText}</div>
-                                <div class="user-detail-item"><strong>Дата регистрации:</strong> ${createdDate}</div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Email</div>
+                                    <div class="user-detail-value">${email}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Тариф</div>
+                                    <div class="user-detail-value">${tariff}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Дата платежа</div>
+                                    <div class="user-detail-value">${paymentDate}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Дата окончания тарифа</div>
+                                    <div class="user-detail-value">${tariffEndDate}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Статус</div>
+                                    <div class="user-detail-value">${user.status === 'disabled' ? 'Отключён' : 'Активен'}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Назначенные видео</div>
+                                    <div class="user-detail-value">${videosText}</div>
+                                </div>
+                                <div class="user-detail-item">
+                                    <div class="user-detail-label">Дата регистрации</div>
+                                    <div class="user-detail-value">${createdDate}</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -204,6 +249,8 @@ function showAddUserModal() {
     }
     document.getElementById('userRole').value = 'student';
     document.getElementById('userTariff').value = '';
+    document.getElementById('userTariffEndDate').value = '';
+    document.getElementById('userStatus').value = 'active';
     document.getElementById('userProgramNotes').value = '';
     
     // Загружаем список всех видео
@@ -234,6 +281,8 @@ async function editUser(id) {
         }
         document.getElementById('userRole').value = user.role || 'student';
         document.getElementById('userTariff').value = user.tariff || '';
+        document.getElementById('userTariffEndDate').value = user.tariff_end_date ? user.tariff_end_date.slice(0, 10) : '';
+        document.getElementById('userStatus').value = user.status || 'active';
         document.getElementById('userProgramNotes').value = user.program_notes || '';
         
         // Загружаем список всех видео
@@ -246,6 +295,17 @@ async function editUser(id) {
         }
     } catch (error) {
         alert('Ошибка загрузки пользователя: ' + error.message);
+    }
+}
+
+function openChatWithStudent(studentId) {
+    try {
+        sessionStorage.setItem('chatOpenStudentId', String(studentId));
+    } catch (_) {}
+    if (window.router && router.navigate) {
+        router.navigate('/chat');
+    } else {
+        window.location.href = '/admin/chat';
     }
 }
 
@@ -341,11 +401,14 @@ function setupUserForm() {
         
         const password = document.getElementById('userPassword').value;
         
+        const tariffEndDateVal = document.getElementById('userTariffEndDate').value;
         const data = {
             name: document.getElementById('userName').value,
             email: document.getElementById('userEmail').value,
             role: document.getElementById('userRole').value,
             tariff: document.getElementById('userTariff').value || null,
+            tariff_end_date: tariffEndDateVal || null,
+            status: document.getElementById('userStatus').value || 'active',
             assigned_videos: selectedVideos,
             program_notes: document.getElementById('userProgramNotes').value,
         };

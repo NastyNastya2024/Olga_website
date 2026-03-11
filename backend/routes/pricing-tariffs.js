@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
  * Создать новый тариф
  */
 router.post('/', (req, res) => {
-  const { name, price, description, is_popular } = req.body;
+  const { name, price, description, is_popular, duration_months } = req.body;
   
   if (!name || price === undefined) {
     return res.status(400).json({ error: 'Название и цена обязательны' });
@@ -37,6 +37,7 @@ router.post('/', (req, res) => {
     price: String(price),
     description: String(description || ''),
     is_popular: Boolean(is_popular || false),
+    duration_months: parseInt(duration_months, 10) || 1,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -54,7 +55,7 @@ router.post('/', (req, res) => {
  */
 router.put('/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, price, description, is_popular } = req.body;
+  const { name, price, description, is_popular, duration_months } = req.body;
   
   const pricingTariffs = loadData('pricingTariffs');
   const index = pricingTariffs.items.findIndex(t => t.id === id);
@@ -66,6 +67,7 @@ router.put('/:id', (req, res) => {
   if (price !== undefined) pricingTariffs.items[index].price = String(price);
   if (description !== undefined) pricingTariffs.items[index].description = String(description);
   if (is_popular !== undefined) pricingTariffs.items[index].is_popular = Boolean(is_popular);
+  if (duration_months !== undefined) pricingTariffs.items[index].duration_months = parseInt(duration_months, 10) || 1;
   pricingTariffs.items[index].updated_at = new Date().toISOString();
   
   saveData('pricingTariffs', pricingTariffs);

@@ -12,7 +12,7 @@ const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 500 * 1024 * 1024, // 500MB для видео файлов
+    fileSize: 20 * 1024 * 1024 * 1024, // 20GB для видео файлов
   },
   fileFilter: (req, file, cb) => {
     // Разрешаем изображения и видео

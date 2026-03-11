@@ -3,7 +3,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const { loadData } = require('../utils/data-storage');
+const { loadData, saveData } = require('../utils/data-storage');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -23,6 +23,29 @@ function authenticateToken(req, res, next) {
     console.log('Middleware auth - декодированный токен:', JSON.stringify(decoded, null, 2));
     req.user = decoded;
     console.log('Middleware auth - req.user установлен:', { userId: req.user?.userId, email: req.user?.email });
+    
+    // Для учеников: проверяем, не истёк ли тариф
+    if (decoded.role === 'student') {
+      const usersData = loadData('users');
+      const users = usersData.items || [];
+      const user = users.find(u => parseInt(u.id) === parseInt(decoded.userId));
+      if (user && user.tariff_end_date && user.status === 'active') {
+        const endDate = new Date(user.tariff_end_date);
+        if (endDate <= new Date()) {
+          const idx = users.findIndex(u => parseInt(u.id) === parseInt(decoded.userId));
+          if (idx !== -1) {
+            users[idx].status = 'disabled';
+            users[idx].updated_at = new Date().toISOString();
+            saveData('users', { items: users, nextId: usersData.nextId });
+          }
+          return res.status(403).json({ error: 'Подписка истекла. Продлите доступ для продолжения занятий.' });
+        }
+      }
+      if (user && user.status && user.status !== 'active') {
+        return res.status(403).json({ error: 'Подписка истекла. Продлите доступ для продолжения занятий.' });
+      }
+    }
+    
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

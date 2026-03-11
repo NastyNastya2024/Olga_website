@@ -271,10 +271,10 @@ videoFileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
-    // 1. Проверка размера файла (макс 500MB)
-    const maxSize = 500 * 1024 * 1024;
+    // 1. Проверка размера файла (макс 20GB)
+    const maxSize = 20 * 1024 * 1024 * 1024;
     if (file.size > maxSize) {
-        alert('Файл слишком большой. Максимальный размер: 500MB');
+        alert('Файл слишком большой. Максимальный размер: 20GB');
         return;
     }
     

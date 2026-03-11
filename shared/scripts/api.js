@@ -88,6 +88,18 @@ class ApiClient {
             }
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    this.removeToken();
+                    if (typeof window !== 'undefined' && window.removeUserData) {
+                        window.removeUserData();
+                    }
+                    if (typeof window !== 'undefined' && window.router && window.router.navigate) {
+                        window.router.navigate('/login');
+                    } else if (typeof window !== 'undefined') {
+                        window.location.href = '/admin/login';
+                    }
+                    throw new Error('__AUTH_REDIRECT__');
+                }
                 throw new Error(data.error || data.message || 'Ошибка запроса');
             }
 
