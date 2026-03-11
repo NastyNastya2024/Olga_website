@@ -71,9 +71,51 @@ body {
 
 /* Карточки бесплатных видео */
 .free-video-card,
-.video-card-content {
+.video-card {
   border-radius: var(--apple-radius) !important;
   overflow: hidden;
+}
+
+/* Подписи видео — фиксированный размер, без скруглений сверху (Apple UI kit) */
+.video-card-content,
+.free-video-content {
+  min-height: 5rem !important;
+  height: 5rem !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+
+.video-card-content h3,
+.free-video-content h3 {
+  margin: 0 0 0.25rem 0 !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.video-card-content p,
+.free-video-content p {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.3 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Карточки туров */
