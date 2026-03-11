@@ -293,17 +293,20 @@
                     video.innerHTML = '';
                     video.appendChild(source);
                     
+                    // Показываем видео сразу на всех устройствах (не ждём loadstart — иначе opacity: 0 скрывает его)
+                    video.classList.add('loaded');
+                    video.style.opacity = '1';
+                    video.style.visibility = 'visible';
+                    
                     if (isMobile) {
                         video.setAttribute('playsinline', '');
                         video.setAttribute('muted', '');
                         video.setAttribute('autoplay', '');
                         video.setAttribute('loop', '');
-                        video.classList.add('loaded');
-                        video.style.opacity = '1';
-                        video.style.visibility = 'visible';
                     }
                     
                     const loadingEl = document.getElementById('heroVideoLoading');
+                    if (loadingEl) loadingEl.classList.add('hidden');
                     
                     video.addEventListener('loadeddata', () => {
                         console.log('✅ Видео main1 загружено успешно из S3');
@@ -319,7 +322,7 @@
                         video.classList.add('loaded');
                         video.style.opacity = '1';
                         video.style.visibility = 'visible';
-                        if (isMobile && loadingEl) loadingEl.classList.add('hidden');
+                        if (loadingEl) loadingEl.classList.add('hidden');
                     });
                     
                     video.addEventListener('error', (e) => {
