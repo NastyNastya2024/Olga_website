@@ -145,6 +145,19 @@ sudo systemctl reload nginx
 - **Админ-панель**: http://158.160.192.242/admin
 - **MinIO Console**: http://158.160.192.242:9001
 
+## Обновление после git pull (включая Nginx)
+
+Конфиг Nginx хранится в репозитории. После `git pull` примените его одной командой:
+
+```bash
+cd ~/olga-website
+./deploy/apply-nginx.sh
+```
+
+Скрипт скопирует `deploy/nginx-olga-website.conf` (с `client_max_body_size 20G`) в Nginx и перезагрузит его. Ручное редактирование не нужно.
+
+---
+
 ## Полезные команды
 
 ```bash
