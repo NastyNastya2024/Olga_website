@@ -242,16 +242,28 @@
         // Загрузка hero видео main1 из S3
         async function loadHeroVideo() {
             const video = document.getElementById('heroVideo');
+            const loadingEl = document.getElementById('heroVideoLoading');
             if (!video) {
                 console.error('❌ Элемент video не найден');
                 return null;
             }
 
+            const hideLoading = () => { if (loadingEl) loadingEl.classList.add('hidden'); };
+            // Гарантированно скрываем индикатор через 20 сек
+            const safetyTimeout = setTimeout(hideLoading, 20000);
+
             try {
-                console.log('🔍 Запрос hero видео (main1) из S3...');
+                const apiUrl = '/api/public/hero/video';
+                console.log('🔍 Запрос hero видео:', apiUrl);
                 
-                // Получаем URL видео main1 из S3 через API
-                const response = await api.get('/public/hero/video');
+                // Прямой fetch с таймаутом (обход возможных проблем ApiClient)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const res = await fetch(apiUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const response = await res.json();
                 
                 console.log('📥 Ответ от API:', response);
                 console.log('📊 Тип ответа:', typeof response);
@@ -305,13 +317,12 @@
                         video.setAttribute('loop', '');
                     }
                     
-                    const loadingEl = document.getElementById('heroVideoLoading');
-                    if (loadingEl) loadingEl.classList.add('hidden');
+                    hideLoading();
                     
                     video.addEventListener('loadeddata', () => {
                         console.log('✅ Видео main1 загружено успешно из S3');
                         video.classList.add('loaded');
-                        if (loadingEl) loadingEl.classList.add('hidden');
+                        hideLoading();
                         const errorMsg = document.querySelector('.hero .error-msg');
                         if (errorMsg) errorMsg.remove();
                     });
@@ -322,12 +333,12 @@
                         video.classList.add('loaded');
                         video.style.opacity = '1';
                         video.style.visibility = 'visible';
-                        if (loadingEl) loadingEl.classList.add('hidden');
+                        hideLoading();
                     });
                     
                     video.addEventListener('error', (e) => {
                         console.error('❌ Ошибка воспроизведения видео:', e);
-                        if (loadingEl) loadingEl.classList.add('hidden');
+                        hideLoading();
                         showError('Ошибка воспроизведения видео. Проверьте консоль.');
                     });
                     
@@ -335,7 +346,7 @@
                     const loadTimeout = setTimeout(() => {
                         if (!video.classList.contains('loaded') && loadingEl && !loadingEl.classList.contains('hidden')) {
                             console.warn('⚠️ Таймаут загрузки hero видео');
-                            if (loadingEl) loadingEl.classList.add('hidden');
+                            hideLoading();
                             showError('Видео загружается слишком долго. Обновите страницу.');
                         }
                     }, 20000);
@@ -366,30 +377,24 @@
                     }
                     
                     video.style.display = 'none';
-                    const loadingNone = document.getElementById('heroVideoLoading');
-                    if (loadingNone) loadingNone.classList.add('hidden');
+                    hideLoading();
                     return null;
                 }
             } catch (error) {
-                const loadingErr = document.getElementById('heroVideoLoading');
-                if (loadingErr) loadingErr.classList.add('hidden');
+                hideLoading();
                 console.error('❌ Ошибка загрузки hero видео:', error);
                 console.error('   Детали:', error.message);
-                console.error('   Stack:', error.stack);
-                console.error('   Полный объект ошибки:', error);
                 
-                // Более информативное сообщение об ошибке
-                let errorMessage = 'Ошибка загрузки видео из S3';
-                if (error.message) {
-                    if (error.message.includes('подключиться к серверу')) {
-                        errorMessage = 'Не удалось подключиться к серверу. Убедитесь, что backend запущен.';
-                    } else {
-                        errorMessage = 'Ошибка загрузки видео: ' + error.message;
-                    }
+                let errorMessage = 'Ошибка загрузки видео';
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Сервер не ответил. Проверьте, что backend запущен на порту 5000.';
+                } else if (error.message) {
+                    errorMessage = 'Ошибка загрузки видео: ' + error.message;
                 }
-                
                 showError(errorMessage);
                 return null;
+            } finally {
+                clearTimeout(safetyTimeout);
             }
         }
         
