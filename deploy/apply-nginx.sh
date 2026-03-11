@@ -28,6 +28,9 @@ sudo cp /tmp/olga-website-nginx.conf /etc/nginx/sites-available/olga-website
 # Убеждаемся, что конфиг включён
 sudo ln -sf /etc/nginx/sites-available/olga-website /etc/nginx/sites-enabled/olga-website 2>/dev/null || true
 
+# Отключаем default site, чтобы наш конфиг обрабатывал все запросы (в т.ч. по IP)
+sudo rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+
 echo "Проверка конфигурации..."
 sudo nginx -t
 
