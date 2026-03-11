@@ -6,15 +6,27 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-NGINX_CONF="$PROJECT_DIR/deploy/nginx-olga-website.conf"
+NGINX_TEMPLATE="$PROJECT_DIR/deploy/nginx-olga-website.conf"
 
-if [ ! -f "$NGINX_CONF" ]; then
-    echo "Ошибка: файл $NGINX_CONF не найден"
+if [ ! -f "$NGINX_TEMPLATE" ]; then
+    echo "Ошибка: файл $NGINX_TEMPLATE не найден"
     exit 1
 fi
 
+# Подставляем реальный путь к проекту (на случай другого пользователя)
+PROJECT_ROOT="$(dirname "$PROJECT_DIR")"
+CURRENT_USER="$(basename "$PROJECT_ROOT")"
+echo "Путь к проекту: $PROJECT_DIR"
+echo "Пользователь: $CURRENT_USER"
+
+# Создаём конфиг с правильным путём
+sed "s|/home/anastkomarova/olga-website|$PROJECT_DIR|g" "$NGINX_TEMPLATE" > /tmp/olga-website-nginx.conf
+
 echo "Копирование конфига Nginx..."
-sudo cp "$NGINX_CONF" /etc/nginx/sites-available/olga-website
+sudo cp /tmp/olga-website-nginx.conf /etc/nginx/sites-available/olga-website
+
+# Убеждаемся, что конфиг включён
+sudo ln -sf /etc/nginx/sites-available/olga-website /etc/nginx/sites-enabled/olga-website 2>/dev/null || true
 
 echo "Проверка конфигурации..."
 sudo nginx -t
