@@ -19,8 +19,16 @@ CURRENT_USER="$(basename "$PROJECT_ROOT")"
 echo "Путь к проекту: $PROJECT_DIR"
 echo "Пользователь: $CURRENT_USER"
 
-# Создаём конфиг с правильным путём
+# Создаём конфиг с правильным путём (root должен быть .../public)
 sed "s|/home/anastkomarova/olga-website|$PROJECT_DIR|g" "$NGINX_TEMPLATE" > /tmp/olga-website-nginx.conf
+
+# Проверяем, что root содержит /public
+if ! grep -q "root.*olga-website/public" /tmp/olga-website-nginx.conf; then
+    echo "ОШИБКА: root в конфиге должен указывать на .../public"
+    grep "root" /tmp/olga-website-nginx.conf || true
+    exit 1
+fi
+echo "Проверка root: $(grep 'root.*public' /tmp/olga-website-nginx.conf | head -1)"
 
 echo "Копирование конфига Nginx..."
 sudo cp /tmp/olga-website-nginx.conf /etc/nginx/sites-available/olga-website
@@ -38,3 +46,6 @@ echo "Перезагрузка Nginx..."
 sudo systemctl reload nginx
 
 echo "Готово. client_max_body_size 20G применён."
+echo ""
+echo "Проверка: файл videos.html должен быть по пути $PROJECT_DIR/public/videos.html"
+echo "Если 404 сохраняется: sudo nginx -T 2>/dev/null | grep -E 'root|videos'"
