@@ -540,8 +540,8 @@
                 window.videoPreloader.show();
             }
             
-            // Загружаем hero видео и добавляем в прелоадер
-            await loadHeroVideo();
+            // Hero видео загружаем параллельно — не блокируем ретриты, отзывы, тарифы
+            loadHeroVideo().catch(e => console.warn('Hero video:', e));
             
             // Загружаем бесплатные видео (они добавятся в прелоадер внутри функции)
             await loadFreeVideos();
