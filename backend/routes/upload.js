@@ -40,7 +40,18 @@ const upload = multer({
  * POST /api/upload
  * Загрузка файла в S3
  */
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('file')(req, res, (multerErr) => {
+    if (multerErr) {
+      console.error('Multer error:', multerErr);
+      const msg = multerErr.code === 'LIMIT_FILE_SIZE'
+        ? `Файл слишком большой. Максимум: 20 ГБ`
+        : (multerErr.message || 'Ошибка при приёме файла');
+      return res.status(400).json({ success: false, error: msg });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -71,10 +82,11 @@ router.post('/', upload.single('file'), async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Ошибка загрузки файла:', error);
+    console.error('Ошибка загрузки файла в S3:', error);
+    const msg = error.message || 'Ошибка при загрузке файла';
     res.status(500).json({
       success: false,
-      error: error.message || 'Ошибка при загрузке файла',
+      error: msg,
     });
   }
 });

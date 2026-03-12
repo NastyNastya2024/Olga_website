@@ -180,10 +180,14 @@ class ApiClient {
                     }
                 } else {
                     try {
-                        const error = JSON.parse(xhr.responseText);
-                        reject(new Error(error.error || 'Ошибка загрузки файла'));
+                        const errData = JSON.parse(xhr.responseText);
+                        const msg = errData.error || `Ошибка загрузки (код ${xhr.status})`;
+                        console.error('Upload failed:', xhr.status, errData);
+                        reject(new Error(msg));
                     } catch {
-                        reject(new Error('Ошибка загрузки файла'));
+                        const msg = xhr.responseText || `Ошибка загрузки (код ${xhr.status})`;
+                        console.error('Upload failed (no JSON):', xhr.status, msg);
+                        reject(new Error(msg));
                     }
                 }
             });

@@ -471,7 +471,8 @@ function setupVideoForm() {
             } catch (error) {
                 uploadInProgress = false;
                 uploadProgress.style.display = 'none';
-                alert('Ошибка загрузки файла: ' + error.message);
+                const msg = error.message || 'Неизвестная ошибка';
+                alert(msg.startsWith('Ошибка') ? msg : 'Ошибка загрузки: ' + msg);
                 console.error('Upload error:', error);
             }
         });
