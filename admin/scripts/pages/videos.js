@@ -102,7 +102,6 @@ function getVideoModal() {
                     <!-- Загрузка видео файла -->
                     <div class="form-group upload-group">
                         <label class="upload-group-title">Загрузить видео файл</label>
-                        <label class="upload-group-sub">Выберите файл</label>
                         <input type="file" id="videoFile" accept="video/*" class="upload-group-file">
                         <input type="hidden" id="videoUrl">
                         <div id="uploadProgress" style="display: none; margin-top: 0.75rem;">
@@ -116,7 +115,6 @@ function getVideoModal() {
                     <!-- Обложка для видео -->
                     <div class="form-group upload-group">
                         <label class="upload-group-title">Обложка для видео</label>
-                        <label class="upload-group-sub">Выберите файл</label>
                         <input type="file" id="videoCover" accept="image/*" class="upload-group-file">
                         <div id="videoCoverPreview" style="margin-top: 0.5rem;"></div>
                     </div>
