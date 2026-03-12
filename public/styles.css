@@ -2704,36 +2704,36 @@ body:has(.videos-page) .hero video,
         display: block;
     }
     
-    /* Стрелки для прокрутки — показываем под карточками на мобильных */
+    /* Стрелки для прокрутки — как у отзывов: цвет и расстояние */
     .benefits-scroll-controls {
         display: flex !important;
         justify-content: center;
         align-items: center;
-        gap: 2rem;
-        margin-top: 0.75rem;
+        gap: 1rem;
+        margin-top: 1.5rem;
         padding: 0 1rem;
     }
     
     .benefits-scroll-btn {
-        background: #8BA5A4;
-        color: rgba(255, 255, 255, 0.95);
+        background: #008B9D;
         border: none;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        color: white;
         transition: all 0.3s ease;
         font-size: 1.2rem;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 139, 157, 0.3);
     }
     
     .benefits-scroll-btn:hover {
-        background: #7A9594;
-        transform: scale(1.05);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        background: #005A6B;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 139, 157, 0.4);
     }
     
     .benefits-scroll-btn:active {
@@ -2747,7 +2747,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefits-scroll-btn:hover:not(:disabled) {
-        background: #7A9594;
+        background: #005A6B;
     }
 }
 
