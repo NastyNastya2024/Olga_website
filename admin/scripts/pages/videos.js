@@ -102,9 +102,9 @@ function getVideoModal() {
                     <!-- Загрузка видео файла -->
                     <div class="form-group upload-group">
                         <label class="upload-group-title">Загрузить видео файл</label>
-                        <label class="upload-group-sub">Выберите файл или укажите URL</label>
+                        <label class="upload-group-sub">Выберите файл</label>
                         <input type="file" id="videoFile" accept="video/*" class="upload-group-file">
-                        <input type="url" id="videoUrl" placeholder="http://..." class="upload-group-url">
+                        <input type="hidden" id="videoUrl">
                         <div id="uploadProgress" style="display: none; margin-top: 0.75rem;">
                             <div class="progress-bar">
                                 <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
@@ -116,9 +116,8 @@ function getVideoModal() {
                     <!-- Обложка для видео -->
                     <div class="form-group upload-group">
                         <label class="upload-group-title">Обложка для видео</label>
-                        <label class="upload-group-sub">Выберите файл или укажите URL</label>
+                        <label class="upload-group-sub">Выберите файл</label>
                         <input type="file" id="videoCover" accept="image/*" class="upload-group-file">
-                        <input type="url" id="videoCoverUrl" placeholder="http://..." class="upload-group-url">
                         <div id="videoCoverPreview" style="margin-top: 0.5rem;"></div>
                     </div>
                     
@@ -363,7 +362,6 @@ async function editVideo(id) {
         document.getElementById('videoDescription').value = video.description || '';
         document.getElementById('videoCategory').value = video.category || 'blog_1';
         document.getElementById('videoUrl').value = video.video_url || '';
-        document.getElementById('videoCoverUrl').value = video.thumbnail_url || '';
         document.getElementById('videoStatus').value = video.status || 'published';
         const coverPreview = document.getElementById('videoCoverPreview');
         if (coverPreview) {
@@ -480,7 +478,6 @@ function setupVideoForm() {
     
     // Обложка: превью при выборе файла
     const videoCoverInput = document.getElementById('videoCover');
-    const videoCoverUrlInput = document.getElementById('videoCoverUrl');
     const videoCoverPreview = document.getElementById('videoCoverPreview');
     if (videoCoverInput && videoCoverPreview) {
         videoCoverInput.addEventListener('change', function(e) {
@@ -500,13 +497,13 @@ function setupVideoForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Проверяем, что указан URL или загружен файл
+        // Проверяем, что загружен видео файл
         const videoUrl = videoUrlInput.value;
         if (!videoUrl) {
             if (uploadInProgress) {
                 alert('Дождитесь завершения загрузки. Появится сообщение «Файл успешно загружен!», затем нажмите «Сохранить».');
             } else {
-                alert('Пожалуйста, загрузите видео файл или укажите URL');
+                alert('Пожалуйста, загрузите видео файл');
             }
             return;
         }
@@ -524,8 +521,6 @@ function setupVideoForm() {
                 alert('Ошибка загрузки обложки: ' + (err.message || err));
                 return;
             }
-        } else if (videoCoverUrlInput && videoCoverUrlInput.value.trim()) {
-            thumbnailUrl = videoCoverUrlInput.value.trim();
         } else if (videoCoverPreview && videoCoverPreview.querySelector('img') && videoCoverPreview.querySelector('img').src && !videoCoverPreview.querySelector('img').src.startsWith('data:')) {
             thumbnailUrl = videoCoverPreview.querySelector('img').src;
         }

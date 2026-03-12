@@ -8,53 +8,61 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/shared/styles/common.css">
-    <link rel="stylesheet" href="/styles.css">
     <style>
-        .payment-success {
-            min-height: 60vh;
+        /* Стиль как у страницы авторизации */
+        .payment-success-page {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #5CD6DA 0%, #148083 100%);
             padding: 2rem;
+        }
+        .payment-success-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        .payment-success-container h1 {
             text-align: center;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
         }
         .payment-success-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-        .payment-success h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.75rem;
+            text-align: center;
+            font-size: 3rem;
+            color: #148083;
             margin-bottom: 0.5rem;
         }
-        .payment-success p {
-            color: var(--text-secondary, #666);
-            margin-bottom: 2rem;
+        .payment-success-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
-        .payment-success .btn-back {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: var(--accent, #8b7355);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: opacity 0.2s;
+        .payment-success-message {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1rem;
         }
-        .payment-success .btn-back:hover {
-            opacity: 0.9;
-        }
-        .registration-form {
-            max-width: 360px;
-            width: 100%;
-            text-align: left;
-            margin-top: 1rem;
+        .payment-success-auth-note {
+            background: #e8f7f8;
+            border-left: 4px solid #148083;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #2c3e50;
         }
         .registration-form label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: #2c3e50;
         }
         .registration-form input {
             width: 100%;
@@ -63,11 +71,12 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
+            box-sizing: border-box;
         }
         .registration-form button {
             width: 100%;
             padding: 0.75rem 1.5rem;
-            background: #008B9D;
+            background: #148083;
             color: white;
             border: none;
             border-radius: 8px;
@@ -76,18 +85,18 @@
             font-size: 1rem;
         }
         .registration-form button:hover {
-            opacity: 0.9;
+            background: #0f6a6d;
         }
         .registration-form button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
-        .payment-success .status-loading {
-            color: #666;
+        .status-loading {
+            color: #7f8c8d;
             margin-bottom: 1rem;
             font-size: 0.9rem;
         }
-        .payment-success .error-msg {
+        .error-msg {
             color: #c00;
             margin-top: 0.5rem;
             font-size: 0.9rem;
@@ -95,30 +104,16 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <div class="logo">
-                <a href="/">
-                    <img src="/img/logo.png" alt="Olga Website" class="logo-img">
-                </a>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/">Главная</a></li>
-                <li><a href="/videos.html">Видео</a></li>
-                <li><a href="/club.html">Клуб</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main class="main-content">
-        <section class="payment-success">
+    <main class="payment-success-page">
+        <div class="payment-success-container">
             <div class="payment-success-icon">✓</div>
             <h1>Оплата прошла успешно</h1>
-            <p id="successMessage">Спасибо за оплату!</p>
+            <p class="payment-success-message" id="successMessage">Спасибо за оплату!</p>
+            <p class="payment-success-auth-note">Обязательно авторизуйтесь, чтобы получить обратную связь от преподавателя.</p>
             <div id="loadingStatus" class="status-loading" style="display: none;"></div>
             <div id="registrationBlock" style="display: none;">
-                <p style="margin-bottom: 1rem;">Введите email и пароль для входа в личный кабинет:</p>
-                <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Используйте новый пароль, который вы нигде больше не использовали — так браузер не будет предупреждать об утечке.</p>
+                <p class="payment-success-subtitle">Введите email и пароль для входа в личный кабинет:</p>
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 1rem;">Используйте новый пароль, который вы нигде больше не использовали — так браузер не будет предупреждать об утечке.</p>
                 <form class="registration-form" id="registrationForm" autocomplete="off">
                     <label for="regEmail">Email</label>
                     <input type="email" id="regEmail" name="email" required placeholder="your@email.com" autocomplete="off">
@@ -130,8 +125,7 @@
                     <button type="submit" id="submitBtn">Войти в личный кабинет</button>
                 </form>
             </div>
-            <a href="/" class="btn-back" id="btnBack" style="margin-top: 2rem;">На главную</a>
-        </section>
+        </div>
     </main>
 
     <script src="/shared/scripts/api.js"></script>
