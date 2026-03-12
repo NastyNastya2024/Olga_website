@@ -2710,13 +2710,13 @@ body:has(.videos-page) .hero video,
         justify-content: center;
         align-items: center;
         gap: 2rem;
-        margin-top: 1.5rem;
+        margin-top: 0.75rem;
         padding: 0 1rem;
     }
     
     .benefits-scroll-btn {
-        background: #008B9D;
-        color: white;
+        background: #8BA5A4;
+        color: rgba(255, 255, 255, 0.95);
         border: none;
         border-radius: 50%;
         width: 40px;
@@ -2727,13 +2727,13 @@ body:has(.videos-page) .hero video,
         cursor: pointer;
         transition: all 0.3s ease;
         font-size: 1.2rem;
-        box-shadow: 0 2px 8px rgba(0, 139, 157, 0.3);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
     
     .benefits-scroll-btn:hover {
-        background: #005A6B;
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 139, 157, 0.4);
+        background: #7A9594;
+        transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
     
     .benefits-scroll-btn:active {
@@ -2747,7 +2747,7 @@ body:has(.videos-page) .hero video,
     }
     
     .benefits-scroll-btn:hover:not(:disabled) {
-        background: #005A6B;
+        background: #7A9594;
     }
 }
 
