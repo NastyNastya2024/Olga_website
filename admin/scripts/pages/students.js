@@ -113,7 +113,7 @@ function getUserModal() {
                             <div class="loading">Загрузка списка видео...</div>
                         </div>
                         <small style="color: #666; display: block; margin-top: 0.5rem;">
-                            Выберите видео из списка всех загруженных на платформу
+                            Выберите видео или целые папки из списка загруженных на платформу
                         </small>
                     </div>
                     
@@ -330,25 +330,85 @@ function renderVideosSelect(videos, selectedVideoIds = []) {
         return;
     }
     
-    container.innerHTML = `
-        <div class="videos-select-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem;">
-            ${videos.map(video => {
-                const isSelected = selectedVideoIds.includes(video.id);
-                return `
-                    <label style="display: flex; align-items: center; padding: 0.5rem; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
-                        <input type="checkbox" 
-                               value="${video.id}" 
-                               ${isSelected ? 'checked' : ''}
-                               style="margin-right: 0.75rem;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500;">${video.title || 'Без названия'}</div>
-                            ${video.description ? `<div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">${video.description.substring(0, 60)}${video.description.length > 60 ? '...' : ''}</div>` : ''}
-                        </div>
-                    </label>
-                `;
-            }).join('')}
-        </div>
-    `;
+    const selectedSet = new Set((selectedVideoIds || []).map(String));
+    
+    // Группируем по папкам
+    const byFolder = {};
+    for (const v of videos) {
+        const folder = (v.folder || '').trim() || '— Без папки';
+        if (!byFolder[folder]) byFolder[folder] = [];
+        byFolder[folder].push(v);
+    }
+    const folderOrder = ['— Без папки', ...Object.keys(byFolder).filter(f => f !== '— Без папки').sort()];
+    
+    const escapeHtml = (s) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    
+    let html = '<div class="videos-select-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem;">';
+    
+    folderOrder.forEach((folder, idx) => {
+        const list = byFolder[folder] || [];
+        const checkedCount = list.filter(v => selectedSet.has(String(v.id))).length;
+        const allChecked = checkedCount === list.length;
+        const someChecked = checkedCount > 0;
+        
+        html += `<div class="folder-assign-block" data-folder-idx="${idx}">`;
+        html += `
+            <div class="folder-assign-header" style="background: #f5f5f5; padding: 0.5rem 0.75rem; margin: 0.25rem 0; border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" class="folder-checkbox" data-folder-idx="${idx}" 
+                    ${allChecked ? 'checked' : ''}
+                    style="margin: 0;"> 
+                <span>${escapeHtml(folder)}</span>
+                <span style="font-size: 0.85rem; color: #666; font-weight: normal;">(${list.length} видео)</span>
+            </div>
+        `;
+        for (const video of list) {
+            const isSelected = selectedSet.has(String(video.id));
+            html += `
+                <label style="display: flex; align-items: center; padding: 0.5rem 0.75rem 0.5rem 2rem; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                    <input type="checkbox" class="video-checkbox" data-folder-idx="${idx}"
+                           value="${video.id}" ${isSelected ? 'checked' : ''} style="margin-right: 0.75rem;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500;">${escapeHtml(video.title || 'Без названия')}</div>
+                        ${video.description ? `<div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">${escapeHtml(video.description.substring(0, 60))}${video.description.length > 60 ? '...' : ''}</div>` : ''}
+                    </div>
+                </label>
+            `;
+        }
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+    
+    // Обработчики: чекбокс папки — выделить/снять все видео в папке
+    container.querySelectorAll('.folder-checkbox').forEach(cb => {
+        const idx = cb.getAttribute('data-folder-idx');
+        const block = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
+        const someChecked = block && [...block.querySelectorAll('.video-checkbox')].some(c => c.checked);
+        const allChecked = block && [...block.querySelectorAll('.video-checkbox')].every(c => c.checked);
+        if (someChecked && !allChecked) cb.indeterminate = true;
+        cb.addEventListener('change', function() {
+            const blk = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
+            if (blk) blk.querySelectorAll('.video-checkbox').forEach(vcb => { vcb.checked = this.checked; });
+            this.indeterminate = false;
+        });
+    });
+    
+    // При изменении видео — обновить состояние чекбокса папки
+    container.querySelectorAll('.video-checkbox').forEach(vcb => {
+        const idx = vcb.getAttribute('data-folder-idx');
+        vcb.addEventListener('change', function() {
+            const block = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
+            if (!block) return;
+            const folderCb = block.querySelector('.folder-checkbox');
+            const videoCbs = block.querySelectorAll('.video-checkbox');
+            const checked = [...videoCbs].filter(c => c.checked).length;
+            if (folderCb) {
+                folderCb.checked = checked === videoCbs.length;
+                folderCb.indeterminate = checked > 0 && checked < videoCbs.length;
+            }
+        });
+    });
 }
 
 function closeUserModal() {
@@ -392,9 +452,9 @@ function setupUserForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Собираем выбранные видео
+        // Собираем выбранные видео (только чекбоксы видео, не папок)
         const selectedVideos = [];
-        const checkboxes = document.querySelectorAll('#videosSelectContainer input[type="checkbox"]:checked');
+        const checkboxes = document.querySelectorAll('#videosSelectContainer .video-checkbox:checked');
         checkboxes.forEach(checkbox => {
             selectedVideos.push(parseInt(checkbox.value));
         });

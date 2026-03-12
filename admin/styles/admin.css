@@ -243,6 +243,19 @@ html, body {
     margin-top: 0;
 }
 
+.student-folder-input {
+    width: 100%;
+    max-width: 140px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+.student-folder-input:focus {
+    border-color: #148083;
+    outline: none;
+}
+
 .club-prices-form .btn {
     align-self: flex-start;
     margin-top: 1rem;

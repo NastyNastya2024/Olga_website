@@ -19,11 +19,19 @@ export default {
         
         return `
             <div id="videos-page">
-                <div class="page-header">
-                    <h1>Видео</h1>
+                <div class="page-header" style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;">
+                    <h1 style="margin: 0;">Видео</h1>
+                    <div class="videos-filter" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <label for="folderFilter" style="font-size: 0.9rem; color: #666;">Папка:</label>
+                        <select id="folderFilter" onchange="applyFolderFilter(this.value)" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.9rem;">
+                            <option value="">Все папки</option>
+                            <option value="—">Без папки</option>
+                        </select>
+                    </div>
                     ${!isStudent ? '<button class="btn btn-primary" onclick="showAddVideoModal()">Добавить видео</button>' : ''}
                 </div>
 
+                <datalist id="studentFolderList"></datalist>
                 <div class="table-container">
                     <table class="data-table" id="videos-data-table">
                         <colgroup>
@@ -70,6 +78,8 @@ export default {
         // Делаем функции доступными глобально (до загрузки данных)
         window.loadVideos = loadVideos;
         window.goToVideosPage = goToVideosPage;
+        window.saveStudentFolder = saveStudentFolder;
+        window.applyFolderFilter = applyFolderFilter;
         window.showAddVideoModal = showAddVideoModal;
         window.closeVideoModal = closeVideoModal;
         window.editVideo = editVideo;
@@ -159,6 +169,8 @@ let currentShareVideoTitle = '';
 const VIDEOS_PAGE_SIZE = 20;
 let allVideosList = [];
 let videosCurrentPage = 1;
+let studentVideoFolders = {}; // { video_id: folder } — папки ученика
+let folderFilter = ''; // '' = все, '—' = без папки, иначе название папки
 
 async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
@@ -197,6 +209,17 @@ async function loadVideos() {
             videos = response.data || response;
         }
 
+        // Для учеников загружаем их папки
+        if (getUserRole() === 'student') {
+            try {
+                const meRes = await api.get('/admin/users/me');
+                const me = meRes.data || meRes;
+                studentVideoFolders = me.video_folders || {};
+            } catch (e) {
+                studentVideoFolders = {};
+            }
+        }
+
         if (videos.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет видео</td></tr>';
             return;
@@ -205,6 +228,7 @@ async function loadVideos() {
         allVideosList = videos;
         videosCurrentPage = 1;
         await loadFoldersForDatalist();
+        await populateFolderFilter();
         renderVideosPage();
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
@@ -225,6 +249,32 @@ async function loadFoldersForDatalist() {
     }
 }
 
+async function populateFolderFilter() {
+    const select = document.getElementById('folderFilter');
+    if (!select) return;
+    const isStudent = getUserRole() === 'student';
+    let folders = [];
+    if (isStudent) {
+        folders = [...new Set(Object.values(studentVideoFolders))].filter(Boolean).sort();
+    } else {
+        try {
+            const res = await api.get('/admin/videos/folders');
+            folders = res.data || res || [];
+        } catch (e) {
+            folders = [];
+        }
+    }
+    select.innerHTML = '<option value="">Все папки</option><option value="—">Без папки</option>' +
+        folders.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+    select.value = folderFilter;
+}
+
+function applyFolderFilter(value) {
+    folderFilter = value || '';
+    videosCurrentPage = 1;
+    renderVideosPage();
+}
+
 function renderVideosPage() {
     const tbody = document.getElementById('videosTableBody');
     const paginationEl = document.getElementById('videosPagination');
@@ -232,10 +282,24 @@ function renderVideosPage() {
 
     const isStudent = getUserRole() === 'student';
     
-    // Сортируем по папке, затем по названию
-    const sorted = [...allVideosList].sort((a, b) => {
-        const fa = (a.folder || '').trim() || '';
-        const fb = (b.folder || '').trim() || '';
+    const getFolder = (v) => {
+        if (isStudent && studentVideoFolders[String(v.id)]) {
+            return studentVideoFolders[String(v.id)];
+        }
+        return (v.folder || '').trim() || '';
+    };
+    // Фильтр по папке
+    let filtered = allVideosList;
+    if (folderFilter) {
+        if (folderFilter === '—') {
+            filtered = allVideosList.filter(v => !getFolder(v));
+        } else {
+            filtered = allVideosList.filter(v => getFolder(v) === folderFilter);
+        }
+    }
+    const sorted = [...filtered].sort((a, b) => {
+        const fa = getFolder(a);
+        const fb = getFolder(b);
         if (fa !== fb) return fa.localeCompare(fb);
         return (a.title || '').localeCompare(b.title || '');
     });
@@ -249,11 +313,33 @@ function renderVideosPage() {
     const end = Math.min(start + VIDEOS_PAGE_SIZE, total);
     const pageVideos = sorted.slice(start, end);
 
+    if (total === 0) {
+        const msg = folderFilter ? 'Нет видео в выбранной папке' : 'Нет видео';
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${msg}</td></tr>`;
+        if (paginationEl) paginationEl.style.display = 'none';
+        return;
+    }
+
+    const studentFoldersList = isStudent ? [...new Set(Object.values(studentVideoFolders))].sort() : [];
+    const datalistEl = document.getElementById('studentFolderList');
+    if (datalistEl && isStudent) {
+        datalistEl.innerHTML = studentFoldersList.map(f => `<option value="${escapeHtml(f)}">`).join('');
+    }
     tbody.innerHTML = pageVideos.map(video => {
-        const folder = (video.folder || '').trim() || '—';
+        const folder = isStudent 
+            ? (studentVideoFolders[String(video.id)] || '').trim() || '—'
+            : (video.folder || '').trim() || '—';
+        const folderCell = isStudent ? `
+            <td class="folder-cell">
+                <input type="text" list="studentFolderList" value="${escapeHtml(folder === '—' ? '' : folder)}" 
+                    placeholder="Добавить в папку" class="student-folder-input"
+                    data-video-id="${video.id}"
+                    onchange="saveStudentFolder(${video.id}, this.value)">
+            </td>
+        ` : `<td class="folder-cell">${escapeHtml(folder)}</td>`;
         return `
         <tr>
-            <td class="folder-cell">${escapeHtml(folder)}</td>
+            ${folderCell}
             <td>${video.id}</td>
             <td>${escapeHtml(video.title || '')}</td>
             <td class="cell-status-access">
@@ -291,6 +377,23 @@ function renderVideosPage() {
 function goToVideosPage(pageNum) {
     videosCurrentPage = pageNum;
     renderVideosPage();
+}
+
+async function saveStudentFolder(videoId, folderName) {
+    const folder = (folderName || '').trim();
+    const next = { ...studentVideoFolders };
+    if (folder) {
+        next[String(videoId)] = folder;
+    } else {
+        delete next[String(videoId)];
+    }
+    try {
+        await api.put('/admin/users/me', { video_folders: next });
+        studentVideoFolders = next;
+        renderVideosPage();
+    } catch (e) {
+        alert('Не удалось сохранить папку: ' + (e.message || 'Ошибка'));
+    }
 }
 
 function showAddVideoModal() {

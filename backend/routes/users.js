@@ -211,7 +211,7 @@ router.put('/me', authenticateToken, async (req, res) => {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
   
-  const { name, email, password, currentPassword } = req.body;
+  const { name, email, password, currentPassword, video_folders } = req.body;
   
   const updatedUser = {
     ...currentUsers[userIndex],
@@ -219,6 +219,19 @@ router.put('/me', authenticateToken, async (req, res) => {
     email: email !== undefined ? email : currentUsers[userIndex].email,
     updated_at: new Date().toISOString(),
   };
+
+  // Ученики могут обновлять свои папки для видео (только для назначенных им)
+  if (video_folders !== undefined && currentUsers[userIndex].role === 'student') {
+    const assigned = (currentUsers[userIndex].assigned_videos || []).map(String);
+    const sanitized = {};
+    for (const [vid, folder] of Object.entries(video_folders || {})) {
+      if (assigned.includes(String(vid)) && typeof folder === 'string') {
+        const f = folder.trim();
+        if (f) sanitized[String(vid)] = f;
+      }
+    }
+    updatedUser.video_folders = sanitized;
+  }
   
   // Если указан новый пароль, проверяем текущий и хешируем новый
   if (password && password.trim() !== '') {
