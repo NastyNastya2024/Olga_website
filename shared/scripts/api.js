@@ -185,8 +185,16 @@ class ApiClient {
                         console.error('Upload failed:', xhr.status, errData);
                         reject(new Error(msg));
                     } catch {
-                        const msg = xhr.responseText || `Ошибка загрузки (код ${xhr.status})`;
-                        console.error('Upload failed (no JSON):', xhr.status, msg);
+                        // 502/504 — Nginx не получил ответ от backend (HTML вместо JSON)
+                        let msg;
+                        if (xhr.status === 502) {
+                            msg = '502 Bad Gateway: backend не отвечает. Проверьте, что PM2 запущен: pm2 status';
+                        } else if (xhr.status === 504) {
+                            msg = '504 Gateway Timeout: загрузка прервана по таймауту. Попробуйте файл поменьше или подождите.';
+                        } else {
+                            msg = `Ошибка загрузки (код ${xhr.status})`;
+                        }
+                        console.error('Upload failed (no JSON):', xhr.status, xhr.responseText?.substring(0, 200));
                         reject(new Error(msg));
                     }
                 }

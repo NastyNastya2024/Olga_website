@@ -14,6 +14,7 @@ npm-debug.log*
 
 # Временные файлы
 .DS_Store
+backend/tmp-uploads/
 *.swp
 *.swo
 *~

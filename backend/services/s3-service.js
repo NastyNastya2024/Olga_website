@@ -8,36 +8,46 @@ const { s3, BUCKET_NAME, isYandexStorage } = require('../config/s3-config');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const path = require('path');
+const fs = require('fs');
 
 class S3Service {
   /**
    * Загрузка файла в S3
-   * @param {Buffer} fileBuffer - Буфер файла
+   * @param {Buffer|string} fileBufferOrPath - Буфер файла или путь к файлу на диске
    * @param {string} fileName - Имя файла
    * @param {string} mimeType - MIME тип файла
    * @param {string} folder - Папка для сохранения (опционально)
    * @returns {Promise<Object>} Результат загрузки с URL и ключом
    */
-  async uploadFile(fileBuffer, fileName, mimeType, folder = 'uploads') {
+  async uploadFile(fileBufferOrPath, fileName, mimeType, folder = 'uploads') {
     try {
-      // Генерируем уникальное имя файла
       const timestamp = Date.now();
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
       const key = `${folder}/${timestamp}-${sanitizedFileName}`;
 
+      // Для больших файлов используем stream (путь к файлу), иначе buffer
+      const isFilePath = typeof fileBufferOrPath === 'string';
+      const body = isFilePath ? fs.createReadStream(fileBufferOrPath) : fileBufferOrPath;
+
       const command = new PutObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-        Body: fileBuffer,
+        Body: body,
         ContentType: mimeType,
         CacheControl: 'public, max-age=31536000, immutable',
-        // ACL убран: Yandex Object Storage и часть S3-совместимых хранилищ не поддерживают ACL,
-        // из-за чего возникает ошибка "signature does not match". Публичность настраивается на уровне bucket.
       });
 
       await s3.send(command);
 
-      // Генерируем публичный URL
+      // Удаляем временный файл после успешной загрузки
+      if (isFilePath) {
+        try {
+          fs.unlinkSync(fileBufferOrPath);
+        } catch (e) {
+          console.warn('Не удалось удалить временный файл:', fileBufferOrPath, e.message);
+        }
+      }
+
       const url = this.getPublicUrl(key);
 
       return {

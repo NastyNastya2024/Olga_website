@@ -35,6 +35,39 @@ curl -s http://localhost:5000/api/public/tours | head -c 200
 
 ---
 
+## 502 Bad Gateway при загрузке файла
+
+**Причина:** Nginx не получает ответ от backend (Node.js). Backend может быть остановлен, упал или перегружен.
+
+**Решение:**
+
+1. Подключитесь по SSH и проверьте PM2:
+```bash
+pm2 status
+pm2 logs olga-backend --lines 30
+```
+
+2. Если backend не запущен или упал:
+```bash
+cd ~/olga-website/backend
+pm2 start index.js --name olga-backend
+# или перезапуск:
+pm2 restart olga-backend
+```
+
+3. Проверьте память (большие файлы могут вызвать OOM):
+```bash
+free -h
+```
+
+4. Проверьте, что backend отвечает локально:
+```bash
+curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/health
+# Должно вернуть 200
+```
+
+---
+
 ## Видео/фото не загружаются на сайте
 
 Убедитесь, что в `backend/.env` на сервере указано:
@@ -96,4 +129,15 @@ git pull origin main
 
 # Обновить backend
 cd backend && npm install --production && pm2 restart olga-backend
+```
+
+## PM2: перезапуск через ecosystem (рекомендуется)
+
+Если backend часто падает (↺ много перезапусков), используйте ecosystem:
+
+```bash
+cd ~/olga-website/backend
+pm2 delete olga-backend 2>/dev/null || true
+pm2 start ecosystem.config.js
+pm2 save
 ```

@@ -1,39 +1,47 @@
 /**
  * Роуты для загрузки файлов через Express и Multer
+ * Для видео: disk storage (не грузит весь файл в память) — избегает OOM на ВМ с 4 GB RAM
  */
 
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const s3Service = require('../services/s3-service');
 
 const router = express.Router();
 
-// Настройка multer для обработки файлов в памяти
+// Временная папка для загрузок (очищается после отправки в S3)
+const UPLOAD_TMP = path.join(__dirname, '../tmp-uploads');
+if (!fs.existsSync(UPLOAD_TMP)) {
+  fs.mkdirSync(UPLOAD_TMP, { recursive: true });
+}
+
+const fileFilter = (req, file, cb) => {
+  const allowedMimes = [
+    'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+    'video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
+  ];
+  if (allowedMimes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Неподдерживаемый тип файла'), false);
+  }
+};
+
+// Disk storage — для больших видео не использует RAM
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_TMP),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || '';
+    cb(null, `upload-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+  },
+});
+
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 20 * 1024 * 1024 * 1024, // 20GB для видео файлов
-  },
-  fileFilter: (req, file, cb) => {
-    // Разрешаем изображения и видео
-    const allowedMimes = [
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'image/webp',
-      'video/mp4',
-      'video/webm',
-      'video/quicktime', // .mov
-      'video/x-msvideo', // .avi
-      'video/x-matroska', // .mkv
-    ];
-    
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Неподдерживаемый тип файла'), false);
-    }
-  },
+  storage,
+  limits: { fileSize: 20 * 1024 * 1024 * 1024 }, // 20 GB
+  fileFilter,
 });
 
 /**
@@ -60,12 +68,11 @@ router.post('/', (req, res, next) => {
       });
     }
 
-    // Определяем папку на основе типа файла
     const folder = req.file.mimetype.startsWith('image/') ? 'images' : 'videos';
 
-    // Загружаем файл в S3
+    // Передаём путь к файлу — S3 загружает потоком, без загрузки в память
     const result = await s3Service.uploadFile(
-      req.file.buffer,
+      req.file.path,
       req.file.originalname,
       req.file.mimetype,
       folder
@@ -82,6 +89,14 @@ router.post('/', (req, res, next) => {
       },
     });
   } catch (error) {
+    // Удаляем временный файл при ошибке
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (e) {
+        console.warn('Не удалось удалить временный файл:', req.file.path);
+      }
+    }
     console.error('Ошибка загрузки файла в S3:', error);
     const msg = error.message || 'Ошибка при загрузке файла';
     res.status(500).json({
