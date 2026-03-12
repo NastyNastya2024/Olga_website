@@ -19,14 +19,16 @@ export default {
         
         return `
             <div id="videos-page">
-                <div class="page-header" style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;">
-                    <h1 style="margin: 0;">Видео</h1>
-                    <div class="videos-filter" style="display: flex; align-items: center; gap: 0.5rem;">
-                        <label for="folderFilter" style="font-size: 0.9rem; color: #666;">Папка:</label>
-                        <select id="folderFilter" onchange="applyFolderFilter(this.value)" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.9rem;">
-                            <option value="">Все папки</option>
-                            <option value="—">Без папки</option>
-                        </select>
+                <div class="page-header videos-page-header">
+                    <div class="videos-header-row">
+                        <h1>Видео</h1>
+                        <div class="videos-filter">
+                            <label for="folderFilter">Папка:</label>
+                            <select id="folderFilter" onchange="applyFolderFilter(this.value)">
+                                <option value="">Все папки</option>
+                                <option value="—">Без папки</option>
+                            </select>
+                        </div>
                     </div>
                     ${!isStudent ? '<button class="btn btn-primary" onclick="showAddVideoModal()">Добавить видео</button>' : ''}
                 </div>
@@ -176,7 +178,7 @@ async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
     if (!tbody) return;
     
-        tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
+        tbody.innerHTML = '<tr class="table-message-row"><td colspan="5" class="loading">Загрузка...</td></tr>';
     const paginationEl = document.getElementById('videosPagination');
     if (paginationEl) paginationEl.style.display = 'none';
 
@@ -192,7 +194,7 @@ async function loadVideos() {
                 const assignedVideoIds = (user.assigned_videos || []).map(id => parseInt(id));
                 
                 if (assignedVideoIds.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Вам не назначено ни одного видео</td></tr>';
+                    tbody.innerHTML = '<tr class="table-message-row"><td colspan="5" class="empty-state">Вам не назначено ни одного видео</td></tr>';
                     return;
                 }
                 
@@ -201,7 +203,7 @@ async function loadVideos() {
                 videos = allVideos.filter(video => assignedVideoIds.includes(parseInt(video.id)));
             } catch (error) {
                 console.error('Ошибка загрузки данных пользователя:', error);
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
+                tbody.innerHTML = '<tr class="table-message-row"><td colspan="5" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
                 return;
             }
         } else {
@@ -221,7 +223,7 @@ async function loadVideos() {
         }
 
         if (videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет видео</td></tr>';
+            tbody.innerHTML = '<tr class="table-message-row"><td colspan="5" class="empty-state">Нет видео</td></tr>';
             return;
         }
 
@@ -232,7 +234,7 @@ async function loadVideos() {
         renderVideosPage();
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных</td></tr>';
+        tbody.innerHTML = '<tr class="table-message-row"><td colspan="5" class="empty-state">Ошибка загрузки данных</td></tr>';
     }
 }
 
@@ -315,7 +317,7 @@ function renderVideosPage() {
 
     if (total === 0) {
         const msg = folderFilter ? 'Нет видео в выбранной папке' : 'Нет видео';
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${msg}</td></tr>`;
+        tbody.innerHTML = `<tr class="table-message-row"><td colspan="5" class="empty-state">${msg}</td></tr>`;
         if (paginationEl) paginationEl.style.display = 'none';
         return;
     }
@@ -330,22 +332,22 @@ function renderVideosPage() {
             ? (studentVideoFolders[String(video.id)] || '').trim() || '—'
             : (video.folder || '').trim() || '—';
         const folderCell = isStudent ? `
-            <td class="folder-cell">
+            <td class="folder-cell" data-label="Папка">
                 <input type="text" list="studentFolderList" value="${escapeHtml(folder === '—' ? '' : folder)}" 
                     placeholder="Добавить в папку" class="student-folder-input"
                     data-video-id="${video.id}"
                     onchange="saveStudentFolder(${video.id}, this.value)">
             </td>
-        ` : `<td class="folder-cell">${escapeHtml(folder)}</td>`;
+        ` : `<td class="folder-cell" data-label="Папка">${escapeHtml(folder)}</td>`;
         return `
-        <tr>
+        <tr data-video-id="${video.id}">
             ${folderCell}
-            <td>${video.id}</td>
-            <td>${escapeHtml(video.title || '')}</td>
-            <td class="cell-status-access">
+            <td data-label="ID">${video.id}</td>
+            <td data-label="Название" class="cell-title">${escapeHtml(video.title || '')}</td>
+            <td class="cell-status-access" data-label="Статус">
                 <span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span>
             </td>
-            <td class="cell-actions">
+            <td class="cell-actions" data-label="Действия">
                 ${!isStudent ? `
                     <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
                     <button class="btn btn-danger" title="Удалить" onclick="deleteVideo(${video.id})">Удалить</button>

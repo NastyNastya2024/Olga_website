@@ -251,6 +251,12 @@ html, body {
     border: 1px solid #ddd;
     border-radius: 6px;
 }
+@media (max-width: 768px) {
+    .student-folder-input {
+        max-width: none;
+        flex: 1;
+    }
+}
 .student-folder-input:focus {
     border-color: #148083;
     outline: none;
@@ -803,6 +809,58 @@ tr.user-detail-row td.user-detail-cell {
     color: #2c3e50;
 }
 
+/* Шапка страницы «Видео» — без наложения на мобильном */
+.videos-page-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.videos-header-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+}
+.videos-header-row h1 {
+    margin: 0;
+}
+.videos-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.videos-filter label {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+}
+.videos-filter select {
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    min-width: 0;
+}
+@media (max-width: 768px) {
+    .videos-page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .videos-header-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .videos-filter {
+        width: 100%;
+    }
+    .videos-filter select {
+        flex: 1;
+        min-width: 0;
+    }
+    .videos-page-header .btn-primary {
+        width: 100%;
+    }
+}
+
 /* Login Page */
 .login-page {
     display: flex;
@@ -993,59 +1051,79 @@ tr.user-detail-row td.user-detail-cell {
         padding-left: 0.25rem !important;
         padding-right: 0.25rem !important;
     }
-    /* Скрываем ID на мобильном — больше места для названия и кнопок */
-    #videos-data-table th:nth-child(1),
-    #videos-data-table td:nth-child(1) {
+    /* Карточный layout для таблицы видео на мобильном — без наложения */
+    #videos-data-table colgroup {
         display: none;
     }
-    #videos-data-table th:nth-child(2),
-    #videos-data-table td:nth-child(2) {
-        width: 34%;
-        max-width: none;
+    #videos-data-table thead {
+        display: none;
     }
-    #videos-data-table th:nth-child(3),
-    #videos-data-table td:nth-child(3),
-    #videos-data-table .cell-status-access {
-        width: 16% !important;
+    #videos-data-table tbody tr.table-message-row {
+        display: table-row;
+    }
+    #videos-data-table tbody tr.table-message-row td {
+        display: table-cell;
+        width: 100%;
+    }
+    #videos-data-table tbody tr.table-message-row td::before {
+        display: none;
+    }
+    #videos-data-table tbody tr:not(.table-message-row) {
+        display: block;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        padding: 1rem;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    #videos-data-table tbody tr:not(.table-message-row) td {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.4rem 0 !important;
+        border: none !important;
+        width: 100% !important;
         max-width: none !important;
-        min-width: 0 !important;
     }
-    #videos-data-table .cell-status-access .status-badge {
-        font-size: 0.58rem !important;
-        padding: 0.12rem 0.28rem !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+    #videos-data-table tbody tr:not(.table-message-row) td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #666;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+        min-width: 4.5rem;
     }
-    #videos-data-table th.col-actions,
-    #videos-data-table td.cell-actions {
-        width: 50% !important;
-        min-width: 0 !important;
+    #videos-data-table tbody tr:not(.table-message-row) td.cell-actions::before {
+        display: none;
     }
-    /* Кнопки в одну строку, компактные — все три видны */
-    #videos-data-table .cell-actions {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 0.25rem !important;
-        justify-content: flex-end;
+    #videos-data-table tbody tr:not(.table-message-row) td.cell-title {
+        font-weight: 500;
+        word-break: break-word;
+    }
+    #videos-data-table tbody tr:not(.table-message-row) td.cell-status-access {
+        align-items: center;
+    }
+    #videos-data-table tbody tr:not(.table-message-row) td.cell-actions {
+        flex-direction: column;
+        align-items: stretch;
+        padding-top: 0.75rem !important;
+        margin-top: 0.5rem;
+        border-top: 1px solid #eee !important;
+        gap: 0.5rem;
     }
     #videos-data-table .cell-actions .btn {
-        padding: 0.45rem 0.5rem !important;
-        min-width: 36px !important;
-    }
-    #videos-data-table .cell-actions .btn-edit,
-    #videos-data-table .cell-actions .btn-primary,
-    #videos-data-table .cell-actions .btn-danger,
-    #videos-data-table .cell-actions .btn-view {
-        padding: 0.45rem 0.5rem !important;
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem 0.75rem !important;
+        min-width: 0 !important;
     }
     #videos-data-table .cell-actions .btn-edit::before,
     #videos-data-table .cell-actions .btn-primary::before,
     #videos-data-table .cell-actions .btn-danger::before,
     #videos-data-table .cell-actions .btn-view::before {
-        width: 1rem !important;
-        height: 1rem !important;
+        width: 1.25rem !important;
+        height: 1.25rem !important;
     }
 
     /* Уменьшаем кнопки на 20% для мобильной версии */
