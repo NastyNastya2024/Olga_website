@@ -108,11 +108,14 @@ async function loadVideos() {
             return;
         }
 
-        // Сортируем видео в обратном порядке - последние загруженные идут первыми
+        // Сортируем: сначала по папке, затем по дате (новые первыми)
         allVideos.sort((a, b) => {
+            const fa = (a.folder || '').trim() || '';
+            const fb = (b.folder || '').trim() || '';
+            if (fa !== fb) return fa.localeCompare(fb);
             const dateA = a.created_at ? new Date(a.created_at) : new Date(a.id || 0);
             const dateB = b.created_at ? new Date(b.created_at) : new Date(b.id || 0);
-            return dateB - dateA; // Сортировка по убыванию (новые первыми)
+            return dateB - dateA;
         });
 
         // На мобильных не предзагружаем видео на странице списка (они загрузятся по требованию)
@@ -164,7 +167,25 @@ function displayVideos() {
     const endIndex = startIndex + videosPerPage;
     const videosToShow = allVideos.slice(startIndex, endIndex);
 
-    grid.innerHTML = videosToShow.map(video => renderVideoCard(video)).join('');
+    // Группируем по папкам
+    const byFolder = {};
+    for (const v of videosToShow) {
+        const key = (v.folder || '').trim() || '—';
+        if (!byFolder[key]) byFolder[key] = [];
+        byFolder[key].push(v);
+    }
+    const folderOrder = ['—', ...Object.keys(byFolder).filter(k => k !== '—').sort()];
+
+    let html = '';
+    for (const folderKey of folderOrder) {
+        const list = byFolder[folderKey] || [];
+        if (list.length === 0) continue;
+        if (folderKey !== '—') {
+            html += `<h3 class="videos-folder-title">${escapeHtml(folderKey)}</h3>`;
+        }
+        html += `<div class="videos-folder-grid">${list.map(v => renderVideoCard(v)).join('')}</div>`;
+    }
+    grid.innerHTML = html;
 }
 
 function renderPagination() {

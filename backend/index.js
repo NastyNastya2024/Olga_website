@@ -2,6 +2,16 @@
  * Express сервер с интеграцией S3 и поддержкой SPA
  */
 
+// Ловим падения — пишем в лог перед выходом (pm2 logs покажет причину)
+process.on('uncaughtException', (err) => {
+  console.error('CRASH uncaughtException:', err);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('CRASH unhandledRejection:', reason, promise);
+  process.exit(1);
+});
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');

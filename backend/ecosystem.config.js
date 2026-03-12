@@ -12,6 +12,11 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
     },
-    node_args: '--max-old-space-size=1024', // 1 GB heap (загрузка идёт через диск, не память)
+    node_args: '--max-old-space-size=1024',
+    // Стабилизация: не перезапускать бесконечно при падении
+    max_restarts: 20,
+    min_uptime: 5000,      // мин. 5 сек работы = успешный старт
+    restart_delay: 3000,   // 3 сек пауза перед перезапуском
+    exp_backoff_restart_delay: 100,
   }],
 };

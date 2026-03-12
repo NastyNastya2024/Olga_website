@@ -28,6 +28,15 @@ router.get('/', (req, res) => {
 });
 
 /**
+ * GET /api/admin/videos/folders
+ * Получить список папок (уникальные значения folder)
+ */
+router.get('/folders', (req, res) => {
+  const folders = [...new Set(videos.map(v => (v.folder || '').trim()).filter(Boolean))].sort();
+  res.json(folders);
+});
+
+/**
  * GET /api/admin/videos/:id
  * Получить видео по ID
  */
@@ -47,7 +56,7 @@ router.get('/:id', (req, res) => {
  * Создать новое видео
  */
 router.post('/', (req, res) => {
-  const { title, description, video_url, thumbnail_url, status, access_type, category } = req.body;
+  const { title, description, video_url, thumbnail_url, status, access_type, category, folder } = req.body;
   
   if (!title || !video_url) {
     return res.status(400).json({ error: 'Название и URL видео обязательны' });
@@ -62,6 +71,7 @@ router.post('/', (req, res) => {
     status: status || 'published',
     access_type: access_type || 'open',
     category: category || 'blog_1',
+    folder: (folder || '').trim() || null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -84,7 +94,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ error: 'Видео не найдено' });
   }
   
-  const { title, description, video_url, thumbnail_url, status, access_type, category } = req.body;
+  const { title, description, video_url, thumbnail_url, status, access_type, category, folder } = req.body;
   
   videos[videoIndex] = {
     ...videos[videoIndex],
@@ -95,6 +105,7 @@ router.put('/:id', (req, res) => {
     status: status || videos[videoIndex].status,
     access_type: access_type || videos[videoIndex].access_type,
     category: category !== undefined ? category : (videos[videoIndex].category || 'blog_1'),
+    folder: folder !== undefined ? ((folder || '').trim() || null) : (videos[videoIndex].folder ?? null),
     updated_at: new Date().toISOString(),
   };
   

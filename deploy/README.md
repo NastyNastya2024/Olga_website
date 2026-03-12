@@ -57,6 +57,27 @@ df -h ~/olga-website/backend/tmp-uploads
 
 ---
 
+## 502 Bad Gateway — backend постоянно падает
+
+**Узнать причину падения:**
+```bash
+pm2 logs olga-backend --err --lines 100
+# Ищите строки "CRASH uncaughtException" или "CRASH unhandledRejection"
+```
+
+**Частые причины:**
+- **JavaScript heap out of memory** — нехватка RAM (ВМ 4 ГБ)
+- **ECONNREFUSED** — S3/Yandex Object Storage недоступен (проверьте .env)
+- **EACCES** — нет прав на запись в backend/tmp-uploads
+
+**Проверка прав и места:**
+```bash
+ls -la ~/olga-website/backend/tmp-uploads
+df -h ~
+```
+
+---
+
 ## 502 Bad Gateway при загрузке файла
 
 **Причина:** Nginx не получает ответ от backend (Node.js). Backend может быть остановлен, упал или перегружен.

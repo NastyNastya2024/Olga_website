@@ -669,6 +669,30 @@ body:has(.videos-page) .hero video,
     opacity: 1 !important;
 }
 
+.videos-folder-title {
+    grid-column: 1 / -1;
+    font-size: 1.25rem;
+    color: #2a8a9a;
+    margin: 1.5rem 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(42, 138, 154, 0.3);
+}
+.videos-folder-title:first-child {
+    margin-top: 0;
+}
+.videos-folder-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+@media (max-width: 768px) {
+    .videos-folder-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .videos-grid {
         grid-template-columns: 1fr !important;

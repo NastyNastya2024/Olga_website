@@ -2,6 +2,16 @@
  * Страница управления видео
  */
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 export default {
     render: async () => {
         const userRole = getUserRole();
@@ -17,13 +27,15 @@ export default {
                 <div class="table-container">
                     <table class="data-table" id="videos-data-table">
                         <colgroup>
-                            <col style="width: 5%">
-                            <col style="width: 38%">
                             <col style="width: 12%">
-                            <col style="width: 45%">
+                            <col style="width: 5%">
+                            <col style="width: 33%">
+                            <col style="width: 12%">
+                            <col style="width: 38%">
                         </colgroup>
                         <thead>
                             <tr>
+                                <th>Папка</th>
                                 <th>ID</th>
                                 <th>Название</th>
                                 <th>Статус</th>
@@ -32,7 +44,7 @@ export default {
                         </thead>
                         <tbody id="videosTableBody">
                             <tr>
-                                <td colspan="4" class="loading">Загрузка...</td>
+                                <td colspan="5" class="loading">Загрузка...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -98,6 +110,11 @@ function getVideoModal() {
                         <label>Категория</label>
                         <input type="text" id="videoCategory" value="blog_1" placeholder="blog_1">
                     </div>
+                    <div class="form-group">
+                        <label>Папка</label>
+                        <input type="text" id="videoFolder" list="folderList" placeholder="Без папки (оставьте пустым)">
+                        <datalist id="folderList"></datalist>
+                    </div>
                     
                     <!-- Загрузка видео файла -->
                     <div class="form-group upload-group">
@@ -147,7 +164,7 @@ async function loadVideos() {
     const tbody = document.getElementById('videosTableBody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="4" class="loading">Загрузка...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
     const paginationEl = document.getElementById('videosPagination');
     if (paginationEl) paginationEl.style.display = 'none';
 
@@ -163,7 +180,7 @@ async function loadVideos() {
                 const assignedVideoIds = (user.assigned_videos || []).map(id => parseInt(id));
                 
                 if (assignedVideoIds.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Вам не назначено ни одного видео</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Вам не назначено ни одного видео</td></tr>';
                     return;
                 }
                 
@@ -172,7 +189,7 @@ async function loadVideos() {
                 videos = allVideos.filter(video => assignedVideoIds.includes(parseInt(video.id)));
             } catch (error) {
                 console.error('Ошибка загрузки данных пользователя:', error);
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных: ' + error.message + '</td></tr>';
                 return;
             }
         } else {
@@ -181,16 +198,30 @@ async function loadVideos() {
         }
 
         if (videos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Нет видео</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Нет видео</td></tr>';
             return;
         }
 
         allVideosList = videos;
         videosCurrentPage = 1;
+        await loadFoldersForDatalist();
         renderVideosPage();
     } catch (error) {
         console.error('Ошибка загрузки видео:', error);
-        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Ошибка загрузки данных</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Ошибка загрузки данных</td></tr>';
+    }
+}
+
+async function loadFoldersForDatalist() {
+    try {
+        const folders = await api.get('/admin/videos/folders');
+        const list = folders.data || folders;
+        const datalist = document.getElementById('folderList');
+        if (datalist && Array.isArray(list)) {
+            datalist.innerHTML = list.map(f => `<option value="${(f || '').replace(/"/g, '&quot;')}">`).join('');
+        }
+    } catch (e) {
+        console.warn('Не удалось загрузить список папок:', e);
     }
 }
 
@@ -200,19 +231,31 @@ function renderVideosPage() {
     if (!tbody) return;
 
     const isStudent = getUserRole() === 'student';
-    const total = allVideosList.length;
+    
+    // Сортируем по папке, затем по названию
+    const sorted = [...allVideosList].sort((a, b) => {
+        const fa = (a.folder || '').trim() || '';
+        const fb = (b.folder || '').trim() || '';
+        if (fa !== fb) return fa.localeCompare(fb);
+        return (a.title || '').localeCompare(b.title || '');
+    });
+    
+    const total = sorted.length;
     const totalPages = Math.max(1, Math.ceil(total / VIDEOS_PAGE_SIZE));
     const page = Math.min(Math.max(1, videosCurrentPage), totalPages);
     videosCurrentPage = page;
 
     const start = (page - 1) * VIDEOS_PAGE_SIZE;
     const end = Math.min(start + VIDEOS_PAGE_SIZE, total);
-    const pageVideos = allVideosList.slice(start, end);
+    const pageVideos = sorted.slice(start, end);
 
-    tbody.innerHTML = pageVideos.map(video => `
+    tbody.innerHTML = pageVideos.map(video => {
+        const folder = (video.folder || '').trim() || '—';
+        return `
         <tr>
+            <td class="folder-cell">${escapeHtml(folder)}</td>
             <td>${video.id}</td>
-            <td>${video.title}</td>
+            <td>${escapeHtml(video.title || '')}</td>
             <td class="cell-status-access">
                 <span class="status-badge ${video.status}">${video.status === 'published' ? 'Опубликовано' : 'Скрыто'}</span>
             </td>
@@ -221,10 +264,10 @@ function renderVideosPage() {
                     <button class="btn btn-edit" title="Редактировать" onclick="editVideo(${video.id})">Редактировать</button>
                     <button class="btn btn-danger" title="Удалить" onclick="deleteVideo(${video.id})">Удалить</button>
                 ` : ''}
-                ${video.video_url ? `<button class="btn btn-view" title="Смотреть" onclick="showVideoPlayer(${video.id}, '${video.video_url.replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
+                ${video.video_url ? `<button class="btn btn-view" title="Смотреть" onclick="showVideoPlayer(${video.id}, '${(video.video_url || '').replace(/'/g, "\\'")}', '${(video.title || '').replace(/'/g, "\\'")}', '${video.status || 'published'}')">Смотреть</button>` : ''}
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 
     if (paginationEl) {
         if (totalPages <= 1) {
@@ -258,11 +301,11 @@ function showAddVideoModal() {
     const coverPreview = document.getElementById('videoCoverPreview');
     if (coverPreview) coverPreview.innerHTML = '';
     
-    // Устанавливаем категорию по умолчанию
+    // Устанавливаем значения по умолчанию
     const categoryInput = document.getElementById('videoCategory');
-    if (categoryInput) {
-        categoryInput.value = 'blog_1';
-    }
+    if (categoryInput) categoryInput.value = 'blog_1';
+    const folderInput = document.getElementById('videoFolder');
+    if (folderInput) folderInput.value = '';
     
     // Сбрасываем прогресс загрузки
     const uploadProgress = document.getElementById('uploadProgress');
@@ -360,6 +403,7 @@ async function editVideo(id) {
         document.getElementById('videoDescription').value = video.description || '';
         document.getElementById('videoCategory').value = video.category || 'blog_1';
         document.getElementById('videoUrl').value = video.video_url || '';
+        document.getElementById('videoFolder').value = video.folder || '';
         document.getElementById('videoStatus').value = video.status || 'published';
         const coverPreview = document.getElementById('videoCoverPreview');
         if (coverPreview) {
@@ -421,6 +465,16 @@ function setupVideoForm() {
                 return;
             }
             
+            // Для файлов > 500 МБ — предупреждение (браузер может прервать загрузку при свёрнутой вкладке)
+            const sizeMB = Math.round(file.size / 1024 / 1024);
+            if (sizeMB > 500) {
+                const ok = confirm(`Файл ${sizeMB} МБ. Для успешной загрузки:\n\n• Держите эту вкладку открытой и на переднем плане\n• Не сворачивайте браузер и не переключайте вкладки\n• Подключитесь по проводному интернету\n\nПродолжить загрузку?`);
+                if (!ok) {
+                    e.target.value = '';
+                    return;
+                }
+            }
+            
             // Показываем прогресс
             uploadProgress.style.display = 'block';
             progressFill.style.width = '0%';
@@ -467,7 +521,10 @@ function setupVideoForm() {
             } catch (error) {
                 uploadInProgress = false;
                 uploadProgress.style.display = 'none';
-                const msg = error.message || 'Неизвестная ошибка';
+                let msg = error.message || 'Неизвестная ошибка';
+                if (msg.includes('сети') || msg.includes('network') || msg.includes('ERR_NETWORK')) {
+                    msg += '\n\nСовет: держите вкладку открытой, не сворачивайте браузер. Попробуйте снова.';
+                }
                 alert(msg.startsWith('Ошибка') ? msg : 'Ошибка загрузки: ' + msg);
                 console.error('Upload error:', error);
             }
@@ -527,6 +584,7 @@ function setupVideoForm() {
             title: document.getElementById('videoTitle').value,
             description: document.getElementById('videoDescription').value,
             category: document.getElementById('videoCategory').value || 'blog_1',
+            folder: (document.getElementById('videoFolder')?.value || '').trim() || null,
             video_url: videoUrl,
             thumbnail_url: thumbnailUrl,
             status: document.getElementById('videoStatus').value,
