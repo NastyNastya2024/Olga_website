@@ -209,7 +209,6 @@
         const burgerMenu = document.getElementById('burgerMenu');
         const navMenu = document.getElementById('navMenu');
 
-        if (burgerMenu && navMenu) {
         burgerMenu.addEventListener('click', () => {
             burgerMenu.classList.toggle('active');
             navMenu.classList.toggle('active');
@@ -231,7 +230,6 @@
                 navMenu.classList.remove('active');
             }
         });
-        }
 
         // Инверсия цветов меню с самого начала
         const header = document.querySelector('.header');
@@ -242,28 +240,16 @@
         // Загрузка hero видео main1 из S3
         async function loadHeroVideo() {
             const video = document.getElementById('heroVideo');
-            const loadingEl = document.getElementById('heroVideoLoading');
             if (!video) {
                 console.error('❌ Элемент video не найден');
                 return null;
             }
 
-            const hideLoading = () => { if (loadingEl) loadingEl.classList.add('hidden'); };
-            // Гарантированно скрываем индикатор через 20 сек
-            const safetyTimeout = setTimeout(hideLoading, 20000);
-
             try {
-                const apiUrl = '/api/public/hero/video';
-                console.log('🔍 Запрос hero видео:', apiUrl);
+                console.log('🔍 Запрос hero видео (main1) из S3...');
                 
-                // Прямой fetch с таймаутом (обход возможных проблем ApiClient)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
-                const res = await fetch(apiUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const response = await res.json();
+                // Получаем URL видео main1 из S3 через API
+                const response = await api.get('/public/hero/video');
                 
                 console.log('📥 Ответ от API:', response);
                 console.log('📊 Тип ответа:', typeof response);
@@ -287,11 +273,9 @@
                 console.log('📊 Парсинг ответа:', { videoUrl, isSuccess, response });
                 
                 if (isSuccess && videoUrl) {
-                    // Для относительного URL (прокси) делаем абсолютным
-                    const fullUrl = videoUrl.startsWith('/')
-                        ? (window.location.origin + videoUrl)
-                        : videoUrl;
-                    console.log('✅ Получен URL видео:', fullUrl);
+                    console.log('✅ Получен URL видео:', videoUrl);
+                    
+                    // Hero уже грузится здесь — в прелоадер не добавляем, чтобы не качать дважды
                     
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
                     console.log('📱 Мобильное устройство:', isMobile);
@@ -299,30 +283,28 @@
                     video.preload = 'auto';
                     
                     const source = document.createElement('source');
-                    source.src = fullUrl;
+                    source.src = videoUrl;
                     source.type = 'video/mp4';
                     
                     video.innerHTML = '';
                     video.appendChild(source);
-                    
-                    // Показываем видео сразу на всех устройствах (не ждём loadstart — иначе opacity: 0 скрывает его)
-                    video.classList.add('loaded');
-                    video.style.opacity = '1';
-                    video.style.visibility = 'visible';
                     
                     if (isMobile) {
                         video.setAttribute('playsinline', '');
                         video.setAttribute('muted', '');
                         video.setAttribute('autoplay', '');
                         video.setAttribute('loop', '');
+                        video.classList.add('loaded');
+                        video.style.opacity = '1';
+                        video.style.visibility = 'visible';
                     }
                     
-                    hideLoading();
+                    const loadingEl = document.getElementById('heroVideoLoading');
                     
                     video.addEventListener('loadeddata', () => {
                         console.log('✅ Видео main1 загружено успешно из S3');
                         video.classList.add('loaded');
-                        hideLoading();
+                        if (loadingEl) loadingEl.classList.add('hidden');
                         const errorMsg = document.querySelector('.hero .error-msg');
                         if (errorMsg) errorMsg.remove();
                     });
@@ -333,25 +315,14 @@
                         video.classList.add('loaded');
                         video.style.opacity = '1';
                         video.style.visibility = 'visible';
-                        hideLoading();
+                        if (isMobile && loadingEl) loadingEl.classList.add('hidden');
                     });
                     
                     video.addEventListener('error', (e) => {
                         console.error('❌ Ошибка воспроизведения видео:', e);
-                        hideLoading();
+                        if (loadingEl) loadingEl.classList.add('hidden');
                         showError('Ошибка воспроизведения видео. Проверьте консоль.');
                     });
-                    
-                    // Таймаут: если видео не загрузилось за 20 сек — показываем ошибку
-                    const loadTimeout = setTimeout(() => {
-                        if (!video.classList.contains('loaded') && loadingEl && !loadingEl.classList.contains('hidden')) {
-                            console.warn('⚠️ Таймаут загрузки hero видео');
-                            hideLoading();
-                            showError('Видео загружается слишком долго. Обновите страницу.');
-                        }
-                    }, 20000);
-                    video.addEventListener('loadeddata', () => clearTimeout(loadTimeout), { once: true });
-                    video.addEventListener('error', () => clearTimeout(loadTimeout), { once: true });
                     
                     video.load();
                     
@@ -377,24 +348,30 @@
                     }
                     
                     video.style.display = 'none';
-                    hideLoading();
+                    const loadingNone = document.getElementById('heroVideoLoading');
+                    if (loadingNone) loadingNone.classList.add('hidden');
                     return null;
                 }
             } catch (error) {
-                hideLoading();
+                const loadingErr = document.getElementById('heroVideoLoading');
+                if (loadingErr) loadingErr.classList.add('hidden');
                 console.error('❌ Ошибка загрузки hero видео:', error);
                 console.error('   Детали:', error.message);
+                console.error('   Stack:', error.stack);
+                console.error('   Полный объект ошибки:', error);
                 
-                let errorMessage = 'Ошибка загрузки видео';
-                if (error.name === 'AbortError') {
-                    errorMessage = 'Сервер не ответил. Проверьте, что backend запущен на порту 5000.';
-                } else if (error.message) {
-                    errorMessage = 'Ошибка загрузки видео: ' + error.message;
+                // Более информативное сообщение об ошибке
+                let errorMessage = 'Ошибка загрузки видео из S3';
+                if (error.message) {
+                    if (error.message.includes('подключиться к серверу')) {
+                        errorMessage = 'Не удалось подключиться к серверу. Убедитесь, что backend запущен.';
+                    } else {
+                        errorMessage = 'Ошибка загрузки видео: ' + error.message;
+                    }
                 }
+                
                 showError(errorMessage);
                 return null;
-            } finally {
-                clearTimeout(safetyTimeout);
             }
         }
         
@@ -554,24 +531,23 @@
             }
         }
 
-        // Инициализация: загрузка контента без блокировки на видео
+        // Инициализация прелоадера и загрузка контента
         document.addEventListener('DOMContentLoaded', async () => {
-            // Показываем прелоадер только на время загрузки данных
+            // Показываем прелоадер
             if (window.videoPreloader) {
                 window.videoPreloader.show();
             }
             
-            // Hero видео — независимо, не блокирует контент
-            loadHeroVideo().catch(e => console.warn('Hero video:', e));
+            // Загружаем hero видео и добавляем в прелоадер
+            await loadHeroVideo();
             
-            // Загружаем бесплатные видео (данные + рендер карточек)
+            // Загружаем бесплатные видео (они добавятся в прелоадер внутри функции)
             await loadFreeVideos();
             
-            // Сразу показываем контент — не ждём предзагрузку видео
+            // Запускаем предзагрузку всех видео
             if (window.videoPreloader) {
-                window.videoPreloader.hide();
+                await window.videoPreloader.startPreloading();
             }
-            // Предзагрузка видео отключена на главной — видео загрузятся при просмотре
         });
 
         // Загрузка ретритов для главной страницы
@@ -600,9 +576,10 @@
                     const endDate = tour.end_date ? new Date(tour.end_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
                     const dateRange = startDate && endDate ? `${startDate} - ${endDate}` : (startDate || 'Дата уточняется');
                     
-                    // Получаем первое изображение из галереи
-                    const previewImage = tour.gallery && Array.isArray(tour.gallery) && tour.gallery.length > 0 
-                        ? tour.gallery[0] 
+                    // Получаем первое изображение из галереи (пропускаем видео — img не отображает .mp4/.mov)
+                    const imageExts = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i;
+                    const previewImage = tour.gallery && Array.isArray(tour.gallery)
+                        ? tour.gallery.find(url => typeof url === 'string' && imageExts.test(url)) || null
                         : null;
                     
                     // Определяем статус ретрита
@@ -912,4 +889,8 @@
         
         // Делаем функции доступными глобально
         window.playFreeVideo = playFreeVideo;
-        window.closeVideoPla
+        window.closeVideoPlayer = closeVideoPlayer;
+
+    </script>
+</body>
+</html>
