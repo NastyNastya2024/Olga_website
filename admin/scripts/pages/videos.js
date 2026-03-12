@@ -409,6 +409,9 @@ function setupVideoForm() {
     const progressFill = document.getElementById('progressFill');
     const uploadStatus = document.getElementById('uploadStatus');
     
+    // Флаг: загрузка в процессе (файл отправлен на сервер, но ответ ещё не получен)
+    let uploadInProgress = false;
+    
     // Обработка выбора файла для загрузки
     if (videoFileInput) {
         videoFileInput.addEventListener('change', async (e) => {
@@ -426,6 +429,8 @@ function setupVideoForm() {
             uploadProgress.style.display = 'block';
             progressFill.style.width = '0%';
             uploadStatus.textContent = 'Подготовка к загрузке...';
+            uploadStatus.style.color = '';
+            uploadInProgress = true;
             
             try {
                 // Создаем FormData
@@ -436,10 +441,16 @@ function setupVideoForm() {
                 uploadStatus.textContent = `Загрузка ${file.name}...`;
                 
                 const response = await api.uploadFile('/upload', formData, (percent) => {
-                    // Обновляем прогресс бар
+                    // Обновляем прогресс бар (100% = файл отправлен на сервер, но сервер ещё загружает в S3)
                     progressFill.style.width = percent + '%';
-                    uploadStatus.textContent = `Загрузка ${file.name}... ${Math.round(percent)}%`;
+                    if (percent >= 99) {
+                        uploadStatus.textContent = 'Обработка на сервере... Подождите перед сохранением';
+                    } else {
+                        uploadStatus.textContent = `Загрузка ${file.name}... ${Math.round(percent)}%`;
+                    }
                 });
+                
+                uploadInProgress = false;
                 
                 if (response.success && response.data) {
                     // Заполняем URL автоматически
@@ -458,6 +469,7 @@ function setupVideoForm() {
                     throw new Error('Ошибка загрузки файла');
                 }
             } catch (error) {
+                uploadInProgress = false;
                 uploadProgress.style.display = 'none';
                 alert('Ошибка загрузки файла: ' + error.message);
                 console.error('Upload error:', error);
@@ -490,7 +502,11 @@ function setupVideoForm() {
         // Проверяем, что указан URL или загружен файл
         const videoUrl = videoUrlInput.value;
         if (!videoUrl) {
-            alert('Пожалуйста, загрузите видео файл или укажите URL');
+            if (uploadInProgress) {
+                alert('Дождитесь завершения загрузки. Появится сообщение «Файл успешно загружен!», затем нажмите «Сохранить».');
+            } else {
+                alert('Пожалуйста, загрузите видео файл или укажите URL');
+            }
             return;
         }
 
