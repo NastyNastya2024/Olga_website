@@ -2704,9 +2704,14 @@ body:has(.videos-page) .hero video,
         display: block;
     }
     
-    /* Стрелки для прокрутки - скрыты на мобильных, используется только свайп */
+    /* Стрелки для прокрутки — показываем под карточками на мобильных */
     .benefits-scroll-controls {
-        display: none !important; /* Скрываем стрелки на мобильных */
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        padding: 0 1rem;
     }
     
     .benefits-scroll-btn {
