@@ -101,6 +101,77 @@
             margin-top: 0.5rem;
             font-size: 0.9rem;
         }
+        .consent-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        .consent-label input[type="checkbox"] {
+            width: auto;
+            margin: 0.25rem 0 0 0;
+            flex-shrink: 0;
+        }
+        .consent-label a {
+            color: #148083;
+            text-decoration: underline;
+        }
+        .consent-label a:hover {
+            color: #0f6a6d;
+        }
+        .consent-popup {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .consent-popup-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+        }
+        .consent-popup-content {
+            position: relative;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .consent-popup-content h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+            font-size: 1.25rem;
+        }
+        .consent-popup-text {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+        }
+        .consent-popup-text p {
+            margin: 0 0 0.75rem 0;
+        }
+        .consent-popup-close {
+            padding: 0.5rem 1.5rem;
+            background: #148083;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .consent-popup-close:hover {
+            background: #0f6a6d;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +180,7 @@
             <div class="payment-success-icon">✓</div>
             <h1>Оплата прошла успешно</h1>
             <p class="payment-success-message" id="successMessage">Спасибо за оплату!</p>
-            <p class="payment-success-auth-note">Обязательно авторизуйтесь, чтобы получить обратную связь от преподавателя.</p>
+            <p class="payment-success-auth-note">Обязательно авторизуйтесь, чтобы получить видео-уроки и зайти в чат клуба.</p>
             <div id="loadingStatus" class="status-loading" style="display: none;"></div>
             <div id="registrationBlock" style="display: none;">
                 <p class="payment-success-subtitle">Введите email и пароль для входа в личный кабинет:</p>
@@ -121,9 +192,30 @@
                     <input type="password" id="regPassword" name="password" required minlength="6" placeholder="••••••••" autocomplete="new-password">
                     <label for="regPasswordConfirm">Подтвердите пароль</label>
                     <input type="password" id="regPasswordConfirm" name="password_confirm" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                    <label class="consent-label">
+                        <input type="checkbox" id="consentCheckbox" name="consent" required>
+                        <span>Я даю <a href="#" id="consentLink">согласие на обработку персональных данных</a></span>
+                    </label>
                     <div class="error-msg" id="formError"></div>
                     <button type="submit" id="submitBtn">Войти в личный кабинет</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Попап согласия на обработку данных -->
+        <div id="consentPopup" class="consent-popup" style="display: none;">
+            <div class="consent-popup-overlay"></div>
+            <div class="consent-popup-content">
+                <h3>Согласие на обработку персональных данных</h3>
+                <div class="consent-popup-text">
+                    <p>Я даю согласие ООО «Диджитрек» (далее — Оператор) на обработку моих персональных данных, указанных в форме регистрации на сайте, в целях предоставления доступа к личному кабинету, видео-урокам и чату клуба.</p>
+                    <p>Обработка персональных данных осуществляется в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+                    <p>Перечень персональных данных: фамилия, имя, отчество (при наличии), адрес электронной почты, номер телефона (при наличии).</p>
+                    <p>Способы обработки: сбор, запись, систематизация, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передача (предоставление, доступ), блокирование, удаление, уничтожение.</p>
+                    <p>Срок действия согласия: до момента его отзыва путём направления письменного заявления Оператору.</p>
+                    <p>Я уведомлен(а), что могу отозвать согласие в любой момент, направив соответствующее заявление на электронную почту Оператора.</p>
+                </div>
+                <button type="button" class="consent-popup-close" id="consentPopupClose">Закрыть</button>
             </div>
         </div>
     </main>
@@ -182,7 +274,8 @@
                     .catch(function() {});
                 if (pollCount >= maxPoll) {
                     clearInterval(pollInterval);
-                    loadingEl.textContent = 'Платёж обрабатывается. Заполните форму и нажмите кнопку — если появится ошибка, попробуйте через минуту.';
+                    loadingEl.textContent = '';
+                    loadingEl.style.display = 'none';
                 }
             }, 500);
 
@@ -214,6 +307,29 @@
                     submitBtn.disabled = false;
                 }
             });
+
+            // Попап согласия на обработку данных
+            const consentLink = document.getElementById('consentLink');
+            const consentPopup = document.getElementById('consentPopup');
+            const consentPopupClose = document.getElementById('consentPopupClose');
+            const consentOverlay = consentPopup && consentPopup.querySelector('.consent-popup-overlay');
+            if (consentLink) {
+                consentLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (consentPopup) consentPopup.style.display = 'flex';
+                });
+            }
+            if (consentPopupClose) {
+                consentPopupClose.addEventListener('click', function() {
+                    if (consentPopup) consentPopup.style.display = 'none';
+                });
+            }
+            if (consentOverlay) {
+                consentOverlay.addEventListener('click', function() {
+                    if (consentPopup) consentPopup.style.display = 'none';
+                });
+            }
         })();
     </script>
 </body>
