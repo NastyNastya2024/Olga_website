@@ -6,6 +6,7 @@ let chatPollInterval = null;
 const CHAT_POLL_INTERVAL_MS = 3000;
 let currentMode = 'private'; // 'private' | 'general'
 let currentThreadId = null;
+let isAdminUser = false;
 
 export default {
     render: async () => {
@@ -60,7 +61,7 @@ export default {
 
         window.__chatCleanup = stopChatPolling;
 
-        const isAdminUser = window.getUserRole && window.getUserRole() === 'admin';
+        isAdminUser = window.getUserRole && window.getUserRole() === 'admin';
 
         setupTabs();
         const threads = await loadThreads();
@@ -152,7 +153,7 @@ async function loadPrivateMessages(threadId) {
 
     try {
         const messages = await api.get(`/admin/chat/threads/${threadId}/messages`);
-        renderMessages(container, messages);
+        renderMessages(container, messages, true);
     } catch (error) {
         console.error('Ошибка загрузки сообщений:', error);
         container.innerHTML = `<div class="chat-error">Ошибка: ${error.message}</div>`;
@@ -165,18 +166,29 @@ async function loadGeneralMessages() {
 
     try {
         const messages = await api.get('/admin/chat/general/messages');
-        renderMessages(container, messages);
+        renderMessages(container, messages, false);
     } catch (error) {
         console.error('Ошибка загрузки сообщений:', error);
         container.innerHTML = `<div class="chat-error">Ошибка: ${error.message}</div>`;
     }
 }
 
-function renderMessages(container, messages) {
+function renderMessages(container, messages, isPrivateChat) {
     if (!container) return;
 
     if (!messages || messages.length === 0) {
-        container.innerHTML = '<div class="chat-empty">Пока нет сообщений. Напишите первым!</div>';
+        if (isPrivateChat && !isAdminUser) {
+            container.innerHTML = `
+                <div class="chat-welcome-new">
+                    <p class="chat-welcome-title">Добро пожаловать!</p>
+                    <p class="chat-welcome-text">Напишите приветствие администратору — он отправит вам доступ к видеоурокам.</p>
+                </div>
+            `;
+        } else if (isPrivateChat && isAdminUser) {
+            container.innerHTML = '<div class="chat-empty">Ученик ещё не написал. Напишите ему первым.</div>';
+        } else {
+            container.innerHTML = '<div class="chat-empty">Пока нет сообщений. Напишите первым!</div>';
+        }
         return;
     }
 
