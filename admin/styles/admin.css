@@ -1296,8 +1296,11 @@ tr.user-detail-row td.user-detail-cell {
 }
 
 .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     display: flex;
-    margin: 0 auto 1.5rem auto;
+    margin: 0;
     background: none;
     border: 1px solid #ddd;
     border-radius: 4px;
