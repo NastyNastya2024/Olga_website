@@ -180,11 +180,9 @@
             <div class="payment-success-icon">✓</div>
             <h1>Оплата прошла успешно</h1>
             <p class="payment-success-message" id="successMessage">Спасибо за оплату!</p>
-            <p class="payment-success-auth-note">Обязательно авторизуйтесь, чтобы получить видео-уроки и зайти в чат клуба.</p>
             <div id="loadingStatus" class="status-loading" style="display: none;"></div>
             <div id="registrationBlock" style="display: none;">
-                <p class="payment-success-subtitle">Введите email и пароль для входа в личный кабинет:</p>
-                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 1rem;">Используйте новый пароль, который вы нигде больше не использовали — так браузер не будет предупреждать об утечке.</p>
+                <p class="payment-success-subtitle">Введите email и пароль для входа:</p>
                 <form class="registration-form" id="registrationForm" autocomplete="off">
                     <label for="regEmail">Email</label>
                     <input type="email" id="regEmail" name="email" required placeholder="your@email.com" autocomplete="off">
@@ -257,7 +255,7 @@
             loadingEl.style.display = 'block';
             loadingEl.textContent = 'Обрабатываем платёж…';
             regBlock.style.display = 'block';
-            successMsg.textContent = 'Спасибо за оплату! Заполните данные для доступа в личный кабинет и чат с преподавателем.';
+            successMsg.textContent = 'Спасибо за оплату! Заполните данные для входа.';
 
             let pollCount = 0;
             const maxPoll = 60;
