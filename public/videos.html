@@ -161,12 +161,13 @@
                         : '';
                     
                     const popularClass = tariff.is_popular ? 'pricing-card-popular' : '';
+                    const durationSuffix = tariff.duration ? ` / ${tariff.duration} мес.` : '';
                     
                     return `
                         <div class="pricing-card ${popularClass}">
                             ${popularBadge}
                             <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
-                            <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
+                            <div class="pricing-card-price">${escapeHtml(tariff.price || '')}${durationSuffix}</div>
                             ${featuresHtml}
                             <button class="pricing-button" onclick="handlePayment(${tariff.id}, event)">Выбрать тариф</button>
                         </div>

@@ -20,6 +20,7 @@ export default {
                                     <th>ID</th>
                                     <th>Название</th>
                                     <th>Цена</th>
+                                    <th>Срок</th>
                                     <th>Описание</th>
                                     <th>Популярный</th>
                                     <th>Действия</th>
@@ -27,7 +28,7 @@ export default {
                             </thead>
                             <tbody id="tariffsTableBody">
                                 <tr>
-                                    <td colspan="6" class="loading">Загрузка...</td>
+                                    <td colspan="7" class="loading">Загрузка...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -52,6 +53,11 @@ export default {
                             <div class="form-group">
                                 <label for="tariffPrice">Цена *</label>
                                 <input type="text" id="tariffPrice" required placeholder="Например: 500₽ или 3500₽ / месяц">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tariffDuration">Срок тарифа (месяцев)</label>
+                                <input type="number" id="tariffDuration" min="1" placeholder="Например: 1, 3, 6, 12">
                             </div>
                             
                             <div class="form-group">
@@ -96,7 +102,7 @@ async function loadTariffs() {
         const tariffs = data.items || [];
 
         if (tariffs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Тарифы пока не добавлены</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Тарифы пока не добавлены</td></tr>';
             return;
         }
 
@@ -105,6 +111,7 @@ async function loadTariffs() {
                 <td>${tariff.id}</td>
                 <td>${escapeHtml(tariff.name || '')}</td>
                 <td>${escapeHtml(tariff.price || '')}</td>
+                <td>${tariff.duration ? tariff.duration + ' мес.' : '—'}</td>
                 <td>${escapeHtml(tariff.description || '').substring(0, 50)}${tariff.description && tariff.description.length > 50 ? '...' : ''}</td>
                 <td>${tariff.is_popular ? '✓' : ''}</td>
                 <td class="cell-actions">
@@ -115,7 +122,7 @@ async function loadTariffs() {
         `).join('');
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
-        tbody.innerHTML = '<tr><td colspan="6" class="error">Ошибка загрузки тарифов</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="error">Ошибка загрузки тарифов</td></tr>';
     }
 }
 
@@ -158,6 +165,7 @@ window.editTariff = async function(id) {
             document.getElementById('tariffId').value = tariff.id;
             document.getElementById('tariffName').value = tariff.name || '';
             document.getElementById('tariffPrice').value = tariff.price || '';
+            document.getElementById('tariffDuration').value = tariff.duration || '';
             document.getElementById('tariffDescription').value = tariff.description || '';
             document.getElementById('tariffIsPopular').checked = tariff.is_popular || false;
             modal.style.display = 'flex';
@@ -209,6 +217,8 @@ function setupTariffForm() {
         const id = document.getElementById('tariffId').value;
         const name = document.getElementById('tariffName').value.trim();
         const price = document.getElementById('tariffPrice').value.trim();
+        const durationVal = document.getElementById('tariffDuration').value.trim();
+        const duration = durationVal ? parseInt(durationVal, 10) : null;
         const description = document.getElementById('tariffDescription').value.trim();
         const isPopular = document.getElementById('tariffIsPopular').checked;
         
@@ -221,6 +231,7 @@ function setupTariffForm() {
             const tariffData = {
                 name,
                 price,
+                duration,
                 description,
                 is_popular: isPopular
             };

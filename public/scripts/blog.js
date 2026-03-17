@@ -159,7 +159,7 @@ async function loadPricingTariffs() {
                 <div class="pricing-card ${popularClass}">
                     ${popularBadge}
                     <h3 class="pricing-card-title">${escapeHtml(tariff.name || '')}</h3>
-                    <div class="pricing-card-price">${escapeHtml(tariff.price || '')}</div>
+                    <div class="pricing-card-price">${escapeHtml(tariff.price || '')}${tariff.duration ? ` / ${tariff.duration} мес.` : ''}</div>
                     ${featuresHtml}
                     <button class="pricing-button" onclick="handlePayment(${tariff.id}, event)">Выбрать тариф</button>
                 </div>
