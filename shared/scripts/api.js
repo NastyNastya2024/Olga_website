@@ -88,18 +88,6 @@ class ApiClient {
             }
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    this.removeToken();
-                    if (typeof window !== 'undefined' && window.removeUserData) {
-                        window.removeUserData();
-                    }
-                    if (typeof window !== 'undefined' && window.router && window.router.navigate) {
-                        window.router.navigate('/login');
-                    } else if (typeof window !== 'undefined') {
-                        window.location.href = '/admin/login';
-                    }
-                    throw new Error('__AUTH_REDIRECT__');
-                }
                 throw new Error(data.error || data.message || 'Ошибка запроса');
             }
 
@@ -180,22 +168,10 @@ class ApiClient {
                     }
                 } else {
                     try {
-                        const errData = JSON.parse(xhr.responseText);
-                        const msg = errData.error || `Ошибка загрузки (код ${xhr.status})`;
-                        console.error('Upload failed:', xhr.status, errData);
-                        reject(new Error(msg));
+                        const error = JSON.parse(xhr.responseText);
+                        reject(new Error(error.error || 'Ошибка загрузки файла'));
                     } catch {
-                        // 502/504 — Nginx не получил ответ от backend (HTML вместо JSON)
-                        let msg;
-                        if (xhr.status === 502) {
-                            msg = '502 Bad Gateway: backend не отвечает. Проверьте, что PM2 запущен: pm2 status';
-                        } else if (xhr.status === 504) {
-                            msg = '504 Gateway Timeout: загрузка прервана по таймауту. Попробуйте файл поменьше или подождите.';
-                        } else {
-                            msg = `Ошибка загрузки (код ${xhr.status})`;
-                        }
-                        console.error('Upload failed (no JSON):', xhr.status, xhr.responseText?.substring(0, 200));
-                        reject(new Error(msg));
+                        reject(new Error('Ошибка загрузки файла'));
                     }
                 }
             });

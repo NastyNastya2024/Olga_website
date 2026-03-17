@@ -46,7 +46,6 @@ export default {
         window.closeUserModal = closeUserModal;
         window.showAddUserModal = showAddUserModal;
         window.toggleUserDetail = toggleUserDetail;
-        window.openChatWithStudent = openChatWithStudent;
         
         await loadAllUsers();
         setTimeout(() => {
@@ -94,26 +93,12 @@ function getUserModal() {
                     </div>
                     
                     <div class="form-group">
-                        <label>Дата окончания тарифа</label>
-                        <input type="date" id="userTariffEndDate" placeholder="ГГГГ-ММ-ДД">
-                        <small style="color: #666;">Когда истекает подписка. По истечении ученик будет отключён.</small>
-                    </div>
-                    
-                    <div class="form-group" id="userStatusGroup">
-                        <label>Статус</label>
-                        <select id="userStatus">
-                            <option value="active">Активен</option>
-                            <option value="disabled">Отключён</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
                         <label>Назначенные видео</label>
                         <div id="videosSelectContainer">
                             <div class="loading">Загрузка списка видео...</div>
                         </div>
                         <small style="color: #666; display: block; margin-top: 0.5rem;">
-                            Выберите видео или целые папки из списка загруженных на платформу
+                            Выберите видео из списка всех загруженных на платформу
                         </small>
                     </div>
                     
@@ -157,12 +142,6 @@ async function loadAllUsers() {
                 : 'Нет';
             const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '-';
             const paymentDate = user.payment_date ? new Date(user.payment_date).toLocaleDateString('ru-RU') : '-';
-            const tariffEndDate = user.tariff_end_date ? new Date(user.tariff_end_date).toLocaleDateString('ru-RU') : '-';
-            const statusBadge = user.role === 'student' && user.status === 'disabled'
-                ? '<span style="margin-left: 0.5rem; padding: 0.2em 0.5em; background: #dc3545; color: white; border-radius: 4px; font-size: 0.85em;">Отключён</span>'
-                : (user.role === 'student' && user.tariff_end_date && new Date(user.tariff_end_date) <= new Date()
-                    ? '<span style="margin-left: 0.5rem; padding: 0.2em 0.5em; background: #ffc107; color: #333; border-radius: 4px; font-size: 0.85em;">Подписка истекла</span>'
-                    : '');
             const emailDisplay = (user.email || '').startsWith('pending_') ? 'Ожидает регистрации' : (user.email || '-');
             const email = emailDisplay.replace(/"/g, '&quot;');
             const tariff = (user.tariff || '-').replace(/"/g, '&quot;');
@@ -170,10 +149,9 @@ async function loadAllUsers() {
             return `
                 <tr data-user-id="${user.id}">
                     <td>${user.id}</td>
-                    <td>${user.name || '-'}${statusBadge}</td>
+                    <td>${user.name || '-'}</td>
                     <td>${user.role}</td>
                     <td class="cell-actions">
-                        ${user.role === 'student' ? `<button class="btn btn-sm btn-chat" title="Чат" onclick="openChatWithStudent(${user.id})">Чат</button>` : ''}
                         <button class="btn btn-sm btn-details" title="Подробнее" onclick="toggleUserDetail(${user.id})">Подробнее</button>
                         <button class="btn btn-edit" title="Редактировать" onclick="editUser(${user.id})">Редактировать</button>
                         <button class="btn btn-danger" title="Удалить" onclick="deleteUser(${user.id})">Удалить</button>
@@ -183,34 +161,11 @@ async function loadAllUsers() {
                     <td colspan="4" class="user-detail-cell">
                         <div class="user-detail-content">
                             <div class="user-detail-grid">
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Email</div>
-                                    <div class="user-detail-value">${email}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Тариф</div>
-                                    <div class="user-detail-value">${tariff}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Дата платежа</div>
-                                    <div class="user-detail-value">${paymentDate}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Дата окончания тарифа</div>
-                                    <div class="user-detail-value">${tariffEndDate}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Статус</div>
-                                    <div class="user-detail-value">${user.status === 'disabled' ? 'Отключён' : 'Активен'}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Назначенные видео</div>
-                                    <div class="user-detail-value">${videosText}</div>
-                                </div>
-                                <div class="user-detail-item">
-                                    <div class="user-detail-label">Дата регистрации</div>
-                                    <div class="user-detail-value">${createdDate}</div>
-                                </div>
+                                <div class="user-detail-item"><strong>Email:</strong> ${email}</div>
+                                <div class="user-detail-item"><strong>Тариф:</strong> ${tariff}</div>
+                                <div class="user-detail-item"><strong>Дата платежа:</strong> ${paymentDate}</div>
+                                <div class="user-detail-item"><strong>Назначенные видео:</strong> ${videosText}</div>
+                                <div class="user-detail-item"><strong>Дата регистрации:</strong> ${createdDate}</div>
                             </div>
                         </div>
                     </td>
@@ -249,8 +204,6 @@ function showAddUserModal() {
     }
     document.getElementById('userRole').value = 'student';
     document.getElementById('userTariff').value = '';
-    document.getElementById('userTariffEndDate').value = '';
-    document.getElementById('userStatus').value = 'active';
     document.getElementById('userProgramNotes').value = '';
     
     // Загружаем список всех видео
@@ -281,8 +234,6 @@ async function editUser(id) {
         }
         document.getElementById('userRole').value = user.role || 'student';
         document.getElementById('userTariff').value = user.tariff || '';
-        document.getElementById('userTariffEndDate').value = user.tariff_end_date ? user.tariff_end_date.slice(0, 10) : '';
-        document.getElementById('userStatus').value = user.status || 'active';
         document.getElementById('userProgramNotes').value = user.program_notes || '';
         
         // Загружаем список всех видео
@@ -295,17 +246,6 @@ async function editUser(id) {
         }
     } catch (error) {
         alert('Ошибка загрузки пользователя: ' + error.message);
-    }
-}
-
-function openChatWithStudent(studentId) {
-    try {
-        sessionStorage.setItem('chatOpenStudentId', String(studentId));
-    } catch (_) {}
-    if (window.router && router.navigate) {
-        router.navigate('/chat');
-    } else {
-        window.location.href = '/admin/chat';
     }
 }
 
@@ -330,85 +270,25 @@ function renderVideosSelect(videos, selectedVideoIds = []) {
         return;
     }
     
-    const selectedSet = new Set((selectedVideoIds || []).map(String));
-    
-    // Группируем по папкам
-    const byFolder = {};
-    for (const v of videos) {
-        const folder = (v.folder || '').trim() || '— Без папки';
-        if (!byFolder[folder]) byFolder[folder] = [];
-        byFolder[folder].push(v);
-    }
-    const folderOrder = ['— Без папки', ...Object.keys(byFolder).filter(f => f !== '— Без папки').sort()];
-    
-    const escapeHtml = (s) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    
-    let html = '<div class="videos-select-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem;">';
-    
-    folderOrder.forEach((folder, idx) => {
-        const list = byFolder[folder] || [];
-        const checkedCount = list.filter(v => selectedSet.has(String(v.id))).length;
-        const allChecked = checkedCount === list.length;
-        const someChecked = checkedCount > 0;
-        
-        html += `<div class="folder-assign-block" data-folder-idx="${idx}">`;
-        html += `
-            <div class="folder-assign-header" style="background: #f5f5f5; padding: 0.5rem 0.75rem; margin: 0.25rem 0; border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" class="folder-checkbox" data-folder-idx="${idx}" 
-                    ${allChecked ? 'checked' : ''}
-                    style="margin: 0;"> 
-                <span>${escapeHtml(folder)}</span>
-                <span style="font-size: 0.85rem; color: #666; font-weight: normal;">(${list.length} видео)</span>
-            </div>
-        `;
-        for (const video of list) {
-            const isSelected = selectedSet.has(String(video.id));
-            html += `
-                <label style="display: flex; align-items: center; padding: 0.5rem 0.75rem 0.5rem 2rem; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
-                    <input type="checkbox" class="video-checkbox" data-folder-idx="${idx}"
-                           value="${video.id}" ${isSelected ? 'checked' : ''} style="margin-right: 0.75rem;">
-                    <div style="flex: 1;">
-                        <div style="font-weight: 500;">${escapeHtml(video.title || 'Без названия')}</div>
-                        ${video.description ? `<div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">${escapeHtml(video.description.substring(0, 60))}${video.description.length > 60 ? '...' : ''}</div>` : ''}
-                    </div>
-                </label>
-            `;
-        }
-        html += '</div>';
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-    
-    // Обработчики: чекбокс папки — выделить/снять все видео в папке
-    container.querySelectorAll('.folder-checkbox').forEach(cb => {
-        const idx = cb.getAttribute('data-folder-idx');
-        const block = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
-        const someChecked = block && [...block.querySelectorAll('.video-checkbox')].some(c => c.checked);
-        const allChecked = block && [...block.querySelectorAll('.video-checkbox')].every(c => c.checked);
-        if (someChecked && !allChecked) cb.indeterminate = true;
-        cb.addEventListener('change', function() {
-            const blk = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
-            if (blk) blk.querySelectorAll('.video-checkbox').forEach(vcb => { vcb.checked = this.checked; });
-            this.indeterminate = false;
-        });
-    });
-    
-    // При изменении видео — обновить состояние чекбокса папки
-    container.querySelectorAll('.video-checkbox').forEach(vcb => {
-        const idx = vcb.getAttribute('data-folder-idx');
-        vcb.addEventListener('change', function() {
-            const block = container.querySelector(`.folder-assign-block[data-folder-idx="${idx}"]`);
-            if (!block) return;
-            const folderCb = block.querySelector('.folder-checkbox');
-            const videoCbs = block.querySelectorAll('.video-checkbox');
-            const checked = [...videoCbs].filter(c => c.checked).length;
-            if (folderCb) {
-                folderCb.checked = checked === videoCbs.length;
-                folderCb.indeterminate = checked > 0 && checked < videoCbs.length;
-            }
-        });
-    });
+    container.innerHTML = `
+        <div class="videos-select-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem;">
+            ${videos.map(video => {
+                const isSelected = selectedVideoIds.includes(video.id);
+                return `
+                    <label style="display: flex; align-items: center; padding: 0.5rem; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                        <input type="checkbox" 
+                               value="${video.id}" 
+                               ${isSelected ? 'checked' : ''}
+                               style="margin-right: 0.75rem;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">${video.title || 'Без названия'}</div>
+                            ${video.description ? `<div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">${video.description.substring(0, 60)}${video.description.length > 60 ? '...' : ''}</div>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('')}
+        </div>
+    `;
 }
 
 function closeUserModal() {
@@ -452,23 +332,20 @@ function setupUserForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Собираем выбранные видео (только чекбоксы видео, не папок)
+        // Собираем выбранные видео
         const selectedVideos = [];
-        const checkboxes = document.querySelectorAll('#videosSelectContainer .video-checkbox:checked');
+        const checkboxes = document.querySelectorAll('#videosSelectContainer input[type="checkbox"]:checked');
         checkboxes.forEach(checkbox => {
             selectedVideos.push(parseInt(checkbox.value));
         });
         
         const password = document.getElementById('userPassword').value;
         
-        const tariffEndDateVal = document.getElementById('userTariffEndDate').value;
         const data = {
             name: document.getElementById('userName').value,
             email: document.getElementById('userEmail').value,
             role: document.getElementById('userRole').value,
             tariff: document.getElementById('userTariff').value || null,
-            tariff_end_date: tariffEndDateVal || null,
-            status: document.getElementById('userStatus').value || 'active',
             assigned_videos: selectedVideos,
             program_notes: document.getElementById('userProgramNotes').value,
         };

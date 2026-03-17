@@ -15,12 +15,11 @@ export default {
 
                     <div class="table-container">
                         <table class="data-table">
-                                <thead>
+                            <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Название</th>
                                     <th>Цена</th>
-                                    <th>Срок (мес.)</th>
                                     <th>Описание</th>
                                     <th>Популярный</th>
                                     <th>Действия</th>
@@ -28,7 +27,7 @@ export default {
                             </thead>
                             <tbody id="tariffsTableBody">
                                 <tr>
-                                    <td colspan="7" class="loading">Загрузка...</td>
+                                    <td colspan="6" class="loading">Загрузка...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -50,19 +49,13 @@ export default {
                                 <input type="text" id="tariffName" required placeholder="Например: Пробное занятие">
                             </div>
                             
-                                <div class="form-group">
-                                    <label for="tariffPrice">Цена *</label>
-                                    <input type="text" id="tariffPrice" required placeholder="Например: 500₽ или 3500₽ / месяц">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tariffDurationMonths">Срок подписки (месяцев) *</label>
-                                    <input type="number" id="tariffDurationMonths" min="1" value="1" placeholder="1">
-                                    <small style="color: #666;">Используется для расчёта даты окончания подписки ученика</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tariffDescription">Описание</label>
+                            <div class="form-group">
+                                <label for="tariffPrice">Цена *</label>
+                                <input type="text" id="tariffPrice" required placeholder="Например: 500₽ или 3500₽ / месяц">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tariffDescription">Описание</label>
                                 <textarea id="tariffDescription" rows="5" placeholder="Введите описание тарифа. Каждое преимущество с новой строки (например: ✓ Одно занятие)"></textarea>
                             </div>
                             
@@ -103,7 +96,7 @@ async function loadTariffs() {
         const tariffs = data.items || [];
 
         if (tariffs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Тарифы пока не добавлены</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Тарифы пока не добавлены</td></tr>';
             return;
         }
 
@@ -112,7 +105,6 @@ async function loadTariffs() {
                 <td>${tariff.id}</td>
                 <td>${escapeHtml(tariff.name || '')}</td>
                 <td>${escapeHtml(tariff.price || '')}</td>
-                <td>${tariff.duration_months || 1}</td>
                 <td>${escapeHtml(tariff.description || '').substring(0, 50)}${tariff.description && tariff.description.length > 50 ? '...' : ''}</td>
                 <td>${tariff.is_popular ? '✓' : ''}</td>
                 <td class="cell-actions">
@@ -123,7 +115,7 @@ async function loadTariffs() {
         `).join('');
     } catch (error) {
         console.error('Ошибка загрузки тарифов:', error);
-        tbody.innerHTML = '<tr><td colspan="7" class="error">Ошибка загрузки тарифов</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="error">Ошибка загрузки тарифов</td></tr>';
     }
 }
 
@@ -166,7 +158,6 @@ window.editTariff = async function(id) {
             document.getElementById('tariffId').value = tariff.id;
             document.getElementById('tariffName').value = tariff.name || '';
             document.getElementById('tariffPrice').value = tariff.price || '';
-            document.getElementById('tariffDurationMonths').value = tariff.duration_months || 1;
             document.getElementById('tariffDescription').value = tariff.description || '';
             document.getElementById('tariffIsPopular').checked = tariff.is_popular || false;
             modal.style.display = 'flex';
@@ -227,13 +218,11 @@ function setupTariffForm() {
         }
         
         try {
-            const durationMonths = parseInt(document.getElementById('tariffDurationMonths').value, 10) || 1;
             const tariffData = {
                 name,
                 price,
                 description,
-                is_popular: isPopular,
-                duration_months: durationMonths
+                is_popular: isPopular
             };
             
             if (id) {

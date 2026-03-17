@@ -33,34 +33,6 @@ function persistData() {
 }
 
 /**
- * Вычислить дату окончания тарифа по дате платежа и сроку подписки (месяцев)
- */
-function computeTariffEndDate(paymentDate, durationMonths) {
-  const start = new Date(paymentDate);
-  start.setMonth(start.getMonth() + (durationMonths || 1));
-  return start.toISOString();
-}
-
-/**
- * Дополнить tariff_end_date для ученика, если отсутствует: ищем тариф по имени и прибавляем срок к дате платежа
- */
-function ensureTariffEndDate(user, allUsers, nextIdVal) {
-  if (user.role !== 'student' || user.tariff_end_date || !user.payment_date || !user.tariff) return;
-  const tariffsData = loadData('pricingTariffs');
-  const tariffs = tariffsData.items || [];
-  const tariff = tariffs.find(t => (t.name || '').trim().toLowerCase() === (user.tariff || '').trim().toLowerCase());
-  const months = tariff?.duration_months || 1;
-  const endDate = computeTariffEndDate(user.payment_date, months);
-  const idx = allUsers.findIndex(u => u.id === user.id);
-  if (idx !== -1) {
-    allUsers[idx].tariff_end_date = endDate;
-    allUsers[idx].updated_at = new Date().toISOString();
-    user.tariff_end_date = endDate;
-    saveData('users', { items: allUsers, nextId: nextIdVal });
-  }
-}
-
-/**
  * GET /api/admin/users
  * Получить список всех пользователей
  */
@@ -69,8 +41,6 @@ router.get('/', (req, res) => {
   const freshData = loadData('users');
   users = freshData.items || users;
   nextId = freshData.nextId || nextId;
-  // Для учеников без tariff_end_date — вычисляем по дате платежа + срок тарифа
-  users.forEach(u => ensureTariffEndDate(u, users, nextId));
   // Не возвращаем пароли в списке пользователей
   const usersWithoutPasswords = users.map(({ password: _, ...user }) => user);
   res.json(usersWithoutPasswords);
@@ -81,7 +51,7 @@ router.get('/', (req, res) => {
  * Создать нового пользователя
  */
 router.post('/', async (req, res) => {
-  const { name, email, password, role, tariff, tariff_end_date, status, assigned_videos, program_notes } = req.body;
+  const { name, email, password, role, tariff, assigned_videos, program_notes } = req.body;
   
   if (!email || !password) {
     return res.status(400).json({ error: 'Email и пароль обязательны' });
@@ -97,9 +67,8 @@ router.post('/', async (req, res) => {
     email,
     name: name || '',
     role: role || 'student',
-    status: status || 'active',
+    status: 'active',
     tariff: tariff || null,
-    tariff_end_date: tariff_end_date || null,
     assigned_videos: assigned_videos || [],
     program_notes: program_notes || '',
     created_at: new Date().toISOString(),
@@ -128,21 +97,6 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * Проверить и отключить ученика при истечении подписки
- */
-function checkAndDisableExpiredStudent(user, currentUsers, userIndex, nextIdVal) {
-  if (user.role !== 'student' || !user.tariff_end_date || user.status !== 'active') return;
-  const endDate = new Date(user.tariff_end_date);
-  if (endDate <= new Date()) {
-    currentUsers[userIndex].status = 'disabled';
-    currentUsers[userIndex].updated_at = new Date().toISOString();
-    saveData('users', { items: currentUsers, nextId: nextIdVal });
-    user.status = 'disabled';
-    console.log('Ученик отключён по истечении подписки:', user.id);
-  }
-}
-
-/**
  * GET /api/admin/users/me
  * Получить данные текущего пользователя
  * ВАЖНО: Этот роут должен быть ПЕРЕД /:id, иначе Express будет перехватывать /me как /:id
@@ -161,8 +115,6 @@ router.get('/me', authenticateToken, (req, res) => {
   // ВАЖНО: Перезагружаем данные из файла для гарантии актуальности
   const freshData = loadData('users');
   const currentUsers = freshData.items || users;
-  users = currentUsers;
-  nextId = freshData.nextId || nextId;
   
   // Преобразуем userId в число для корректного сравнения
   const userIdNumber = parseInt(userId);
@@ -171,8 +123,7 @@ router.get('/me', authenticateToken, (req, res) => {
   console.log('GET /me - все пользователи из файла:', currentUsers.map(u => ({ id: u.id, idType: typeof u.id, email: u.email, assigned_videos: u.assigned_videos })));
   
   // Ищем пользователя, сравнивая как числа
-  const userIndex = currentUsers.findIndex(u => parseInt(u.id) === userIdNumber);
-  const user = userIndex >= 0 ? currentUsers[userIndex] : null;
+  const user = currentUsers.find(u => parseInt(u.id) === userIdNumber);
   
   console.log('GET /me - найденный пользователь:', user ? { id: user.id, email: user.email, assigned_videos: user.assigned_videos } : 'не найден');
   
@@ -180,9 +131,6 @@ router.get('/me', authenticateToken, (req, res) => {
     console.error('GET /me - Пользователь не найден! userId:', userIdNumber, 'доступные ID:', currentUsers.map(u => u.id));
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
-  
-  // Для учеников: проверяем истечение подписки
-  checkAndDisableExpiredStudent(user, currentUsers, userIndex, freshData.nextId || nextId);
   
   // Не возвращаем пароль
   const { password: _, ...userResponse } = user;
@@ -211,7 +159,7 @@ router.put('/me', authenticateToken, async (req, res) => {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
   
-  const { name, email, password, currentPassword, video_folders } = req.body;
+  const { name, email, password, currentPassword } = req.body;
   
   const updatedUser = {
     ...currentUsers[userIndex],
@@ -219,19 +167,6 @@ router.put('/me', authenticateToken, async (req, res) => {
     email: email !== undefined ? email : currentUsers[userIndex].email,
     updated_at: new Date().toISOString(),
   };
-
-  // Ученики могут обновлять свои папки для видео (только для назначенных им)
-  if (video_folders !== undefined && currentUsers[userIndex].role === 'student') {
-    const assigned = (currentUsers[userIndex].assigned_videos || []).map(String);
-    const sanitized = {};
-    for (const [vid, folder] of Object.entries(video_folders || {})) {
-      if (assigned.includes(String(vid)) && typeof folder === 'string') {
-        const f = folder.trim();
-        if (f) sanitized[String(vid)] = f;
-      }
-    }
-    updatedUser.video_folders = sanitized;
-  }
   
   // Если указан новый пароль, проверяем текущий и хешируем новый
   if (password && password.trim() !== '') {
@@ -272,17 +207,12 @@ router.put('/me', authenticateToken, async (req, res) => {
  * Получить пользователя по ID
  */
 router.get('/:id', (req, res) => {
-  const freshData = loadData('users');
-  users = freshData.items || users;
-  nextId = freshData.nextId || nextId;
   const id = parseInt(req.params.id);
   const user = users.find(u => u.id === id);
   
   if (!user) {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
-  
-  ensureTariffEndDate(user, users, nextId);
   
   // Не возвращаем пароль в ответе
   const { password: _, ...userResponse } = user;
@@ -301,7 +231,7 @@ router.put('/:id', async (req, res) => {
     return res.status(404).json({ error: 'Пользователь не найден' });
   }
   
-  const { name, email, password, role, tariff, tariff_end_date, status, assigned_videos, program_notes } = req.body;
+  const { name, email, password, role, tariff, assigned_videos, program_notes } = req.body;
   
   console.log('PUT /users/:id - Обновление пользователя ID:', id);
   console.log('PUT /users/:id - assigned_videos из запроса:', assigned_videos);
@@ -313,8 +243,6 @@ router.put('/:id', async (req, res) => {
     email: email !== undefined ? email : users[userIndex].email,
     role: role !== undefined ? role : users[userIndex].role,
     tariff: tariff !== undefined ? tariff : users[userIndex].tariff,
-    tariff_end_date: tariff_end_date !== undefined ? tariff_end_date : users[userIndex].tariff_end_date,
-    status: status !== undefined ? status : (users[userIndex].status || 'active'),
     assigned_videos: assigned_videos !== undefined ? assigned_videos : users[userIndex].assigned_videos,
     program_notes: program_notes !== undefined ? program_notes : users[userIndex].program_notes,
     updated_at: new Date().toISOString(),

@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { loadData, saveData } = require('../utils/data-storage');
+const { loadData } = require('../utils/data-storage');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
@@ -81,25 +81,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
 
-    // Для учеников: проверяем, не истёк ли тариф — если да, отключаем
-    if (user.role === 'student' && user.tariff_end_date) {
-      const endDate = new Date(user.tariff_end_date);
-      if (endDate <= new Date() && user.status === 'active') {
-        const userData = loadData('users');
-        const idx = userData.items.findIndex(u => u.id === user.id);
-        if (idx !== -1) {
-          userData.items[idx].status = 'disabled';
-          userData.items[idx].updated_at = new Date().toISOString();
-          saveData('users', userData);
-          user.status = 'disabled';
-          console.log('Ученик отключён по истечении подписки:', user.id);
-        }
-      }
-    }
-
     // Проверяем статус пользователя
     if (user.status && user.status !== 'active') {
-      return res.status(403).json({ error: 'Подписка истекла. Продлите доступ для продолжения занятий.' });
+      return res.status(403).json({ error: 'Аккаунт заблокирован' });
     }
 
     // Генерируем JWT токен
