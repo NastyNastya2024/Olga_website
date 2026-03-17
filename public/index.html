@@ -436,7 +436,7 @@
                     videoContent = `
                         <div class="video-placeholder" style="background-image: url('${thumbnailUrl}'); background-size: cover; background-position: center;">
                             <div class="video-play-overlay">
-                                <button class="video-play-button" onclick="window.open('${video.video_url}', '_blank')">▶</button>
+                                <button class="video-play-button" onclick="window.open('${video.video_url}', '_blank')"><svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
                             </div>
                         </div>
                     `;
@@ -460,7 +460,7 @@
                 <div class="free-video-preview" onclick="playFreeVideo('${escapeHtml(video.video_url)}', '${escapeHtml(video.title || 'Видео')}')">
                     ${videoContent}
                     <div class="video-play-overlay">
-                        <div class="video-play-button">▶</div>
+                        <div class="video-play-button"><svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
                     </div>
                 </div>
                 <div class="free-video-content">

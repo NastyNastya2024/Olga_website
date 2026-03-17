@@ -21,6 +21,13 @@ body {
     background-color: #ffffff;
 }
 
+/* SVG-иконка play — корректно отображается на Android (вместо Unicode ▶) */
+.play-icon-svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+}
+
 /* Общие утилиты */
 .container {
     max-width: 1200px;
@@ -463,6 +470,77 @@ body.preloading .footer {
 }
 .legal-info-link-inner:hover {
     text-decoration: underline;
+}
+
+/* Согласие на обработку данных — попап в футере */
+.consent-data-modal {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.consent-data-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+.consent-data-content {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.consent-data-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+}
+.consent-data-close:hover {
+    color: #333;
+}
+.consent-data-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.consent-data-text {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+.consent-data-text p {
+    margin: 0 0 0.75rem 0;
+}
+.consent-data-text p:last-child {
+    margin-bottom: 0;
+}
+.consent-data-btn {
+    padding: 0.5rem 1.5rem;
+    background: #008B9D;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.consent-data-btn:hover {
+    background: #007a8a;
 }
 
 .footer-text {

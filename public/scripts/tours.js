@@ -139,7 +139,7 @@ function renderTourGallery(tourId) {
         mainContainer.innerHTML = `
             <div class="gallery-main-item gallery-video" onclick="playGalleryVideo(event, '${escapedMainUrl}')">
                 <video src="${escapedMainUrl}" muted loop playsinline preload="metadata"></video>
-                <div class="play-overlay">▶</div>
+                <div class="play-overlay"><svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
             </div>
         `;
     } else {
@@ -161,7 +161,7 @@ function renderTourGallery(tourId) {
             return `
                 <div class="gallery-thumbnail gallery-video ${isActive ? 'active' : ''}" onclick="setMainGalleryItem(${tourId}, ${index})">
                     <video src="${escapedUrl}" muted loop playsinline preload="metadata"></video>
-                    <div class="play-overlay-small">▶</div>
+                    <div class="play-overlay-small"><svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
                 </div>
             `;
         } else {

@@ -1212,6 +1212,37 @@ tr.user-detail-row td.user-detail-cell {
     }
 }
 
+/* Адаптив для Android (узкие экраны до 480px) */
+@media (max-width: 480px) {
+    .admin-main {
+        padding: 0.75rem;
+    }
+    
+    #videos-page {
+        margin-left: -0.75rem !important;
+        margin-right: -0.75rem !important;
+        width: calc(100% + 1.5rem) !important;
+    }
+    
+    #videos-data-table th:nth-child(2),
+    #videos-data-table td:nth-child(2) {
+        max-width: 90px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+        padding: 1rem;
+        max-height: 90dvh;
+    }
+    
+    /* Увеличенные зоны нажатия для touch */
+    .data-table .cell-actions .btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
 /* Dashboard Stats */
 .dashboard-stats {
     display: grid;

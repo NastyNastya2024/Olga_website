@@ -333,7 +333,7 @@ function setupTourForm() {
             
             // Добавляем иконку play
             const playIcon = document.createElement('div');
-            playIcon.innerHTML = '▶';
+            playIcon.innerHTML = '<svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
             playIcon.style.position = 'absolute';
             playIcon.style.top = '50%';
             playIcon.style.left = '50%';

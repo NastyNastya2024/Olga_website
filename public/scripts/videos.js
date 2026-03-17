@@ -81,7 +81,7 @@ function renderVideoCard(video) {
             <div class="video-placeholder">
                 ${videoContent}
                 <div class="video-play-overlay">
-                    <div class="video-play-button">▶</div>
+                    <div class="video-play-button"><svg class="play-icon-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
                 </div>
             </div>
             <div class="video-card-content">

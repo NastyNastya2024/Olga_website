@@ -171,7 +171,7 @@
     background: #000 !important;
 }
 
-/* Стили для модального окна видео на мобильных */
+/* Стили для модального окна видео на мобильных и Android */
 @media (max-width: 768px) {
     .modal {
         overflow-y: auto;
@@ -180,10 +180,18 @@
     
     #videoPlayerModal .video-modal-content {
         padding: 3.5rem 1rem 1rem 1rem;
+        min-height: 100dvh; /* dynamic viewport для Android */
+        min-height: -webkit-fill-available;
     }
     
     #videoPlayerModal .video-modal-player {
         height: calc(100vh - 6rem) !important;
+        height: calc(100dvh - 6rem) !important;
+        min-height: 0;
+    }
+    
+    #videoPlayerModal .video-modal-player video {
+        object-fit: contain;
     }
     
     .video-modal-header {
@@ -204,7 +212,21 @@
         width: 14px;
         height: 14px;
     }
+}
+
+/* Дополнительные адаптивы для Android (узкие экраны) */
+@media (max-width: 480px) {
+    #videoPlayerModal .video-modal-content {
+        padding: 3rem 0.75rem 0.75rem 0.75rem;
+    }
     
+    #videoPlayerModal .video-modal-header h2 {
+        font-size: 1rem;
+    }
+    
+    #videoPlayerModal .video-modal-player {
+        height: calc(100dvh - 5rem) !important;
+    }
 }
 
 .close {
