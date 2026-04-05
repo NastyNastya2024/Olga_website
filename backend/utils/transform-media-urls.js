@@ -1,35 +1,48 @@
 /**
- * Преобразует URL медиафайлов (localhost:9000) в относительные пути для production.
- * Браузер пользователя не может загрузить localhost:9000 — только через Nginx proxy /media/
+ * Преобразует URL медиафайлов для ответа API.
+ * Локальный MinIO (localhost:9000) в браузере с домена сайта не открывается — нужны /media/... или публичный URL Yandex.
  */
 
-const BUCKET = process.env.S3_BUCKET || 'olga-media';
+const { isYandexStorage, BUCKET_NAME } = require('../config/s3-config');
 
 /**
- * Заменяет localhost/127.0.0.1 URL MinIO на относительный путь /media/bucket/...
+ * Локальный MinIO: http://localhost:9000/<любой-бакет>/<ключ>
+ * — на Yandex-проде: https://storage.yandexcloud.net/<S3_BUCKET из .env>/<ключ>
+ * — на MinIO за Nginx: /media/<бакет-из-url>/<ключ>
  * @param {string} url
  * @returns {string}
  */
 function transformUrl(url) {
   if (typeof url !== 'string' || !url) return url;
-  // http://localhost:9000/olga-media/... -> /media/olga-media/...
-  const patterns = [
-    new RegExp(`^https?://localhost:9000/${BUCKET}/`, 'i'),
-    new RegExp(`^https?://127\\.0\\.0\\.1:9000/${BUCKET}/`, 'i'),
-  ];
-  for (const re of patterns) {
-    if (re.test(url)) {
-      return url.replace(re, `/media/${BUCKET}/`);
-    }
+
+  const m = url.match(/^https?:\/\/(localhost|127\.0\.0\.1):9000\/([^/]+)\/(.+)$/i);
+  if (!m) return url;
+
+  const bucketInUrl = m[2];
+  const keyPath = m[3];
+
+  if (isYandexStorage) {
+    return `https://storage.yandexcloud.net/${BUCKET_NAME}/${keyPath}`;
   }
-  return url;
+
+  return `/media/${bucketInUrl}/${keyPath}`;
 }
 
-const MEDIA_KEYS = ['video_url', 'thumbnail_url', 'cover_url', 'preview_url', 'url', 'image_url', 's3_url', 'cover_image', 'gallery'];
+const MEDIA_KEYS = [
+  'video_url',
+  'thumbnail_url',
+  'cover_url',
+  'preview_url',
+  'url',
+  'image_url',
+  's3_url',
+  'cover_image',
+  'gallery',
+];
 
 /**
  * Рекурсивно преобразует URL в объекте/массиве.
- * Только в production — в dev localhost:9000 доступен с той же машины.
+ * Только в production — в dev прямой localhost:9000 доступен с той же машины.
  */
 function transformMediaUrls(obj) {
   if (process.env.NODE_ENV !== 'production') return obj;

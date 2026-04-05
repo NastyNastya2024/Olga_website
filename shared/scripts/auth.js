@@ -34,6 +34,7 @@ async function login(email, password) {
         }
         const response = await window.api.post('/admin/auth/login', { email, password });
         if (response.success && response.token) {
+            if (typeof window !== 'undefined') window.__sessionExpiredRedirect = false;
             setToken(response.token);
             if (response.user) {
                 setUserData(response.user);

@@ -26,10 +26,12 @@ router.get('/', (req, res) => {
     const allVideos = getVideos();
     const category = req.query.category;
     
-    // Фильтруем только опубликованные видео с открытым доступом
-    let publishedVideos = allVideos.filter(video => 
-      video.status === 'published' && video.access_type === 'open'
-    );
+    // Фильтруем только опубликованные с открытым доступом (как в БД по умолчанию)
+    let publishedVideos = allVideos.filter(video => {
+      const status = video.status != null ? video.status : 'published';
+      const access = video.access_type != null ? video.access_type : 'open';
+      return status === 'published' && access === 'open';
+    });
     
     // Если указана категория, фильтруем по ней
     if (category) {

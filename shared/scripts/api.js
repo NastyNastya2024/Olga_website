@@ -57,6 +57,48 @@ class ApiClient {
     }
 
     /**
+     * Сессия недействительна (истёк JWT и т.п.) — очистка и переход на вход
+     */
+    handleSessionExpired() {
+        if (typeof window === 'undefined' || window.__sessionExpiredRedirect) return;
+        window.__sessionExpiredRedirect = true;
+        try {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_data');
+        } catch (e) {
+            /* ignore */
+        }
+        const goLogin = () => {
+            if (window.router && typeof window.router.navigate === 'function') {
+                window.router.navigate('/login');
+            } else if (window.location.pathname.includes('/admin')) {
+                window.location.href = '/admin';
+            } else {
+                window.location.reload();
+            }
+        };
+        setTimeout(() => {
+            alert('Сессия истекла. Войдите в личный кабинет снова.');
+            goLogin();
+            setTimeout(() => { window.__sessionExpiredRedirect = false; }, 1500);
+        }, 0);
+    }
+
+    /**
+     * Только ответы API про истёкший/недействительный JWT (не ошибка входа «неверный пароль»).
+     */
+    shouldTriggerReauth(status, errMsg) {
+        const msg = String(errMsg || '');
+        if (status === 401) {
+            return /токен/i.test(msg) || /Требуется авторизац/i.test(msg);
+        }
+        if (status === 403) {
+            return /Недействительный токен/i.test(msg);
+        }
+        return false;
+    }
+
+    /**
      * Базовый метод для запросов
      */
     async request(endpoint, options = {}) {
@@ -88,7 +130,16 @@ class ApiClient {
             }
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || 'Ошибка запроса');
+                const errMsg = data.error || data.message || 'Ошибка запроса';
+                const isAuth =
+                    endpoint.includes('/admin/') &&
+                    !endpoint.includes('/admin/auth/login') &&
+                    token &&
+                    this.shouldTriggerReauth(response.status, errMsg);
+                if (isAuth) {
+                    this.handleSessionExpired();
+                }
+                throw new Error(errMsg);
             }
 
             return data;
@@ -169,7 +220,11 @@ class ApiClient {
                 } else {
                     try {
                         const error = JSON.parse(xhr.responseText);
-                        reject(new Error(error.error || 'Ошибка загрузки файла'));
+                        const errMsg = error.error || 'Ошибка загрузки файла';
+                        if (token && this.shouldTriggerReauth(xhr.status, errMsg)) {
+                            this.handleSessionExpired();
+                        }
+                        reject(new Error(errMsg));
                     } catch {
                         reject(new Error('Ошибка загрузки файла'));
                     }
